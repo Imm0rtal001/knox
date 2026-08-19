@@ -287,6 +287,17 @@
       ]
     },
     {
+  "id": "mkvbase-responsive",
+  "name": "MkvBase Responsive",
+  "version": "1.0.0",
+  "description": "Responsive MkvBase provider for Nuvio / Fire TV",
+  "type": "provider",
+  "providers": [
+    "providers/mkvbase.js"
+  ],
+  "enabled": true
+},
+    {
       "id": "zinkmovies",
       "name": "ZinkMovies.",
       "description": "Bollywood Movies, Hollywood Movies, South Indian Movies, Hindi Dubbed Movies, Web Series, OTT Releases, & Trending Cinema \u2022 Nuvio TV / Fire TV compatible | Fire TV: kept enabled; protected by 20s overall timeout.",
