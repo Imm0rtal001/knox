@@ -286,28 +286,24 @@
         "hi"
       ]
     },
+   {
+  "id": "mkvbase-fetch",
+  "name": "MkvBase Fetch",
+  "version": "1.0.0",
+  "description": "MkvBase provider using direct fetch against https://mkvbase.site/",
+  "providers": [
     {
       "id": "mkvbase",
       "name": "MkvBase",
-      "description": "MkvBase provider optimized for Nuvio / Fire TV with bounded requests",
-      "version": "1.1.0",
-      "author": "Knox",
+      "filename": "mkvbase.js",
+      "enabled": true,
       "supportedTypes": [
         "movie",
         "tv"
-      ],
-      "filename": "providers/mkvbase.js",
-      "enabled": true,
-      "formats": [
-        "mkv",
-        "mp4",
-        "m3u8"
-      ],
-      "contentLanguage": [
-        "en",
-        "hi"
       ]
-    },
+    }
+  ]
+},
     {
       "id": "zinkmovies",
       "name": "ZinkMovies.",
