@@ -1,7 +1,11 @@
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
-const fetch = require("node-fetch");
+const fetch = globalThis.fetch ? globalThis.fetch.bind(globalThis) : (() => {
+  try { return require("node-fetch"); } catch (_) {
+    throw new Error("MkvBase requires fetch support in the Nuvio runtime");
+  }
+})();
 const { getCandidateHeaders, getCandidateUrl, isReadyForPlayback, resolveHubcloud, resolvePlayableCandidates, resolveVcloud } = require("../lib/hostResolver");
 
 // ── Performance: In-memory caches ──
@@ -806,13 +810,11 @@ async function getStreams(tmdbId, mediaType, season, episode, options = {}) {
     return cachedStreams;
   }
 
-  // ── Parallel: TMDB lookup + session prewarm ──
+  // ── Fire TV: keep the initial lookup fast.
+  // Do not launch Chromium/FlareSolverr while Nuvio is waiting for the provider.
   const t0 = Date.now();
-  const [info, _session] = await Promise.all([
-    fetchTmdbDetails(tmdbId, mediaType),
-    (async () => { const s = loadDirectSession(); if (!s) return bootstrapMkvBaseSessionWithFlareSolverr(); return s; })()
-  ]);
-  console.log(`[MkvBase] ⏱ TMDB+session: ${Date.now() - t0}ms`);
+  const info = await fetchTmdbDetails(tmdbId, mediaType);
+  console.log(`[MkvBase] ⏱ TMDB lookup: ${Date.now() - t0}ms`);
   if (!info || !info.title) return [];
 
   const isTv = mediaType === "tv" || mediaType === "series";
@@ -1008,30 +1010,7 @@ async function getStreams(tmdbId, mediaType, season, episode, options = {}) {
   return streams;
 }
 
-// ── Automated Background Session Keep-Alive ──
-async function ensureSessionFreshness() {
-  const session = loadDirectSession();
-  const sessionAgeMs = session ? Date.now() - Number(session.savedAt || 0) : Infinity;
-  // If session is missing or older than 3.5 hours, refresh it in the background
-  if (!session || sessionAgeMs > 3.5 * 60 * 60 * 1000) {
-    console.log("[MkvBase] 🔄 Session expired or approaching expiry, refreshing in background...");
-    const newSession = await bootstrapMkvBaseSessionWithFlareSolverr();
-    if (newSession) {
-      console.log("[MkvBase] ♻️  Background session refreshed successfully");
-    } else {
-      console.log("[MkvBase] ⚠️  Background session refresh failed, will retry on next check");
-    }
-  } else {
-    console.log(`[MkvBase] ♻️  Session is active and fresh (age: ${(sessionAgeMs / 1000 / 60).toFixed(1)} min)`);
-  }
-}
-
-// ── Startup check + Background Keep-Alive Timer (every 2 hours) ──
-setImmediate(() => {
-  ensureSessionFreshness();
-  setInterval(() => {
-    ensureSessionFreshness();
-  }, 2 * 60 * 60 * 1000);
-});
+// Fire TV note: do not start a browser/session refresh at plugin load time.
+// MkvBase sessions are created lazily only when the provider actually needs one.
 
 module.exports = { lookupIdType: "imdb", getStreams, resolveGdflix, fetchMkvBaseApi };

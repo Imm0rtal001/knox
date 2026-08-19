@@ -19,3 +19,4 @@ Add the repository's `manifest.json` URL in Nuvio's **Plugins** section. Plugin 
 ## Validation
 
 All provider files were syntax-checked after transpilation, and every provider was checked for a `getStreams` export. Live scraper/network availability is not guaranteed because third-party source domains can change or block requests.
+\n## Fire TV MkvBase fix (3.0.6)\n- MkvBase is registered in manifest.json.\n- `hostResolver.js` is included.\n- Browser/FlareSolverr session startup is lazy to prevent plugin-load stalls.\n- Uses runtime fetch when available, avoiding a hard dependency on node-fetch.\n
