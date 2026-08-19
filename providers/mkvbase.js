@@ -23,6 +23,9 @@ const BASE_URL = "https://mkvbase.site";
 const TMDB_BASE = "https://api.themoviedb.org/3";
 const TMDB_KEY = "307b7b8ef035c6aa336900aef4e203bd";
 const UA = "Mozilla/5.0 (Linux; Android 11; AFTSSS) AppleWebKit/537.36 Chrome/120.0 Mobile Safari/537.36";
+
+const REQUEST_TIMEOUT = 7000;
+const TOTAL_TIMEOUT = 12000;
 const SESSION_TTL = 30 * 60 * 1000;
 const STREAM_CACHE_TTL = 20 * 60 * 1000;
 const TMDB_CACHE_TTL = 60 * 60 * 1000;
@@ -54,7 +57,7 @@ function putCache(map, key, value, max = 200) {
   }
 }
 
-function promise {
+function withTimeout(promise, ms) {
   return Promise.race([
     promise,
     new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), ms))

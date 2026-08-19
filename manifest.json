@@ -1,11 +1,11 @@
 {
   "name": "Knox 3.1 Fire TV Fully Fixed",
-  "version": "3.1.1",
+  "version": "3.2.1",
   "scrapers": [
     {
       "id": "4khdhub",
       "name": "4KHDHub.",
-      "description": "4KHDHub direct links \u2022 Nuvio TV / Fire TV compatible",
+      "description": "4KHDHub direct links • Nuvio TV / Fire TV compatible",
       "version": "1.0.0",
       "author": "Nuvio Team",
       "supportedTypes": [
@@ -48,7 +48,7 @@
     {
       "id": "CineFreak",
       "name": "CineFreak.",
-      "description": "Provider: CineFreak | Bangla, English, Hindi \u2022 Nuvio TV / Fire TV compatible",
+      "description": "Provider: CineFreak | Bangla, English, Hindi • Nuvio TV / Fire TV compatible",
       "version": "3.3.0",
       "author": "Eclipsia",
       "supportedTypes": [
@@ -71,7 +71,7 @@
     {
       "id": "moviesHunt",
       "name": "MoviesHunt.",
-      "description": "Provider: MoviesHunt | Multi-Lang \u2022 Nuvio TV / Fire TV compatible",
+      "description": "Provider: MoviesHunt | Multi-Lang • Nuvio TV / Fire TV compatible",
       "version": "1.5.0",
       "author": "Eclipsia",
       "supportedTypes": [
@@ -90,7 +90,7 @@
     {
       "id": "animesalt",
       "name": "AnimeSalt.",
-      "description": "AnimeSalt India \u2022 Nuvio TV / Fire TV compatible",
+      "description": "AnimeSalt India • Nuvio TV / Fire TV compatible",
       "version": "1.0.0",
       "author": "Kabir",
       "supportedTypes": [
@@ -113,7 +113,7 @@
     {
       "id": "animeworld",
       "name": "AnimeWorld.",
-      "description": "Watch AnimeWorld India \u2022 Nuvio TV / Fire TV compatible",
+      "description": "Watch AnimeWorld India • Nuvio TV / Fire TV compatible",
       "version": "1.0.0",
       "author": "Kabir",
       "supportedTypes": [
@@ -135,7 +135,7 @@
     {
       "id": "dahmermovies.",
       "name": "Dahmermovies.",
-      "description": "Only works on Android TV \u2022 Nuvio TV / Fire TV compatible",
+      "description": "Only works on Android TV • Nuvio TV / Fire TV compatible",
       "version": "1.0.1",
       "author": "Nuvio Team",
       "supportedTypes": [
@@ -157,7 +157,7 @@
     {
       "id": "hdhub4u",
       "name": "HDHub4u.",
-      "description": "Direct links from HDHub4u with high-speed download support \u2022 Nuvio TV / Fire TV compatible",
+      "description": "Direct links from HDHub4u with high-speed download support • Nuvio TV / Fire TV compatible",
       "version": "1.0.0",
       "author": "Nuvio Team",
       "supportedTypes": [
@@ -178,7 +178,7 @@
     {
       "id": "hdGharTV",
       "name": "HdGharTV.",
-      "description": "Provider: HdGharTV | Multi-lang \u2022 Nuvio TV / Fire TV compatible",
+      "description": "Provider: HdGharTV | Multi-lang • Nuvio TV / Fire TV compatible",
       "version": "1.1.0",
       "author": "Eclipsia",
       "supportedTypes": [
@@ -201,7 +201,7 @@
     {
       "id": "moviesdrive",
       "name": "MoviesDrive.",
-      "description": "MoviesDrive - Movies and TV shows with multiple streaming servers \u2022 Nuvio TV / Fire TV compatible | Fire TV: kept enabled; no overall response timeout.",
+      "description": "MoviesDrive - Movies and TV shows with multiple streaming servers • Nuvio TV / Fire TV compatible | Fire TV: kept enabled; no overall response timeout.",
       "version": "2.0.0",
       "author": "JK",
       "supportedTypes": [
@@ -224,7 +224,7 @@
     {
       "id": "uhdmovies",
       "name": "UHDMovies.",
-      "description": "UHD Movies streaming with multiple resolution \u2022 Nuvio TV / Fire TV compatible",
+      "description": "UHD Movies streaming with multiple resolution • Nuvio TV / Fire TV compatible",
       "version": "1.0.0",
       "author": "Nuvio Team",
       "supportedTypes": [
@@ -245,7 +245,7 @@
     {
       "id": "vegaMovies",
       "name": "VegaMovies.",
-      "description": "VegaMovies streaming with high-quality direct links \u2022 Nuvio TV / Fire TV compatible | Fire TV: kept enabled; no overall response timeout.",
+      "description": "VegaMovies streaming with high-quality direct links • Nuvio TV / Fire TV compatible | Fire TV: kept enabled; no overall response timeout.",
       "version": "2.0",
       "author": "piratezoro9",
       "supportedTypes": [
@@ -267,7 +267,7 @@
     {
       "id": "rogmovies",
       "name": "Rogmovies.",
-      "description": "rogmovies streaming bollywood movies with high-quality direct links \u2022 Nuvio TV / Fire TV compatible | Fire TV: kept enabled; no overall response timeout.",
+      "description": "rogmovies streaming bollywood movies with high-quality direct links • Nuvio TV / Fire TV compatible | Fire TV: kept enabled; no overall response timeout.",
       "version": "2.0",
       "author": "piratezoro9",
       "supportedTypes": [
@@ -311,7 +311,7 @@
     {
       "id": "zinkmovies",
       "name": "ZinkMovies.",
-      "description": "Bollywood Movies, Hollywood Movies, South Indian Movies, Hindi Dubbed Movies, Web Series, OTT Releases, & Trending Cinema \u2022 Nuvio TV / Fire TV compatible | Fire TV: kept enabled; no overall response timeout.",
+      "description": "Bollywood Movies, Hollywood Movies, South Indian Movies, Hindi Dubbed Movies, Web Series, OTT Releases, & Trending Cinema • Nuvio TV / Fire TV compatible | Fire TV: kept enabled; no overall response timeout.",
       "version": "1.0.0",
       "author": "Kabir",
       "supportedTypes": [
