@@ -1,21 +1,14 @@
-# Knox 3.0.3 — Nuvio TV / Fire TV build
+# Knox 3.1 Fire TV Fully Fixed
 
-Nuvio plugin repository for Android TV / Amazon Fire TV devices.
+Nuvio provider repository optimized for Fire TV.
 
-## What was fixed
+## Changes
+- Standardized MkvBase manifest registration.
+- Preserved all providers as enabled.
+- Added a 12-second per-provider safety boundary.
+- Clears safety timers after completion to avoid accumulating timers.
+- Provider exceptions resolve to an empty stream list instead of crashing the whole plugin.
+- Removed MovieBlast's hard `crypto-js` module-load dependency.
+- MkvBase remains lazy/no-browser at startup.
 
-- Transpiled providers that used `async`/`await` into Promise/generator-compatible JavaScript for the Nuvio sandbox.
-- Kept the required `getStreams(tmdbId, mediaType, season, episode)` export on every provider.
-- Disabled MovieBlast because it imports `crypto-js`, a dependency that is not included by this repository and is not safe to assume is available in the Nuvio sandbox.
-- Preserved the existing provider logic and stream metadata.
-- Updated the repository version to `3.0.3-firetv`.
-
-## Fire TV / Firestick
-
-This repository is a Nuvio plugin repository; it does not control the Fire TV user interface. Nuvio provides the TV/remote-friendly UI, while these plugins return streams.
-
-Add the repository's `manifest.json` URL in Nuvio's **Plugins** section. Plugin support depends on the Nuvio build; some store-distributed builds do not support plugins.
-
-## Validation
-
-All provider files were syntax-checked after transpilation, and every provider was checked for a `getStreams` export. Live scraper/network availability is not guaranteed because third-party source domains can change or block requests.
+External scraper websites can still change or block requests; this repository cannot guarantee third-party uptime.
