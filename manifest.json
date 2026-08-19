@@ -26,7 +26,7 @@
     {
       "id": "movieBlast",
       "name": "MovieBlast.",
-      "description": "Disabled: requires crypto-js, which is not available in the Nuvio sandbox. | Fire TV: kept enabled; protected by 20s overall timeout.",
+      "description": "Disabled: requires crypto-js, which is not available in the Nuvio sandbox. | Fire TV: kept enabled; no overall response timeout.",
       "version": "1.1.0",
       "author": "Eclipsia",
       "supportedTypes": [
@@ -201,7 +201,7 @@
     {
       "id": "moviesdrive",
       "name": "MoviesDrive.",
-      "description": "MoviesDrive - Movies and TV shows with multiple streaming servers \u2022 Nuvio TV / Fire TV compatible | Fire TV: kept enabled; protected by 20s overall timeout.",
+      "description": "MoviesDrive - Movies and TV shows with multiple streaming servers \u2022 Nuvio TV / Fire TV compatible | Fire TV: kept enabled; no overall response timeout.",
       "version": "2.0.0",
       "author": "JK",
       "supportedTypes": [
@@ -245,7 +245,7 @@
     {
       "id": "vegaMovies",
       "name": "VegaMovies.",
-      "description": "VegaMovies streaming with high-quality direct links \u2022 Nuvio TV / Fire TV compatible | Fire TV: kept enabled; protected by 20s overall timeout.",
+      "description": "VegaMovies streaming with high-quality direct links \u2022 Nuvio TV / Fire TV compatible | Fire TV: kept enabled; no overall response timeout.",
       "version": "2.0",
       "author": "piratezoro9",
       "supportedTypes": [
@@ -267,7 +267,7 @@
     {
       "id": "rogmovies",
       "name": "Rogmovies.",
-      "description": "rogmovies streaming bollywood movies with high-quality direct links \u2022 Nuvio TV / Fire TV compatible | Fire TV: kept enabled; protected by 20s overall timeout.",
+      "description": "rogmovies streaming bollywood movies with high-quality direct links \u2022 Nuvio TV / Fire TV compatible | Fire TV: kept enabled; no overall response timeout.",
       "version": "2.0",
       "author": "piratezoro9",
       "supportedTypes": [
@@ -311,7 +311,7 @@
     {
       "id": "zinkmovies",
       "name": "ZinkMovies.",
-      "description": "Bollywood Movies, Hollywood Movies, South Indian Movies, Hindi Dubbed Movies, Web Series, OTT Releases, & Trending Cinema \u2022 Nuvio TV / Fire TV compatible | Fire TV: kept enabled; protected by 20s overall timeout.",
+      "description": "Bollywood Movies, Hollywood Movies, South Indian Movies, Hindi Dubbed Movies, Web Series, OTT Releases, & Trending Cinema \u2022 Nuvio TV / Fire TV compatible | Fire TV: kept enabled; no overall response timeout.",
       "version": "1.0.0",
       "author": "Kabir",
       "supportedTypes": [
