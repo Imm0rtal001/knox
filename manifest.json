@@ -1,6 +1,6 @@
 {
   "name": "Knox Fire TV Providers",
-  "version": "3.5.0",
+  "version": "3.6.0",
   "scrapers": [
     {
       "id": "4khdhub",
@@ -311,29 +311,11 @@
         "ta",
         "te"
       ]
-    },
-    {
-      "id": "mkvbase",
-      "name": "MkvBase",
-      "description": "MkvBase direct-fetch provider for Nuvio / Fire TV",
-      "version": "1.0.0",
-      "author": "Knox",
-      "supportedTypes": [
-        "movie",
-        "tv"
-      ],
-      "filename": "providers/mkvbase.js",
-      "enabled": true,
-      "formats": [
-        "mp4",
-        "mkv",
-        "m3u8"
-      ],
-      "logo": "",
-      "contentLanguage": [
-        "en",
-        "hi"
-      ]
     }
-  ]
+  ],
+  "nuvioBadge": {
+    "enabled": true,
+    "source": "https://pastebin.com/raw/5xiu5fLL",
+    "description": "Nuvio badge configuration supplied by repository owner."
+  }
 }
