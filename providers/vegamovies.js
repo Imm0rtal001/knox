@@ -2,8 +2,18 @@
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function fulfilled(value) { try {
+            step(generator.next(value));
+        }
+        catch (e) {
+            reject(e);
+        } }
+        function rejected(value) { try {
+            step(generator["throw"](value));
+        }
+        catch (e) {
+            reject(e);
+        } }
         function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
@@ -30,16 +40,22 @@ const mobileHdrs = () => ({
     "Accept-Language": "en-US,en;q=0.9",
     "Referer": BASE_URL + "/"
 });
-const origin = url => { try {
-    const p = url.split('//');
-    return p[0] + '//' + p[1].split('/')[0];
-}
-catch (e) {
-    return url;
-} };
+const origin = url => {
+    try {
+        const p = url.split('//');
+        return p[0] + '//' + p[1].split('/')[0];
+    }
+    catch (e) {
+        return url;
+    }
+};
 const fixUrl = url => !url ? '' : url.startsWith('https://') ? url : url.startsWith('http://') ? 'https://' + url.slice(7) : url.startsWith('//') ? 'https:' + url : BASE_URL + (url.startsWith('/') ? '' : '/') + url;
-const normalizeQ = q => { if (!q)
-    return null; const l = q.toLowerCase(); return (l === '4k' || l === '4kp') ? '2160p' : ALLOWED_Q.includes(l) ? l : null; };
+const normalizeQ = q => {
+    if (!q)
+        return null;
+    const l = q.toLowerCase();
+    return (l === '4k' || l === '4kp') ? '2160p' : ALLOWED_Q.includes(l) ? l : null;
+};
 const parseQ = t => { const m = String(t || '').match(/(2160|1080|720|480|1440)\s*P/i); return m ? m[1].toLowerCase() + 'p' : /4K|UHD/i.test(t) ? '2160p' : /1440|2K/i.test(t) ? '1440p' : 'HD'; };
 const decodeEnt = s => (s || '').replace(/&#8211;|&#8212;|&ndash;|&mdash;/g, '-').replace(/&#038;|&amp;/g, '&').replace(/&#8217;/g, "'").replace(/&quot;/g, '"');
 function fetchSafe(url_1) {
@@ -55,24 +71,28 @@ function fetchSafe(url_1) {
         }
     });
 }
-const fetchJson = (url_1, ...args_1) => __awaiter(void 0, [url_1, ...args_1], void 0, function* (url, opts = {}) { try {
-    const r = yield fetchSafe(url, opts);
-    if (!r || !r.ok)
+const fetchJson = (url_1, ...args_1) => __awaiter(void 0, [url_1, ...args_1], void 0, function* (url, opts = {}) {
+    try {
+        const r = yield fetchSafe(url, opts);
+        if (!r || !r.ok)
+            return null;
+        return JSON.parse(yield r.text());
+    }
+    catch (e) {
         return null;
-    return JSON.parse(yield r.text());
-}
-catch (e) {
-    return null;
-} });
-const fetchHtml = (url_1, ...args_1) => __awaiter(void 0, [url_1, ...args_1], void 0, function* (url, opts = {}) { try {
-    const r = yield fetchSafe(url, opts);
-    if (!r || !r.ok)
+    }
+});
+const fetchHtml = (url_1, ...args_1) => __awaiter(void 0, [url_1, ...args_1], void 0, function* (url, opts = {}) {
+    try {
+        const r = yield fetchSafe(url, opts);
+        if (!r || !r.ok)
+            return null;
+        return cheerio.load(yield r.text());
+    }
+    catch (e) {
         return null;
-    return cheerio.load(yield r.text());
-}
-catch (e) {
-    return null;
-} });
+    }
+});
 function makeStream(_, title, url, quality, headers, mediaInfo, fallbackQ = 'HD') {
     if (!url || !url.startsWith('https://'))
         return null;
@@ -117,8 +137,12 @@ function makeStream(_, title, url, quality, headers, mediaInfo, fallbackQ = 'HD'
     };
 }
 const dedupe = streams => { const s = new Set(); return (streams || []).filter(x => x && x.url && !s.has(x.url) && s.add(x.url)); };
-const isHubVc = s => { if (!s || !s.url)
-    return false; const l = s.url.toLowerCase(); return l.includes('hubcloud') || l.includes('vcloud') || l.includes('/hub2/') || l.includes('homelander.buzz') || l.includes('whistle.lat') || l.includes('mandalorian.buzz') || l.includes('.r2.dev') || (s.name && (s.name.includes('HubCloud') || s.name.includes('vCloud'))); };
+const isHubVc = s => {
+    if (!s || !s.url)
+        return false;
+    const l = s.url.toLowerCase();
+    return l.includes('hubcloud') || l.includes('vcloud') || l.includes('/hub2/') || l.includes('homelander.buzz') || l.includes('whistle.lat') || l.includes('mandalorian.buzz') || l.includes('.r2.dev') || (s.name && (s.name.includes('HubCloud') || s.name.includes('vCloud')));
+};
 function isStrictMatch(reqTitle, reqYear, scrTitle, scrYear, alts = []) {
     if (!scrTitle)
         return false;
@@ -287,12 +311,14 @@ function extractSingleVc(vcUrl, referer, targetSeason, targetEp, label, fallback
         const synced = href => href.includes('?') ? href + '&s=' + (1 + new Date().getMinutes()) : href + '?s=' + (1 + new Date().getMinutes());
         const varAtob = raw.match(/var\s+url\s*=\s*atob\(atob\('([^']+)'\)\)/);
         const varUrl = raw.match(/var\s+url\s*=\s*['"]([^'"]+)['"]/);
-        let bridgeUrl = varAtob ? (function () { try {
-            return atob(atob(varAtob[1]));
-        }
-        catch (e) {
-            return varAtob[1];
-        } })() : varUrl ? varUrl[1] : '';
+        let bridgeUrl = varAtob ? (function () {
+            try {
+                return atob(atob(varAtob[1]));
+            }
+            catch (e) {
+                return varAtob[1];
+            }
+        })() : varUrl ? varUrl[1] : '';
         if (bridgeUrl && bridgeUrl.includes('.workers.dev') && bridgeUrl.startsWith('https://')) {
             tasks.push(() => streams.push(makeStream('Worker', (label || 'Worker') + ' [' + headerText + ']', synced(bridgeUrl), quality, { 'Referer': newUrl }, mediaInfo, fallbackQ)));
             bridgeUrl = '';
@@ -402,10 +428,12 @@ function loadStreamsFromUrl(url, label, quality, referer, targetSeason, targetEp
                     continue;
                 const res = yield Promise.all(tasks.slice(i, i + 5).map(fn => fn().catch(() => [])));
                 let found = false;
-                res.forEach(r => { if (r && r.length) {
-                    r.forEach(s => s && s.url && streams.push(s));
-                    found = true;
-                } });
+                res.forEach(r => {
+                    if (r && r.length) {
+                        r.forEach(s => s && s.url && streams.push(s));
+                        found = true;
+                    }
+                });
                 if (found)
                     break;
             }
@@ -491,4 +519,3 @@ function getStreams(tmdbId, mediaType, season, episode) {
     });
 }
 module.exports = { getStreams };
-

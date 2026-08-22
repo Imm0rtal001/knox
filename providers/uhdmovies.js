@@ -671,4 +671,3 @@ if (typeof module !== "undefined" && module.exports) {
 else {
     global.getStreams = getStreams;
 }
-
