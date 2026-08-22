@@ -1,6 +1,6 @@
 {
   "name": "Knox Fire TV Providers",
-  "version": "3.6.1",
+  "version": "3.6.2",
   "scrapers": [
     {
       "id": "4khdhub",

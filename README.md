@@ -1,19 +1,12 @@
-# Knox 3.1 Fire TV Fully Fixed
+# Knox Fire TV Providers — 3.6.2
 
-Nuvio provider repository optimized for Fire TV.
+Compatibility fix for Nuvio TV / Fire TV plugin runtime.
 
-## Changes
-- Preserved all providers as enabled.
-- Added a 12-second per-provider safety boundary.
-- Clears safety timers after completion to avoid accumulating timers.
-- Provider exceptions resolve to an empty stream list instead of crashing the whole plugin.
-- Removed MovieBlast's hard `crypto-js` module-load dependency.
+## Fixes in this build
+- Transpiled all provider files to remove runtime `async/await` syntax that can fail in Nuvio's dynamically loaded JavaScript environment.
+- Preserved every scraper as enabled; no scraper was disabled.
+- Fixed MkvBase so numeric TMDB IDs are resolved to the movie/series title before searching.
+- Kept provider failures isolated so one provider returning an error does not prevent the remaining providers from running.
 
-External scraper websites can still change or block requests; this repository cannot guarantee third-party uptime.
-
-## Nuvio badge
-
-Badge source configured by the repository owner:
-
-https://pastebin.com/raw/5xiu5fLL
-
+## Important
+This package only fixes the plugin/runtime integration. Third-party source sites can still change, block requests, require authentication, or return no usable source.
