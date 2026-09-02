@@ -33,7 +33,7 @@ function searchSite(title, mediaType) {
     return httpGet(url, { 'Referer': BASE + '/' })
         .then(function (html) {
         var results = [];
-        var re = /href="(https:\/\/watchanimeworld\.net\/(series|movies)\/([^\/\"]+)\/)"/g;
+        var re = /href="(https:\/\/watchanimeworld\.one\/(series|movies)\/([^\/\"]+)\/)"/g;
         var m;
         while ((m = re.exec(html)) !== null) {
             var link = m[1], type = m[2], slug = m[3];
@@ -56,7 +56,7 @@ function getEpisodeUrl(seriesUrl, season, episode) {
         return httpGet(ajaxUrl, { 'Referer': seriesUrl })
             .then(function (epHtml) {
             var suffix = season + 'x' + episode + '/';
-            var re = /href="(https:\/\/watchanimeworld\.net\/episode\/([^"]+))"/g;
+            var re = /href="(https:\/\/watchanimeworld\.one\/episode\/([^"]+))"/g;
             var m;
             while ((m = re.exec(epHtml)) !== null) {
                 if (m[1].indexOf(suffix) !== -1)
@@ -115,7 +115,7 @@ function getStreams(tmdbId, mediaType, season, episode) {
                 return;
             }
             resolve([{
-                    name: '🗡️ AnimeWorld',
+                    name: 'AnimeWorld',
                     title: 'AnimeWorld • Multi-Audio 1080p',
                     url: streamData.url,
                     quality: '1080p',
