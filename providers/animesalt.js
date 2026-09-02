@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const MAIN_URL = "https://animesalt.link";
+const MAIN_URL = "https://animesalt.cx";
 const TMDB_API_KEY = "307b7b8ef035c6aa336900aef4e203bd";
 const HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/149.0.0.0 Safari/537.36",
