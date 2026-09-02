@@ -9,7 +9,7 @@
       "version": "1.5.0",
       "author": "Imm0rtal001",
       "supportedTypes": ["movie", "tv"],
-      "filename": "https://raw.githubusercontent.com/Imm0rtal001/knox/refs/heads/main/manifest.json",
+      "filename": "providers/4khdhub.js",
       "enabled": true,
       "hasSettings": true,
       "formats": ["mkv", "m3u8", "mp4"],
