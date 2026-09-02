@@ -120,7 +120,7 @@ function resolveAnimePageUrl(title, mediaType, year) {
 }
 function extractEpisodeUrl(html, season, episode) {
     var _a, _b;
-    const pattern = new RegExp(`href="(https://animesalt\\.link/episode/[^"]*${season}x${episode}[^"]*)"`);
+    const pattern = new RegExp(`href="(https://animesalt\\.cx/episode/[^"]*${season}x${episode}[^"]*)"`);
     return (_b = (_a = pattern.exec(html)) === null || _a === void 0 ? void 0 : _a[1]) !== null && _b !== void 0 ? _b : null;
 }
 function resolveEpisodeUrl(seriesPageUrl, season, episode) {
@@ -206,7 +206,7 @@ function getStreams(tmdbId, mediaType, season, episode) {
                 ? ` • Episode ${episode}${episodeTitle ? ` - ${episodeTitle}` : ""}`
                 : "";
             return [{
-                    name: "AnimeSalt",
+                    name: "AnimeSalt.",
                     title: "AnimeSalt",
                     url: stream.url,
                     quality: "1080p",
