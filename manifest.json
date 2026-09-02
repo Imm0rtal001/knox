@@ -13,7 +13,7 @@
       "enabled": true,
       "hasSettings": true,
       "formats": ["mkv", "m3u8", "mp4"],
-      "logo": "",
+      "logo": "https://i.postimg.cc/DZpW6Xfb/4khdhub.png",
       "contentLanguage": ["en", "hi"]
     },
     {
@@ -21,7 +21,7 @@
       "name": "MovieBlast.",
       "description": "Disabled: requires crypto-js, which is not available in the Nuvio sandbox. | Fire TV: kept enabled; no overall response timeout.",
       "version": "1.1.0",
-      "author": "Eclipsia",
+      "author": "Imm0rtal001",
       "supportedTypes": [
         "movie",
         "tv"
@@ -43,7 +43,7 @@
       "name": "CineFreak.",
       "description": "Provider: CineFreak | Bangla, English, Hindi • Nuvio TV / Fire TV compatible",
       "version": "3.3.0",
-      "author": "Eclipsia",
+      "author": "Imm0rtal001",
       "supportedTypes": [
         "movie",
         "tv"
@@ -66,7 +66,7 @@
       "name": "MoviesHunt.",
       "description": "Provider: MoviesHunt | Multi-Lang • Nuvio TV / Fire TV compatible",
       "version": "1.5.0",
-      "author": "Eclipsia",
+      "author": "Imm0rtal001",
       "supportedTypes": [
         "movie"
       ],
@@ -85,7 +85,7 @@
       "name": "AnimeSalt.",
       "description": "AnimeSalt India • Nuvio TV / Fire TV compatible",
       "version": "1.0.0",
-      "author": "Kabir",
+      "author": "Imm0rtal001",
       "supportedTypes": [
         "movie",
         "tv"
@@ -108,7 +108,7 @@
       "name": "AnimeWorld.",
       "description": "Watch AnimeWorld India • Nuvio TV / Fire TV compatible",
       "version": "1.0.0",
-      "author": "Kabir",
+      "author": "Imm0rtal001",
       "supportedTypes": [
         "movie",
         "tv"
@@ -130,7 +130,7 @@
       "name": "Dahmermovies.",
       "description": "Only works on Android TV • Nuvio TV / Fire TV compatible",
       "version": "1.0.1",
-      "author": "Nuvio Team",
+      "author": "Imm0rtal001",
       "supportedTypes": [
         "movie",
         "tv"
@@ -152,7 +152,7 @@
       "name": "HDHub4u.",
       "description": "Direct links from HDHub4u with high-speed download support • Nuvio TV / Fire TV compatible",
       "version": "1.0.0",
-      "author": "Nuvio Team",
+      "author": "Imm0rtal001",
       "supportedTypes": [
         "movie",
         "tv"
@@ -173,7 +173,7 @@
       "name": "HdGharTV.",
       "description": "Provider: HdGharTV | Multi-lang • Nuvio TV / Fire TV compatible",
       "version": "1.1.0",
-      "author": "Eclipsia",
+      "author": "Imm0rtal001",
       "supportedTypes": [
         "movie",
         "tv"
@@ -196,7 +196,7 @@
       "name": "MoviesDrive.",
       "description": "MoviesDrive - Movies and TV shows with multiple streaming servers • Nuvio TV / Fire TV compatible | Fire TV: kept enabled; no overall response timeout.",
       "version": "2.0.0",
-      "author": "JK",
+      "author": "Imm0rtal001",
       "supportedTypes": [
         "movie",
         "tv"
@@ -219,7 +219,7 @@
       "name": "UHDMovies.",
       "description": "UHD Movies streaming with multiple resolution • Nuvio TV / Fire TV compatible",
       "version": "1.0.0",
-      "author": "Nuvio Team",
+      "author": "Imm0rtal001",
       "supportedTypes": [
         "movie",
         "tv"
@@ -240,7 +240,7 @@
       "name": "VegaMovies.",
       "description": "VegaMovies streaming with high-quality direct links • Nuvio TV / Fire TV compatible | Fire TV: kept enabled; no overall response timeout.",
       "version": "2.0",
-      "author": "piratezoro9",
+      "author": "Imm0rtal001",
       "supportedTypes": [
         "movie",
         "tv"
@@ -262,7 +262,7 @@
       "name": "Rogmovies.",
       "description": "rogmovies streaming bollywood movies with high-quality direct links • Nuvio TV / Fire TV compatible | Fire TV: kept enabled; no overall response timeout.",
       "version": "2.0",
-      "author": "piratezoro9",
+      "author": "Imm0rtal001",
       "supportedTypes": [
         "movie",
         "tv"
@@ -284,7 +284,7 @@
       "name": "ZinkMovies.",
       "description": "Bollywood Movies, Hollywood Movies, South Indian Movies, Hindi Dubbed Movies, Web Series, OTT Releases, & Trending Cinema • Nuvio TV / Fire TV compatible | Fire TV: kept enabled; no overall response timeout.",
       "version": "1.0.0",
-      "author": "Kabir",
+      "author": "Imm0rtal001",
       "supportedTypes": [
         "movie",
         "tv"
