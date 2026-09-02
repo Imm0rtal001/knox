@@ -4,24 +4,17 @@
   "scrapers": [
     {
       "id": "4khdhub",
-      "name": "4KHDHub.",
-      "description": "4KHDHub direct links • Nuvio TV / Fire TV compatible",
-      "version": "1.0.0",
-      "author": "Nuvio Team",
-      "supportedTypes": [
-        "movie",
-        "tv"
-      ],
-      "filename": "providers/4khdhub.js",
+      "name": "4Khdhub.",
+      "description": "Provider: 4kHdHub | Multi-lang",
+      "version": "1.5.0",
+      "author": "Imm0rtal001",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "https://raw.githubusercontent.com/Imm0rtal001/knox/refs/heads/main/manifest.json",
       "enabled": true,
-      "formats": [
-        "mp4",
-        "m3u8"
-      ],
-      "logo": "https://i.postimg.cc/DZpW6Xfb/4khdhub.png",
-      "contentLanguage": [
-        "en"
-      ]
+      "hasSettings": true,
+      "formats": ["mkv", "m3u8", "mp4"],
+      "logo": "",
+      "contentLanguage": ["en", "hi"]
     },
     {
       "id": "movieBlast",
