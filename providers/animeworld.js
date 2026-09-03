@@ -3,7 +3,7 @@
 const cheerio = require("cheerio");
 const TMDB_API_KEY = "307b7b8ef035c6aa336900aef4e203bd";
 const BASE_URL = "https://watchanimeworld.one";
-const PLAYER_BASE_URL = "https://play.zephyrix.top";
+const PLAYER_BASE_URL = "https://play.zephyrix.org";
 const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36";
 const DEFAULT_REQUEST_HEADERS = { "User-Agent": USER_AGENT };
 
@@ -86,7 +86,7 @@ async function resolveEpisodeUrl(seriesUrl, seasonNumber, episodeNumber) {
 async function extractStreamData(pageUrl) {
   const response = await performGetRequest(pageUrl, { "Referer": `${BASE_URL}/` });
   const html = await response.text();
-  const streamMatch = html.match(/(?:src|data-src)="(https:\/\/play\.zephyrix\.top\/video\/([a-f0-9]+))"/);
+  const streamMatch = html.match(/(?:src|data-src)="(https:\/\/play\.zephyrix\.org\/video\/([a-f0-9]+))"/);
   if (!streamMatch) return null;
 
   const videoHash = streamMatch[2];
