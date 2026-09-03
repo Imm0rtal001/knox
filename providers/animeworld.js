@@ -1,451 +1,429 @@
-"use strict";
-
-/*
- * AnimeWorld provider for Knox / Nuvio TV.
- * - No cheerio/CryptoJS or other npm dependency.
- * - Keeps the required module.exports = { getStreams } interface.
- * - Uses TMDB_API_KEY from the environment when available.
+/**
+ * AnimeWorld diagnostic provider for Knox / Nuvio.
  *
- * IMPORTANT: The Nuvio sandbox must provide TMDB_API_KEY for this provider
- * to resolve titles. Do not hard-code a TMDB key in the provider.
+ * Purpose:
+ *   Diagnose where an AnimeWorld lookup fails without attempting to
+ *   extract or return a playable stream URL.
+ *
+ * Nuvio provider contract:
+ *   getStreams(tmdbId, mediaType, season, episode) -> Promise<Array>
+ *
+ * Diagnostics are written with console.error/console.log so they can be
+ * viewed in the Nuvio Plugin Tester / device logs.
+ *
+ * TMDB key:
+ *   No API key is hard-coded.
+ *   Supported sources:
+ *     1) globalThis.TMDB_API_KEY
+ *     2) process.env.TMDB_API_KEY (Node/local testing only)
+ *
+ * IMPORTANT:
+ *   Some Nuvio builds do not expose environment variables to plugins.
+ *   In that case the diagnostic intentionally stops at the TMDB stage
+ *   and reports that fact instead of silently failing.
  */
 
-const PROVIDER_NAME = "AnimeWorld.";
-const BASE_URL = "https://watchanimeworld.one";
-const PLAYER_BASE_URL = "https://play.zephyrix.org";
-const TMDB_API_BASE = "https://api.themoviedb.org/3";
-const TMDB_API_KEY =
-  (typeof process !== "undefined" && process.env && process.env.TMDB_API_KEY) || "";
+"use strict";
 
-const USER_AGENT =
+var PROVIDER = "AnimeWorld-Diagnostic";
+var BASE_URL = "https://watchanimeworld.one";
+var TMDB_BASE = "https://api.themoviedb.org/3";
+
+var USER_AGENT =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
   "(KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36";
 
-const HEADERS = {
+var HEADERS = {
   "User-Agent": USER_AGENT,
-  "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-  "Accept-Language": "en-US,en;q=0.9",
+  "Accept": "text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8",
+  "Accept-Language": "en-US,en;q=0.9"
 };
 
-const DEBUG =
-  typeof process !== "undefined" &&
-  process.env &&
-  process.env.ANIMEWORLD_DEBUG === "1";
-
-function logError(context, error, extra) {
-  if (!DEBUG) return;
-  const message = error && error.message ? error.message : String(error);
-  console.error(`[${PROVIDER_NAME}] ${context}: ${message}`, extra || "");
-}
-
-function fail(message) {
-  throw new Error(`[${PROVIDER_NAME}] ${message}`);
-}
-
-function addQuery(url, key, value) {
-  const separator = url.indexOf("?") >= 0 ? "&" : "?";
-  return `${url}${separator}${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
-}
-
-async function fetchText(url, extraHeaders) {
-  const headers = Object.assign({}, HEADERS, extraHeaders || {});
-  try {
-    const response = await fetch(url, { headers });
-    if (!response || !response.ok) {
-      logError("HTTP text request failed", new Error(
-        `${response ? response.status : "no response"} ${url}`
-      ));
-      return null;
-    }
-    return await response.text();
-  } catch (error) {
-    logError(`GET ${url}`, error);
-    return null;
+function log(level, message, data) {
+  var prefix = "[" + PROVIDER + "] " + level.toUpperCase() + ": " + message;
+  if (data !== undefined) {
+    console.log(prefix, data);
+  } else {
+    console.log(prefix);
   }
 }
 
-async function fetchJson(url, extraHeaders) {
-  const headers = Object.assign({}, HEADERS, extraHeaders || {});
-  try {
-    const response = await fetch(url, { headers });
-    if (!response || !response.ok) {
-      logError("HTTP JSON request failed", new Error(
-        `${response ? response.status : "no response"} ${url}`
-      ));
-      return null;
-    }
-    return await response.json();
-  } catch (error) {
-    logError(`JSON GET ${url}`, error);
-    return null;
+function error(stage, message, data) {
+  var prefix = "[" + PROVIDER + "] [FAILED] [" + stage + "] " + message;
+  if (data !== undefined) {
+    console.error(prefix, data);
+  } else {
+    console.error(prefix);
   }
 }
 
-async function postJson(url, body, extraHeaders) {
-  const headers = Object.assign(
-    {},
-    HEADERS,
-    {
-      "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-      "X-Requested-With": "XMLHttpRequest",
-    },
-    extraHeaders || {}
-  );
+function ok(stage, message, data) {
+  var prefix = "[" + PROVIDER + "] [OK] [" + stage + "] " + message;
+  if (data !== undefined) {
+    console.log(prefix, data);
+  } else {
+    console.log(prefix);
+  }
+}
+
+function getApiKey() {
+  try {
+    if (typeof globalThis !== "undefined" && globalThis.TMDB_API_KEY) {
+      return String(globalThis.TMDB_API_KEY);
+    }
+  } catch (_) {}
 
   try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers,
-      body,
+    if (
+      typeof process !== "undefined" &&
+      process.env &&
+      process.env.TMDB_API_KEY
+    ) {
+      return String(process.env.TMDB_API_KEY);
+    }
+  } catch (_) {}
+
+  return "";
+}
+
+function requestText(url, headers) {
+  return fetch(url, {
+    headers: Object.assign({}, HEADERS, headers || {})
+  }).then(function (response) {
+    if (!response) {
+      throw new Error("No response object was returned.");
+    }
+
+    return response.text().then(function (body) {
+      return {
+        status: response.status,
+        ok: response.ok,
+        body: body,
+        headers: response.headers
+      };
     });
-
-    if (!response || !response.ok) {
-      logError("HTTP POST failed", new Error(
-        `${response ? response.status : "no response"} ${url}`
-      ));
-      return null;
-    }
-
-    return await response.json();
-  } catch (error) {
-    logError(`POST ${url}`, error);
-    return null;
-  }
+  });
 }
 
-async function getTmdbDetails(tmdbId, mediaType) {
-  if (!TMDB_API_KEY) {
-    fail(
-      "TMDB_API_KEY is missing. Configure TMDB_API_KEY in the provider runtime."
+function requestJson(url, headers) {
+  return fetch(url, {
+    headers: Object.assign({}, HEADERS, headers || {})
+  }).then(function (response) {
+    if (!response) {
+      throw new Error("No response object was returned.");
+    }
+
+    return response.text().then(function (body) {
+      var parsed = null;
+
+      try {
+        parsed = JSON.parse(body);
+      } catch (parseError) {
+        throw new Error(
+          "Response was not valid JSON (HTTP " +
+            response.status +
+            "): " +
+            parseError.message
+        );
+      }
+
+      return {
+        status: response.status,
+        ok: response.ok,
+        data: parsed
+      };
+    });
+  });
+}
+
+function getTmdbDetails(tmdbId, mediaType) {
+  var key = getApiKey();
+
+  if (!key) {
+    error(
+      "TMDB",
+      "TMDB_API_KEY is not available in this plugin runtime."
+    );
+    error(
+      "TMDB",
+      "For local testing set TMDB_API_KEY. For Nuvio, the runtime must expose the key through globalThis.TMDB_API_KEY or another supported configuration mechanism."
+    );
+    return Promise.reject(
+      new Error("TMDB_API_KEY is unavailable in the provider runtime.")
     );
   }
 
-  if (tmdbId == null || String(tmdbId).trim() === "") {
-    fail("tmdbId is missing.");
-  }
+  var type = mediaType === "movie" ? "movie" : "tv";
+  var url =
+    TMDB_BASE +
+    "/" +
+    type +
+    "/" +
+    encodeURIComponent(String(tmdbId)) +
+    "?api_key=" +
+    encodeURIComponent(key) +
+    "&language=en-US";
 
-  const type = mediaType === "movie" ? "movie" : "tv";
-  const url = addQuery(
-    addQuery(`${TMDB_API_BASE}/${type}/${encodeURIComponent(tmdbId)}`, "api_key", TMDB_API_KEY),
-    "language",
-    "en-US"
-  );
+  log("info", "TMDB request started: " + type + "/" + tmdbId);
 
-  const data = await fetchJson(url);
-  if (!data) {
-    fail(`TMDB did not return metadata for ${type}/${tmdbId}.`);
-  }
+  return requestJson(url)
+    .then(function (result) {
+      if (!result.ok) {
+        throw new Error(
+          "TMDB returned HTTP " + result.status + "."
+        );
+      }
 
-  return {
-    title: data.title || data.name || "",
-    year: (data.release_date || data.first_air_date || "").slice(0, 4),
-  };
+      var data = result.data || {};
+      var title = data.title || data.name || "";
+      var year = (
+        data.release_date ||
+        data.first_air_date ||
+        ""
+      ).slice(0, 4);
+
+      if (!title) {
+        throw new Error("TMDB response contained no title/name.");
+      }
+
+      ok("TMDB", "Metadata resolved.", {
+        title: title,
+        year: year || null
+      });
+
+      return {
+        title: title,
+        year: year || null
+      };
+    })
+    .catch(function (err) {
+      error("TMDB", err.message);
+      throw err;
+    });
 }
 
-function decodeHtml(value) {
-  return String(value || "")
-    .replace(/&#8211;|&#x2013;/gi, "-")
-    .replace(/&#8212;|&#x2014;/gi, "-")
-    .replace(/&#039;|&#x27;|&apos;/gi, "'")
-    .replace(/&quot;/gi, '"')
-    .replace(/&amp;/gi, "&")
-    .replace(/<[^>]*>/g, "")
-    .trim();
-}
-
-function absoluteUrl(href) {
-  if (!href) return "";
-  if (/^https?:\/\//i.test(href)) return href;
-  if (href.startsWith("/")) return BASE_URL + href;
-  return `${BASE_URL}/${href}`;
-}
-
-function normalizeTitle(value) {
+function normalize(value) {
   return String(value || "")
     .toLowerCase()
     .replace(/&[^;]+;/g, "")
     .replace(/[^a-z0-9]/g, "");
 }
 
-function extractSearchResults(html, mediaType, queryTitle, queryYear) {
-  const results = [];
-  const seen = new Set();
-  const expectedType = mediaType === "movie" ? "movies" : "series";
-  const query = normalizeTitle(queryTitle);
+function inspectSearchHtml(html, title, mediaType) {
+  var expected = mediaType === "movie" ? "movies" : "series";
+  var wanted = normalize(title);
+  var count = 0;
+  var matching = 0;
 
-  // Match links regardless of attribute ordering/quote style.
-  const linkRe =
+  var linkRe =
     /<a\b[^>]*href\s*=\s*["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
 
-  let match;
+  var match;
   while ((match = linkRe.exec(html || "")) !== null) {
-    const href = absoluteUrl(match[1]);
-    const pathMatch = href.match(
-      /^https:\/\/watchanimeworld\.one\/(series|movies)\/([^/?#]+)\/?/i
+    var href = match[1] || "";
+    var path = href.match(
+      /^https?:\/\/watchanimeworld\.one\/(series|movies)\/([^/?#]+)/i
     );
-    if (!pathMatch) continue;
 
-    const kind = pathMatch[1].toLowerCase();
-    const slug = pathMatch[2];
-    if (kind !== expectedType || !slug || slug === "page") continue;
-    if (seen.has(href)) continue;
-
-    const anchorText = decodeHtml(match[2]);
-    const normalizedSlug = normalizeTitle(slug.replace(/-/g, " "));
-    const normalizedText = normalizeTitle(anchorText);
-
-    // Search results often contain unrelated links. Prefer title-bearing matches.
-    if (
-      query &&
-      !normalizedSlug.includes(query) &&
-      !query.includes(normalizedSlug) &&
-      !normalizedText.includes(query) &&
-      !query.includes(normalizedText)
-    ) {
+    if (!path || path[1].toLowerCase() !== expected) {
       continue;
     }
 
-    const context = (html || "").slice(
-      Math.max(0, match.index - 600),
-      Math.min((html || "").length, match.index + 900)
+    count += 1;
+
+    var slug = normalize(path[2].replace(/-/g, " "));
+    var text = normalize(
+      String(match[2] || "").replace(/<[^>]*>/g, " ")
     );
-    const yearMatch = context.match(/\b(19\d{2}|20\d{2})\b/);
-    const year = yearMatch ? yearMatch[1] : "";
 
-    seen.add(href);
-    results.push({
-      url: href,
-      slug,
-      title: anchorText || slug.replace(/-/g, " "),
-      year,
-      yearMatch: !!queryYear && year === String(queryYear),
-    });
-  }
-
-  // Prefer exact normalized title and then matching year.
-  results.sort((a, b) => {
-    const aSlug = normalizeTitle(a.slug.replace(/-/g, " "));
-    const bSlug = normalizeTitle(b.slug.replace(/-/g, " "));
-    const aExact = aSlug === query ? 2 : 0;
-    const bExact = bSlug === query ? 2 : 0;
-    const aYear = a.yearMatch ? 1 : 0;
-    const bYear = b.yearMatch ? 1 : 0;
-    return (bExact + bYear) - (aExact + aYear);
-  });
-
-  return results;
-}
-
-async function searchAnimeSite(title, mediaType, year) {
-  const url = `${BASE_URL}/?s=${encodeURIComponent(title)}`;
-  const html = await fetchText(url, { Referer: `${BASE_URL}/` });
-  if (!html) return [];
-
-  return extractSearchResults(html, mediaType, title, year);
-}
-
-async function resolveEpisodeUrl(seriesUrl, season, episode) {
-  const html = await fetchText(seriesUrl, { Referer: `${BASE_URL}/` });
-  if (!html) return null;
-
-  const postIdMatch =
-    html.match(/\bpostid-(\d+)\b/i) ||
-    html.match(/\bdata-post\s*=\s*["'](\d+)["']/i);
-
-  if (!postIdMatch) {
-    logError("resolveEpisodeUrl", new Error("Series page has no post ID."));
-    return null;
-  }
-
-  const ajaxUrl =
-    `${BASE_URL}/wp-admin/admin-ajax.php` +
-    `?action=action_select_season` +
-    `&season=${encodeURIComponent(season)}` +
-    `&post=${encodeURIComponent(postIdMatch[1])}`;
-
-  const episodeHtml = await fetchText(ajaxUrl, { Referer: seriesUrl });
-  if (!episodeHtml) return null;
-
-  const target = `${season}x${episode}/`;
-  const hrefRe = /<a\b[^>]*href\s*=\s*["']([^"']+)["'][^>]*>/gi;
-
-  let match;
-  while ((match = hrefRe.exec(episodeHtml)) !== null) {
-    const href = absoluteUrl(match[1]);
-    if (href.toLowerCase().includes(target.toLowerCase())) {
-      return href;
+    if (
+      !wanted ||
+      slug.indexOf(wanted) !== -1 ||
+      wanted.indexOf(slug) !== -1 ||
+      text.indexOf(wanted) !== -1 ||
+      wanted.indexOf(text) !== -1
+    ) {
+      matching += 1;
     }
   }
-
-  // Some pages omit the trailing slash.
-  const targetNoSlash = `${season}x${episode}`;
-  hrefRe.lastIndex = 0;
-  while ((match = hrefRe.exec(episodeHtml)) !== null) {
-    const href = absoluteUrl(match[1]);
-    if (href.toLowerCase().includes(targetNoSlash.toLowerCase())) {
-      return href;
-    }
-  }
-
-  return null;
-}
-
-function extractVideoHash(html) {
-  if (!html) return null;
-
-  const patterns = [
-    /(?:src|data-src)\s*=\s*["']https:\/\/play\.zephyrix\.org\/video\/([a-f0-9]+)["']/i,
-    /https:\/\/play\.zephyrix\.org\/video\/([a-f0-9]+)/i,
-  ];
-
-  for (const pattern of patterns) {
-    const match = html.match(pattern);
-    if (match) return match[1];
-  }
-
-  return null;
-}
-
-async function extractStreamData(pageUrl) {
-  const html = await fetchText(pageUrl, { Referer: `${BASE_URL}/` });
-  if (!html) return null;
-
-  const videoHash = extractVideoHash(html);
-  if (!videoHash) {
-    logError("extractStreamData", new Error("No Zephyrix video hash found."));
-    return null;
-  }
-
-  const playerUrl =
-    `${PLAYER_BASE_URL}/player/index.php` +
-    `?data=${encodeURIComponent(videoHash)}` +
-    `&do=getVideo`;
-
-  const body =
-    `hash=${encodeURIComponent(videoHash)}` +
-    `&r=${encodeURIComponent(`${BASE_URL}/`)}`;
-
-  const data = await postJson(playerUrl, body, {
-    Referer: `${BASE_URL}/`,
-    Origin: PLAYER_BASE_URL,
-  });
-
-  if (!data) return null;
-
-  const streamUrl =
-    typeof data.videoSource === "string" && data.videoSource
-      ? data.videoSource
-      : typeof data.securedLink === "string" && data.securedLink
-        ? data.securedLink
-        : null;
-
-  if (!streamUrl || !/^https?:\/\//i.test(streamUrl)) {
-    logError("extractStreamData", new Error("Player returned no usable stream URL."));
-    return null;
-  }
-
-  const hashMatch = streamUrl.match(/\/cdn\/hls\/([a-f0-9]+)\//i);
-  const contentHash = hashMatch ? hashMatch[1] : videoHash;
 
   return {
-    url: streamUrl,
-    subtitle:
-      `${PLAYER_BASE_URL}/cdn/down/${contentHash}/Subtitle/subtitle_eng.srt`,
+    candidateLinks: count,
+    titleMatches: matching
   };
 }
 
-async function getStreams(tmdbId, mediaType, season, episode) {
-  try {
-    const type = mediaType === "movie" ? "movie" : "tv";
+function testAnimeWorldSearch(title, mediaType) {
+  var url = BASE_URL + "/?s=" + encodeURIComponent(title);
 
-    if (type === "tv" && (season == null || episode == null)) {
-      logError("getStreams", new Error("Season and episode are required."));
-      return [];
-    }
+  log("info", "AnimeWorld search started.", {
+    url: url,
+    type: mediaType
+  });
 
-    const seasonNumber = type === "tv" ? parseInt(season, 10) : null;
-    const episodeNumber = type === "tv" ? parseInt(episode, 10) : null;
-
-    if (
-      type === "tv" &&
-      (!Number.isInteger(seasonNumber) ||
-        !Number.isInteger(episodeNumber) ||
-        seasonNumber < 1 ||
-        episodeNumber < 1)
-    ) {
-      logError("getStreams", new Error("Invalid season/episode number."));
-      return [];
-    }
-
-    const metadata = await getTmdbDetails(tmdbId, type);
-    if (!metadata.title) {
-      logError("getStreams", new Error(`No title for TMDB ID ${tmdbId}.`));
-      return [];
-    }
-
-    const searchResults = await searchAnimeSite(
-      metadata.title,
-      type,
-      metadata.year
-    );
-
-    if (!searchResults.length) {
-      logError(
-        "getStreams",
-        new Error(`No AnimeWorld result for "${metadata.title}".`)
-      );
-      return [];
-    }
-
-    let pageUrl = searchResults[0].url;
-
-    if (type === "tv") {
-      pageUrl = await resolveEpisodeUrl(pageUrl, seasonNumber, episodeNumber);
-      if (!pageUrl) {
-        logError(
-          "getStreams",
-          new Error(
-            `Episode S${seasonNumber}E${episodeNumber} was not found on AnimeWorld.`
-          )
+  return requestText(url, {
+    "Referer": BASE_URL + "/"
+  })
+    .then(function (result) {
+      if (!result.ok) {
+        throw new Error(
+          "AnimeWorld search returned HTTP " + result.status + "."
         );
-        return [];
       }
-    }
 
-    const stream = await extractStreamData(pageUrl);
-    if (!stream) return [];
+      if (!result.body || result.body.length < 50) {
+        throw new Error(
+          "AnimeWorld returned an unexpectedly small/empty HTML response."
+        );
+      }
 
-    return [
-      {
-        name: PROVIDER_NAME,
-        title: "AnimeWorld",
-        url: stream.url,
-        quality: "1080p",
-        headers: {
-          Referer: `${PLAYER_BASE_URL}/`,
-          Origin: PLAYER_BASE_URL,
-          "User-Agent": USER_AGENT,
-        },
-        subtitles: stream.subtitle
-          ? [
-              {
-                url: stream.subtitle,
-                lang: "en",
-                name: "English",
-              },
-            ]
-          : [],
-      },
-    ];
-  } catch (error) {
-    logError("getStreams", error, {
-      tmdbId,
-      mediaType,
-      season,
-      episode,
+      var inspection = inspectSearchHtml(
+        result.body,
+        title,
+        mediaType
+      );
+
+      if (inspection.candidateLinks === 0) {
+        throw new Error(
+          "Search page loaded, but no /series/ or /movies/ candidate links were detected."
+        );
+      }
+
+      ok("SEARCH", "AnimeWorld search page loaded.", {
+        bytes: result.body.length,
+        candidateLinks: inspection.candidateLinks,
+        titleMatches: inspection.titleMatches
+      });
+
+      if (inspection.titleMatches === 0) {
+        error(
+          "SEARCH-MATCH",
+          "AnimeWorld responded, but no candidate matched the TMDB title."
+        );
+        throw new Error("AnimeWorld title matching failed.");
+      }
+
+      ok("SEARCH-MATCH", "At least one title candidate matched.");
+
+      return result.body;
+    })
+    .catch(function (err) {
+      error("SEARCH", err.message);
+      throw err;
     });
-    return [];
-  }
 }
 
-module.exports = { getStreams };
+function testEpisodePage(title, mediaType, season, episode) {
+  if (mediaType === "movie") {
+    ok("EPISODE", "Skipped: media type is movie.");
+    return Promise.resolve();
+  }
+
+  log("info", "Episode-stage diagnostic cannot continue without a matched series URL.");
+
+  /*
+   * Deliberately do not guess an episode URL here. The purpose of this
+   * diagnostic provider is to identify the failing stage rather than
+   * silently scrape an outdated player endpoint.
+   */
+
+  if (season == null || episode == null) {
+    throw new Error("Season and episode are required for TV diagnostics.");
+  }
+
+  ok(
+    "EPISODE",
+    "Input is valid, but episode URL resolution requires the matched series page."
+  );
+
+  return Promise.resolve();
+}
+
+function getStreams(tmdbId, mediaType, season, episode) {
+  log("info", "========== diagnostic run ==========");
+  log("info", "Input", {
+    tmdbId: tmdbId,
+    mediaType: mediaType,
+    season: season,
+    episode: episode
+  });
+
+  if (tmdbId == null || String(tmdbId).trim() === "") {
+    error("INPUT", "tmdbId is missing.");
+    return Promise.resolve([]);
+  }
+  ok("INPUT", "tmdbId received.");
+
+  if (mediaType !== "movie" && mediaType !== "tv") {
+    error(
+      "INPUT",
+      'Unsupported mediaType. Expected "movie" or "tv".'
+    );
+    return Promise.resolve([]);
+  }
+  ok("INPUT", "mediaType is valid.");
+
+  if (mediaType === "tv") {
+    var s = Number(season);
+    var e = Number(episode);
+
+    if (!Number.isInteger(s) || s < 1) {
+      error("INPUT", "Invalid season: " + season);
+      return Promise.resolve([]);
+    }
+
+    if (!Number.isInteger(e) || e < 1) {
+      error("INPUT", "Invalid episode: " + episode);
+      return Promise.resolve([]);
+    }
+
+    ok("INPUT", "Season/episode are valid.", {
+      season: s,
+      episode: e
+    });
+  }
+
+  if (typeof fetch !== "function") {
+    error("RUNTIME", "fetch() is not available in the plugin runtime.");
+    return Promise.resolve([]);
+  }
+  ok("RUNTIME", "fetch() is available.");
+
+  return getTmdbDetails(tmdbId, mediaType)
+    .then(function (metadata) {
+      return testAnimeWorldSearch(
+        metadata.title,
+        mediaType
+      ).then(function () {
+        return testEpisodePage(
+          metadata.title,
+          mediaType,
+          season,
+          episode
+        );
+      });
+    })
+    .then(function () {
+      ok(
+        "SUMMARY",
+        "Diagnostics reached the end without a reported failure."
+      );
+      log(
+        "info",
+        "No playable stream is returned by this diagnostic provider."
+      );
+      return [];
+    })
+    .catch(function (err) {
+      error("SUMMARY", "Pipeline stopped: " + err.message);
+      log(
+        "info",
+        "Fix the FAILED stage above, then run the provider again."
+      );
+      return [];
+    });
+}
+
+module.exports = {
+  getStreams: getStreams
+};
