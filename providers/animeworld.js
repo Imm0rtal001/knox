@@ -118,7 +118,7 @@ function getStreams(tmdbId, mediaType, season, episode) {
 
         resolve([{
           name: 'AnimeWorld.',
-          title: 'AnimeWorld • Multi-Audio 1080p',
+          title: 'animeWorld',
           url: streamData.url,
           quality: '1080p',
           headers: {
