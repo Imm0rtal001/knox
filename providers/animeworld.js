@@ -1,35 +1,93 @@
 "use strict";
 
 const cheerio = require("cheerio");
-const TMDB_API_KEY = "307b7b8ef035c6aa336900aef4e203bd";
+const TMDB_API_KEY = process.env.TMDB_API_KEY || "";
 const BASE_URL = "https://watchanimeworld.one";
 const PLAYER_BASE_URL = "https://play.zephyrix.org";
 const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36";
 const DEFAULT_REQUEST_HEADERS = { "User-Agent": USER_AGENT };
+const DEBUG = process.env.ANIMEWORLD_DEBUG === "1";
+
+function logError(context, error, extra = {}) {
+  if (!DEBUG && !extra.force) return;
+  const message = error instanceof Error ? error.message : String(error);
+  console.error(`[animeworld] ${context}: ${message}`, {
+    ...extra,
+    stack: error instanceof Error ? error.stack : undefined
+  });
+}
+
+function requireTmdbApiKey() {
+  if (!TMDB_API_KEY) {
+    throw new Error(
+      "TMDB_API_KEY is not configured. Set it in the environment before calling getStreams()."
+    );
+  }
+}
 
 async function performGetRequest(url, headers = {}) {
-  const response = await fetch(url, { headers: { ...DEFAULT_REQUEST_HEADERS, ...headers } });
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  let response;
+  try {
+    response = await fetch(url, {
+      headers: { ...DEFAULT_REQUEST_HEADERS, ...headers }
+    });
+  } catch (error) {
+    throw new Error(`GET request failed for ${url}: ${error.message}`, { cause: error });
+  }
+
+  if (!response.ok) {
+    throw new Error(`GET ${url} failed with HTTP ${response.status} ${response.statusText}`);
+  }
+
   return response;
 }
 
 async function performPostRequest(url, body, headers = {}) {
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { ...DEFAULT_REQUEST_HEADERS, "Content-Type": "application/x-www-form-urlencoded", ...headers },
-    body
-  });
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  return response.json();
+  let response;
+  try {
+    response = await fetch(url, {
+      method: "POST",
+      headers: {
+        ...DEFAULT_REQUEST_HEADERS,
+        "Content-Type": "application/x-www-form-urlencoded",
+        ...headers
+      },
+      body
+    });
+  } catch (error) {
+    throw new Error(`POST request failed for ${url}: ${error.message}`, { cause: error });
+  }
+
+  if (!response.ok) {
+    throw new Error(`POST ${url} failed with HTTP ${response.status} ${response.statusText}`);
+  }
+
+  try {
+    return await response.json();
+  } catch (error) {
+    throw new Error(`Invalid JSON response from ${url}: ${error.message}`, { cause: error });
+  }
 }
 
 async function fetchFromTmdb(path) {
+  requireTmdbApiKey();
+
+  const url = new URL(`https://api.themoviedb.org/3/${path}`);
+  url.searchParams.set("api_key", TMDB_API_KEY);
+
   try {
-    const response = await fetch(`https://api.themoviedb.org/3/${path}?api_key=${TMDB_API_KEY}`);
-    if (!response.ok) return null;
-    return response.json();
-  } catch {
-    return null;
+    const response = await fetch(url, { headers: DEFAULT_REQUEST_HEADERS });
+
+    if (!response.ok) {
+      throw new Error(
+        `TMDB request failed with HTTP ${response.status} ${response.statusText} for ${path}`
+      );
+    }
+
+    return await response.json();
+  } catch (error) {
+    logError(`TMDB ${path}`, error, { force: true });
+    throw error;
   }
 }
 
@@ -54,7 +112,8 @@ async function searchAnimeSite(title, mediaType) {
     });
 
     return results;
-  } catch {
+  } catch (error) {
+    logError(`searchAnimeSite("${title}", ${mediaType})`, error);
     return [];
   }
 }
@@ -110,16 +169,26 @@ async function extractStreamData(pageUrl) {
 
 async function getStreams(tmdbId, mediaType = "tv", seasonNumber = 1, episodeNumber = 1) {
   try {
-    if (mediaType === "tv" && (seasonNumber == null || episodeNumber == null)) return [];
+    if (tmdbId == null || String(tmdbId).trim() === "") {
+      throw new Error("tmdbId is required.");
+    }
+
+    if (!["tv", "movie"].includes(mediaType)) {
+      throw new Error(`Unsupported mediaType "${mediaType}". Expected "tv" or "movie".`);
+    }
+
+    if (mediaType === "tv" && (seasonNumber == null || episodeNumber == null)) {
+      throw new Error("seasonNumber and episodeNumber are required for TV shows.");
+    }
 
     const [mediaEntry, seasonEpisodes] = await Promise.all([
       fetchFromTmdb(`${mediaType}/${tmdbId}`),
       mediaType === "tv" ? fetchFromTmdb(`tv/${tmdbId}/season/${seasonNumber}`) : Promise.resolve(null)
     ]);
 
-    if (!mediaEntry) return [];
+    if (!mediaEntry) throw new Error(`TMDB returned no media for ID ${tmdbId}.`);
     const mediaTitle = mediaEntry.name || mediaEntry.title;
-    if (!mediaTitle) return [];
+    if (!mediaTitle) throw new Error(`TMDB media ${tmdbId} has no title/name.`);
 
     const releaseYear = (mediaEntry.release_date || mediaEntry.first_air_date || "").slice(0, 4) || null;
 
@@ -131,7 +200,7 @@ async function getStreams(tmdbId, mediaType = "tv", seasonNumber = 1, episodeNum
     }
 
     const searchResults = await searchAnimeSite(mediaTitle, mediaType);
-    if (!searchResults.length) return [];
+    if (!searchResults.length) throw new Error(`No AnimeWorld result found for "${mediaTitle}".`);
 
     let streamData = null;
 
@@ -142,7 +211,7 @@ async function getStreams(tmdbId, mediaType = "tv", seasonNumber = 1, episodeNum
       if (episodeUrl) streamData = await extractStreamData(episodeUrl);
     }
 
-    if (!streamData) return [];
+    if (!streamData) throw new Error(`No playable stream found for "${mediaTitle}".`);
 
     return [{
       name: "AnimeWorld.",
@@ -158,7 +227,14 @@ async function getStreams(tmdbId, mediaType = "tv", seasonNumber = 1, episodeNum
         ? [{ url: streamData.subtitle, language: "en", name: "English" }]
         : []
     }];
-  } catch {
+  } catch (error) {
+    logError("getStreams", error, {
+      force: true,
+      tmdbId,
+      mediaType,
+      seasonNumber,
+      episodeNumber
+    });
     return [];
   }
 }
