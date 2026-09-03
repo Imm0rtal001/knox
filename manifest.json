@@ -1,6 +1,6 @@
 {
   "name": "Knox Providers",
-  "version": "3.6.3",
+  "version": "3.6.4",
   "scrapers": [
     {
       "id": "4khdhub",
@@ -37,6 +37,19 @@
         "en",
         "hi"
       ]
+    },
+     {
+      "id": "moviebox",
+      "name": "Moviebox.",
+      "description": "Provider: MovieBox | English, Bangla, Hindi",
+      "version": "1.7.0",
+      "author": "Imm0rtal001",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/moviebox.js",
+      "enabled": true,
+      "formats": ["mp4", "m3u8", "mpd"],
+      "logo": "",
+      "contentLanguage": ["en", "hi", "bn"]
     },
     {
       "id": "CineFreak",
