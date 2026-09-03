@@ -1,164 +1,223 @@
 "use strict";
 
-const cheerio = require("cheerio");
+const MAIN_URL = "https://watchanimeworld.one";
 const TMDB_API_KEY = "307b7b8ef035c6aa336900aef4e203bd";
-const BASE_URL = "https://watchanimeworld.one";
-const PLAYER_BASE_URL = "https://play.zephyrix.org";
-const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36";
-const DEFAULT_REQUEST_HEADERS = { "User-Agent": USER_AGENT };
+const HEADERS = {
+  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/150.0.0.0 Safari/537.36",
+  "Referer": "https://animesalt.cx/",
+};
 
-async function performGetRequest(url, headers = {}) {
-  const response = await fetch(url, { headers: { ...DEFAULT_REQUEST_HEADERS, ...headers } });
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  return response;
-}
-
-async function performPostRequest(url, body, headers = {}) {
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { ...DEFAULT_REQUEST_HEADERS, "Content-Type": "application/x-www-form-urlencoded", ...headers },
-    body
-  });
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  return response.json();
-}
-
-async function fetchFromTmdb(path) {
+async function fetchHtml(url, options = {}) {
+  const resolvedUrl = url.startsWith("http") ? url : `${MAIN_URL}${url}`;
   try {
-    const response = await fetch(`https://api.themoviedb.org/3/${path}?api_key=${TMDB_API_KEY}`);
+    const response = await fetch(resolvedUrl, { headers: HEADERS, ...options });
+    if (!response.ok) return "";
+    return await response.text();
+  } catch (_) {
+    return "";
+  }
+}
+
+async function fetchJson(url, options = {}) {
+  try {
+    const response = await fetch(url, { headers: HEADERS, ...options });
     if (!response.ok) return null;
-    return response.json();
-  } catch {
+    return await response.json();
+  } catch (_) {
     return null;
   }
 }
 
-async function searchAnimeSite(title, mediaType) {
+async function fetchTmdbMetadata(tmdbId, mediaType) {
+  const endpoint = mediaType === "movie" ? "movie" : "tv";
+  const data = await fetchJson(
+    `https://api.themoviedb.org/3/${endpoint}/${tmdbId}?api_key=${TMDB_API_KEY}`
+  );
+  if (!data) return null;
+  const title = data.title || data.name;
+  const year = parseInt((data.release_date || data.first_air_date || "").split("-")[0]) || null;
+  return { title, year };
+}
+
+async function fetchEpisodeTitle(tmdbId, season, episode) {
+  const data = await fetchJson(
+    `https://api.themoviedb.org/3/tv/${tmdbId}/season/${season}?api_key=${TMDB_API_KEY}`
+  );
+  const episodeNumber = parseInt(episode) || 1;
+  return data?.episodes?.find((ep) => ep.episode_number === episodeNumber)?.name || "";
+}
+
+function normalizeTitle(str) {
+  return str.toLowerCase().replace(/[^a-z0-9]/g, "").trim();
+}
+
+function extractSearchEntries(html, mediaType) {
+  const containerMatch = html.match(/id="movies-a"([\s\S]*?)(?=<footer|id="footer|class="footer)/m);
+  const contentHtml = containerMatch ? containerMatch[1] : html;
+
+  const entries = [];
+  const visitedSlugs = new Set();
+  const articlePattern = /<article[^>]*>([\s\S]*?)<\/article>/g;
+
+  let match;
+  while ((match = articlePattern.exec(contentHtml)) !== null) {
+    const articleHtml = match[1];
+    const linkMatch = articleHtml.match(/href="(https:\/\/watchanimeworld\.one\/(series|movies)\/([^\/\"]+)\/?)"/);
+    const titleMatch = articleHtml.match(/class="entry-title"[^>]*>([^<]+)</);
+    const yearMatch = articleHtml.match(/class="year"[^>]*>(\d{4})</);
+
+    if (!linkMatch || !titleMatch) continue;
+    const [, url, type, slug] = linkMatch;
+    if (!slug || slug === "page" || visitedSlugs.has(slug)) continue;
+
+    visitedSlugs.add(slug);
+    entries.push({ url, type, slug, title: titleMatch[1].trim(), year: yearMatch ? +yearMatch[1] : null });
+  }
+
+  const typed = entries.filter((entry) => entry.type === (mediaType === "movie" ? "movies" : "series"));
+  return typed.length ? typed : entries;
+}
+
+function selectTopCandidate(entries, title, year) {
+  let pool = entries;
+
+  if (year) {
+    const yearAligned = entries.filter((e) => e.year !== null && Math.abs(e.year - year) <= 1);
+    const undated = entries.filter((e) => e.year === null);
+    pool = yearAligned.length ? yearAligned : undated.length ? undated : entries;
+  }
+
+  const normalizedQuery = normalizeTitle(title);
+  pool.sort((a, b) => {
+    const na = normalizeTitle(a.title), nb = normalizeTitle(b.title);
+    const exactDiff = (na === normalizedQuery ? 0 : 1) - (nb === normalizedQuery ? 0 : 1);
+    if (exactDiff !== 0) return exactDiff;
+    const prefixDiff = (na.startsWith(normalizedQuery) ? 0 : 1) - (nb.startsWith(normalizedQuery) ? 0 : 1);
+    if (prefixDiff !== 0) return prefixDiff;
+    return na.length - nb.length;
+  });
+
+  return pool[0] || null;
+}
+
+async function resolveAnimePageUrl(title, mediaType, year) {
+  const html = await fetchHtml(`/?s=${encodeURIComponent(title)}`);
+  if (!html) return null;
+  const entries = extractSearchEntries(html, mediaType);
+  if (!entries.length) return null;
+  const candidate = selectTopCandidate(entries, title, year);
+  return candidate ? candidate.url : null;
+}
+
+function extractEpisodeUrl(html, season, episode) {
+  const pattern = new RegExp(`href="(https://watchanimeworld\\.one/episode/[^"]*${season}x${episode}[^"]*)"`);
+  return pattern.exec(html)?.[1] ?? null;
+}
+
+async function resolveEpisodeUrl(seriesPageUrl, season, episode) {
+  const html = await fetchHtml(seriesPageUrl);
+  if (!html) return null;
+
+  const seasonEntries = [];
+  const seasonPattern = /data-post="(\d+)"\s+data-season="(\d+)"/g;
+  let match;
+  while ((match = seasonPattern.exec(html)) !== null) {
+    seasonEntries.push({ post: match[1], season: +match[2] });
+  }
+
+  if (!seasonEntries.length) return extractEpisodeUrl(html, season, episode);
+
+  const targetSeason = seasonEntries.find((s) => s.season === +season);
+  if (!targetSeason) return null;
+
+  const seasonHtml = await fetchHtml(
+    `/wp-admin/admin-ajax.php?action=action_select_season&season=${season}&post=${targetSeason.post}`
+  );
+  return seasonHtml ? extractEpisodeUrl(seasonHtml, season, episode) : null;
+}
+
+async function resolveStreamData(pageUrl) {
+  const html = await fetchHtml(pageUrl);
+  if (!html) return null;
+
+  const playerMatch = html.match(/src="(https:\/\/play\.zephyrix\.org\/video\/([a-f0-9]+))"/);
+  if (!playerMatch) return null;
+
+  const [, playerUrl, videoHash] = playerMatch;
+  const cdnOrigin = playerUrl.split("/video/")[0];
+
   try {
-    const response = await performGetRequest(`${BASE_URL}/?s=${encodeURIComponent(title)}`, { "Referer": `${BASE_URL}/` });
-    const html = await response.text();
-    const $ = cheerio.load(html);
-    const seenUrls = new Set();
-    const results = [];
-
-    $("a[href]").each((_, element) => {
-      const href = $(element).attr("href") || "";
-      const match = href.match(/^https:\/\/watchanimeworld\.one\/(series|movies)\/([^/]+)\//);
-      if (!match || match[2] === "page" || seenUrls.has(href)) return;
-
-      const isCorrectType = mediaType === "movie" ? match[1] === "movies" : match[1] === "series";
-      if (!isCorrectType) return;
-
-      seenUrls.add(href);
-      results.push(href);
+    const response = await fetch(`${cdnOrigin}/player/index.php?data=${videoHash}&do=getVideo`, {
+      method: "POST",
+      headers: {
+        ...HEADERS,
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Origin": cdnOrigin,
+        "X-Requested-With": "XMLHttpRequest",
+      },
+      body: `hash=${videoHash}&r=${encodeURIComponent(MAIN_URL + "/")}`,
     });
+    if (!response.ok) return null;
 
-    return results;
-  } catch {
-    return [];
+    const payload = await response.json();
+    const m3u8Url = payload.videoSource || payload.securedLink;
+    if (!m3u8Url) return null;
+
+    const contentHash = m3u8Url.match(/\/hls\/([a-f0-9]+)\//)?.[1] ?? videoHash;
+    const cdnBase = m3u8Url.split("/cdn/hls/")[0];
+    const subtitleUrl = `${cdnBase}/cdn/down/${contentHash}/Subtitle/subtitle_eng.srt`;
+
+    return { url: m3u8Url, subtitle: subtitleUrl, cdnBase };
+  } catch (_) {
+    return null;
   }
 }
 
-async function resolveEpisodeUrl(seriesUrl, seasonNumber, episodeNumber) {
-  const response = await performGetRequest(seriesUrl, { "Referer": `${BASE_URL}/` });
-  const html = await response.text();
-  const postIdMatch = html.match(/postid-(\d+)/) || html.match(/data-post="(\d+)"/);
-  if (!postIdMatch) return null;
+async function getStreams(tmdbId, mediaType, season, episode) {
+  if (mediaType === "tv" && (season == null || episode == null)) return [];
 
-  const ajaxResponse = await performGetRequest(
-    `${BASE_URL}/wp-admin/admin-ajax.php?action=action_select_season&season=${seasonNumber}&post=${postIdMatch[1]}`,
-    { "Referer": seriesUrl }
-  );
-  const episodeHtml = await ajaxResponse.text();
-  const urlSuffix = `${seasonNumber}x${episodeNumber}/`;
-  const $ = cheerio.load(episodeHtml);
-  let episodeUrl = null;
-
-  $("a[href]").each((_, element) => {
-    if (episodeUrl) return;
-    const href = $(element).attr("href") || "";
-    if (href.includes(urlSuffix)) episodeUrl = href;
-  });
-
-  return episodeUrl;
-}
-
-async function extractStreamData(pageUrl) {
-  const response = await performGetRequest(pageUrl, { "Referer": `${BASE_URL}/` });
-  const html = await response.text();
-  const streamMatch = html.match(/(?:src|data-src)="(https:\/\/play\.zephyrix\.org\/video\/([a-f0-9]+))"/);
-  if (!streamMatch) return null;
-
-  const videoHash = streamMatch[2];
-  const postData = await performPostRequest(
-    `${PLAYER_BASE_URL}/player/index.php?data=${videoHash}&do=getVideo`,
-    `hash=${videoHash}&r=${encodeURIComponent(`${BASE_URL}/`)}`,
-    { "Referer": `${BASE_URL}/`, "Origin": PLAYER_BASE_URL, "X-Requested-With": "XMLHttpRequest" }
-  );
-
-  const m3u8Url = postData.videoSource || postData.securedLink;
-  if (!m3u8Url) return null;
-
-  const hashMatch = m3u8Url.match(/\/cdn\/hls\/([a-f0-9]+)\//);
-  const contentHash = hashMatch ? hashMatch[1] : videoHash;
-
-  return {
-    url: m3u8Url,
-    subtitle: `${PLAYER_BASE_URL}/cdn/down/${contentHash}/Subtitle/subtitle_eng.srt`
-  };
-}
-
-async function getStreams(tmdbId, mediaType = "tv", seasonNumber = 1, episodeNumber = 1) {
   try {
-    if (mediaType === "tv" && (seasonNumber == null || episodeNumber == null)) return [];
+    const metadata = await fetchTmdbMetadata(tmdbId, mediaType);
+    if (!metadata?.title) return [];
 
-    const [mediaEntry, seasonEpisodes] = await Promise.all([
-      fetchFromTmdb(`${mediaType}/${tmdbId}`),
-      mediaType === "tv" ? fetchFromTmdb(`tv/${tmdbId}/season/${seasonNumber}`) : Promise.resolve(null)
-    ]);
+    const { title, year } = metadata;
 
-    if (!mediaEntry) return [];
-    const mediaTitle = mediaEntry.name || mediaEntry.title;
-    if (!mediaTitle) return [];
+    const episodeTitle = mediaType === "tv"
+      ? await fetchEpisodeTitle(tmdbId, season, episode)
+      : "";
 
-    const releaseYear = (mediaEntry.release_date || mediaEntry.first_air_date || "").slice(0, 4) || null;
+    const animePageUrl = await resolveAnimePageUrl(title, mediaType, year);
+    if (!animePageUrl) return [];
 
-    let episodeTitle = "";
-    if (mediaType === "tv" && seasonEpisodes?.episodes) {
-      const episodeNumberInt = parseInt(episodeNumber, 10) || 1;
-      const episode = seasonEpisodes.episodes.find(ep => ep.episode_number === episodeNumberInt);
-      episodeTitle = episode?.name || "";
-    }
-
-    const searchResults = await searchAnimeSite(mediaTitle, mediaType);
-    if (!searchResults.length) return [];
-
-    let streamData = null;
-
+    let stream = null;
     if (mediaType === "movie") {
-      streamData = await extractStreamData(searchResults[0]);
+      stream = await resolveStreamData(animePageUrl);
     } else {
-      const episodeUrl = await resolveEpisodeUrl(searchResults[0], seasonNumber, episodeNumber);
-      if (episodeUrl) streamData = await extractStreamData(episodeUrl);
+      const episodeUrl = await resolveEpisodeUrl(animePageUrl, season, episode);
+      if (episodeUrl) stream = await resolveStreamData(episodeUrl);
     }
 
-    if (!streamData) return [];
+    if (!stream) return [];
+
+    const episodeLabel = mediaType === "tv" && season && episode
+      ? ` • Episode ${episode}${episodeTitle ? ` - ${episodeTitle}` : ""}`
+      : "";
 
     return [{
-      name: "AnimeWorld.",
-      title: "AnimeWorld",
-      url: streamData.url,
+      name: "Animeworld.",
+      title: "Animeworld",
+      url: stream.url,
       quality: "1080p",
       headers: {
-        "Referer": `${PLAYER_BASE_URL}/`,
-        "Origin": PLAYER_BASE_URL,
-        "User-Agent": USER_AGENT
+        "Referer": stream.cdnBase + "/",
+        "Origin": stream.cdnBase,
+        "User-Agent": HEADERS["User-Agent"],
       },
-      subtitles: streamData.subtitle
-        ? [{ url: streamData.subtitle, language: "en", name: "English" }]
-        : []
+      subtitles: stream.subtitle
+        ? [{ url: stream.subtitle, lang: "en", name: "English" }]
+        : [],
     }];
-  } catch {
+  } catch (_) {
     return [];
   }
 }
