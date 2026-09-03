@@ -1,6 +1,6 @@
 "use strict";
 
-const API_BASE = "https://movieboxhd.net";
+const API_BASE = "https://h5-api.aoneroom.com";
 const KEY_B64_DEFAULT = "NzZpUmwwN3MweFNOOWpxbUVXQXQ3OUVCSlp1bElRSXNWNjRGWnIyTw==";
 const KEY_B64_ALT = "NzZpUmwwN3MweFNOOWpxbUVXQXQ3OUVCSlp1bElRSXNWNjRGWnIyTw==";
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
