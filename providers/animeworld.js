@@ -1,7 +1,7 @@
 
 var TMDB_KEY = 'd80ba92bc7cefe3359668d30d06f3305'
 var BASE     = 'https://watchanimeworld.one'
-var PLAYER   = 'https://play.zephyrflick.org'
+var PLAYER   = 'https://play.zephyrix.org'
 var UA       = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
 
 function httpGet(url, headers) {
@@ -69,7 +69,7 @@ function getEpisodeUrl(seriesUrl, season, episode) {
 function getStreamFromPage(pageUrl) {
   return httpGet(pageUrl, { 'Referer': BASE + '/' })
     .then(function(html) {
-      var iframeM = html.match(/(?:src|data-src)="(https:\/\/play\.zephyrflick\.org\/video\/([a-f0-9]+))"/)
+      var iframeM = html.match(/(?:src|data-src)="(https:\/\/play\.zephyrix\.org\/video\/([a-f0-9]+))"/)
       if (!iframeM) return null
       
       var videoHash = iframeM[2]
