@@ -204,7 +204,7 @@ async function getStreams(tmdbId, mediaType, season, episode) {
       : "";
 
     return [{
-      name: "AnimeSalt",
+      name: "AnimeSalt.",
       title: "AnimeSalt",
       url: stream.url,
       quality: "1080p",
