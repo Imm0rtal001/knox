@@ -146,7 +146,7 @@ async function getStreams(tmdbId, mediaType = "tv", seasonNumber = 1, episodeNum
 
     return [{
       name: "AnimeWorld.",
-      title: "animeWorld",
+      title: "AnimeWorld",
       url: streamData.url,
       quality: "1080p",
       headers: {
