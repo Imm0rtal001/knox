@@ -18,7 +18,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const WAELUM_API = "https://hdghartv.cc";
+const WAELUM_API = "https://multimovies.beer";
 const TMDB_BASE = "https://api.themoviedb.org/3";
 const TMDB_KEY = "307b7b8ef035c6aa336900aef4e203bd";
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36";
