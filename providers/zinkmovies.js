@@ -400,7 +400,7 @@ function scrapeZinkCloud(_0x237e2a, _0x1e580e, _0x197f2e, _0x5119ab, _0x536b1d, 
                     if (_0x27f81a) {
                         const _0x464fcd = yield fetchText(_0x27f81a, { 'headers': hdrs() });
                         if (_0x464fcd) {
-                            const _0x7b0080 = [], _0x564461 = /href="(https:\/\/new3\.zinkcloud\.net\/file\/([^"]+))"[^>]*>\s*<span[^>]*>(.*?)<\/span>/ig;
+                            const _0x7b0080 = [], _0x564461 = /href="(https:\/\/new4\.zinkcloud\.net\/file\/([^"]+))"[^>]*>\s*<span[^>]*>(.*?)<\/span>/ig;
                             while ((_0x537def = _0x564461[_0x509d9a(0xc4)](_0x464fcd)) !== null) {
                                 const _0x1fdf9a = _0x537def[0x3]['replace'](/<[^>]+>/g, '')[_0x509d9a(_0x4c077b._0x463316)]();
                                 if (_0x1fdf9a['toLowerCase']()['includes']('all\x20episodes'))
