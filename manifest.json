@@ -257,8 +257,8 @@
       ]
     },
     {
-      "id": "zinkmovies",
-      "name": "ZinkMovies.",
+      "id": "hdmovie2",
+      "name": "Hdmovie2.",
       "description": "Bollywood Movies, Hollywood Movies, South Indian Movies, Hindi Dubbed Movies, Web Series, OTT Releases, & Trending Cinema • Nuvio TV / Fire TV compatible | Fire TV: kept enabled; no overall response timeout.",
       "version": "1.0.0",
       "author": "Imm0rtal001",
@@ -266,7 +266,7 @@
         "movie",
         "tv"
       ],
-      "filename": "providers/zinkmovies.js",
+      "filename": "providers/hdmovie2.js",
       "enabled": true,
       "hasSettings": true,
       "formats": [
