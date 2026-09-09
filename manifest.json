@@ -8,13 +8,23 @@
       "description": "Provider: 4kHdHub | Multi-lang",
       "version": "1.5.0",
       "author": "Imm0rtal001",
-      "supportedTypes": ["movie", "tv"],
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
       "filename": "providers/4khdhub.js",
       "enabled": true,
       "hasSettings": true,
-      "formats": ["mkv", "m3u8", "mp4"],
+      "formats": [
+        "mkv",
+        "m3u8",
+        "mp4"
+      ],
       "logo": "https://i.postimg.cc/DZpW6Xfb/4khdhub.png",
-      "contentLanguage": ["en", "hi"]
+      "contentLanguage": [
+        "en",
+        "hi"
+      ]
     },
     {
       "id": "movieBlast",
@@ -256,6 +266,5 @@
         "hi"
       ]
     }
-  }
-    
-
+  ]
+}
