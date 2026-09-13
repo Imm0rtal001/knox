@@ -159,6 +159,27 @@
         "ja"
       ]
     },
+     {
+      "id": "reanime",
+      "name": "Reanime.",
+      "description": "Re:ANIME • Sub/Dub • Anime",
+      "version": "1.4.0",
+      "author": "Imm0rtal001",
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
+      "filename": "providers/reanime.js",
+      "enabled": true,
+      "formats": [
+        "mkv"
+      ],
+      "logo": "",
+      "contentLanguage": [
+        "en",
+        "ja"
+      ]
+    },
     {
       "id": "dahmermovies.",
       "name": "Dahmermovies.",
