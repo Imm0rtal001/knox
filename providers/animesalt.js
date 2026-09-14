@@ -1,10 +1,10 @@
 "use strict";
 
-const BASE_URL = "https://animesalt.cx";
+const BASE_URL = "https://animesalt.me";
 const TMDB_API_KEY = "307b7b8ef035c6aa336900aef4e203bd";
 const HEADERS = {
   "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/151.0.0.0 Safari/537.36",
-  "Referer": "https://animesalt.cx/",
+  "Referer": "https://animesalt.me/",
 };
 
 async function fetchHtml(url, options = {}) {
@@ -62,7 +62,7 @@ function extractSearchEntries(html, mediaType) {
   let match;
   while ((match = articlePattern.exec(contentHtml)) !== null) {
     const articleHtml = match[1];
-    const linkMatch = articleHtml.match(/href="(https:\/\/animesalt\.cx\/(series|movies)\/([^\/\"]+)\/?)"/);
+    const linkMatch = articleHtml.match(/href="(https:\/\/animesalt\.me\/(series|movies)\/([^\/\"]+)\/?)"/);
     const titleMatch = articleHtml.match(/class="entry-title"[^>]*>([^<]+)</);
     const yearMatch = articleHtml.match(/class="year"[^>]*>(\d{4})</);
 
@@ -110,7 +110,7 @@ async function resolveAnimePageUrl(title, mediaType, year) {
 }
 
 function extractEpisodeUrl(html, season, episode) {
-  const pattern = new RegExp(`href="(https://animesalt\\.cx/episode/[^"]*${season}x${episode}[^"]*)"`);
+  const pattern = new RegExp(`href="(https://animesalt\\.me/episode/[^"]*${season}x${episode}[^"]*)"`);
   return pattern.exec(html)?.[1] ?? null;
 }
 
