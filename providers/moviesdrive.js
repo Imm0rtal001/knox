@@ -1,7 +1,7 @@
 "use strict"
 
 const TMDB_KEY = "307b7b8ef035c6aa336900aef4e203bd";
-const BASE_URL = "https://new3.moviesdrive.christmas";
+const BASE_URL = "https://new4.moviesdrive.christmas";
 const REQUEST_HEADERS = {
   "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36",
   "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
@@ -39,7 +39,7 @@ async function fetchTmdbMeta(tmdbId, mediaType) {
 
 async function extractHubCloudLinks(url, referer) {
   try {
-    let currentUrl = url.replace("hubcloud.ink", "hubcloud.dad");
+    let currentUrl = url.replace("hubcloud.dad", "hubcloud.ist");
     let html = await (await fetch(currentUrl, { headers: { ...REQUEST_HEADERS, Referer: referer } })).text();
 
     if (!currentUrl.includes("hubcloud.php")) {
