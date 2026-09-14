@@ -20,7 +20,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 const PROVIDER_NAME = 'MoviesHunt';
 const TMDB_API_KEY = '307b7b8ef035c6aa336900aef4e203bd';
-const movieshuntBase = 'https://movieshunt.run';
+const movieshuntBase = 'https://movieshunt.monster';
 const abhilinksBase = 'https://abhilinks.site';
 const UAS = [
     'Mozilla/5.0 (Linux; Android 14; Pixel 8 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36',
@@ -224,8 +224,8 @@ function extractQualityOptions(html) {
         if (quality === '480P')
             continue;
         const context = html.substring(Math.max(0, match.index - 200), match.index + 600);
-        const hubcloudMatch = context.match(/href="(https:\/\/hubcloud\.cx\/(?:drive|video)\/[^"]+)"/i);
-        const vcloudMatch = context.match(/href="(https:\/\/href\.li\/\?https:\/\/vcloud\.zip\/[^"]+)"/i);
+        const hubcloudMatch = context.match(/href="(https:\/\/hubcloud\.ist\/(?:drive|video)\/[^"]+)"/i);
+        const vcloudMatch = context.match(/href="(https:\/\/href\.li\/\?https:\/\/vcloud\.fit\/[^"]+)"/i);
         if (hubcloudMatch)
             options.push({ quality, size, type: 'hubcloud', url: hubcloudMatch[1] });
         else if (vcloudMatch)
@@ -234,9 +234,9 @@ function extractQualityOptions(html) {
     return options;
 }
 function extractVcloudUrl(raw) {
-    const match = raw.match(/href\.li\/\?https:\/\/vcloud\.zip\/([^"&?]+)/i);
+    const match = raw.match(/href\.li\/\?https:\/\/vcloud\.fit\/([^"&?]+)/i);
     if (match)
-        return 'https://vcloud.zip/' + match[1];
+        return 'https://vcloud.fit/' + match[1];
     return null;
 }
 function isCloudflareUrl(url) {
@@ -303,10 +303,10 @@ function extractEpisodes(html) {
         const end = i + 1 < markers.length ? markers[i + 1].idx : html.length;
         const segment = html.substring(start, end);
         const links = [];
-        const hubcloudRegex = /href="(https:\/\/hubcloud\.cx\/(?:drive|video)\/[^"]+)"/gi;
+        const hubcloudRegex = /href="(https:\/\/hubcloud\.ist\/(?:drive|video)\/[^"]+)"/gi;
         while ((match = hubcloudRegex.exec(segment)) !== null)
             links.push({ type: 'hubcloud', url: match[1] });
-        const vcloudRegex = /href="(https:\/\/href\.li\/\?https:\/\/vcloud\.zip\/[^"]+)"/gi;
+        const vcloudRegex = /href="(https:\/\/href\.li\/\?https:\/\/vcloud\.fit\/[^"]+)"/gi;
         while ((match = vcloudRegex.exec(segment)) !== null) {
             const vUrl = extractVcloudUrl(match[1]);
             if (vUrl)
