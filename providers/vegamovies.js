@@ -335,4 +335,55 @@ async function loadStreamsFromUrl(url, label, quality, referer, targetSeason, ta
 }
 
 async function extractFromPost(post, label, isTv, targetSeason, targetEp, mediaYear) {
-    try
+    try {
+        let html = post.html, seasonLabel = '';
+        if (isTv && targetSeason != null) { html = extractSeasonFromContent(html, targetSeason) || html; seasonLabel = ' S' + targetSeason + (targetEp ? 'E' + targetEp : ''); }
+        const mediaInfo = (seasonLabel.trim() || mediaYear || '').trim();
+        const links = extractNexdriveLinks(html).slice(0, 15);
+        if (!links.length) return [];
+        const results = await Promise.all(links.map(l => loadStreamsFromUrl(l.href, l.label || (seasonLabel + '[' + l.quality + ']'), l.quality, BASE_URL + '/', targetSeason, targetEp, mediaInfo).catch(() => [])));
+        return results.flat();
+    } catch (e) { return []; }
+}
+
+async function getStreams(tmdbId, mediaType, season, episode) {
+    try {
+        if (mediaType === 'tv' && (season == null || episode == null)) return [];
+        const isTv = mediaType === 'tv';
+        const media = await getTMDBInfo(tmdbId, mediaType);
+        const { title: mediaTitle, year: mediaYear, imdbId, altTitles = [] } = media;
+
+        let results = [];
+        if (imdbId && imdbId.startsWith('tt')) results = await searchByTitle(imdbId, null);
+        if (!results.length || !results.some(r => r.imdbId === imdbId)) {
+            let q = mediaTitle + (isTv && season != null ? ' season ' + Number(season) : mediaYear ? ' ' + mediaYear : '');
+            results = await searchByTitle(q, mediaYear);
+            if (!results.length && isTv && season != null) results = await searchByTitle(mediaTitle, mediaYear);
+        }
+        if (!results.length) return [];
+
+        let best = null;
+        const targetImdb = imdbId && imdbId.startsWith('tt') ? imdbId : null;
+        for (const r of results) {
+            if (targetImdb && r.imdbId === targetImdb) {
+                if (!isTv || season == null) { best = r; break; }
+                const range = /(?:s|season|staffel|saison)\s*0*(\d+)\s*(?:-|–|to|and|&|&#)\s*0*(\d+)\b/i.exec(r.title);
+                const inRange = range && parseInt(season) >= parseInt(range[1]) && parseInt(season) <= parseInt(range[2]);
+                if (inRange || new RegExp('(?:s|season|staffel|saison)\\s*0*' + Number(season) + '\\b', 'i').test(r.title)) { best = r; break; }
+            }
+            if (!best && isStrictMatch(mediaTitle, mediaYear, r.title, r.year, altTitles)) best = r;
+        }
+        if (!best || !best.postId) return [];
+
+        const post = await fetchPostContent(best.postId, best.permalink);
+        if (!post) return [];
+
+        const streams = await extractFromPost(post, post.title || best.title, isTv, season != null ? Number(season) : null, episode != null ? Number(episode) : null, mediaYear);
+        const seen = new Set();
+        return streams.filter(s => s && s.url && !seen.has(s.url) && seen.add(s.url)).filter(isHubVc);
+    } catch (e) {
+        return [];
+    }
+}
+
+module.exports = { getStreams };
