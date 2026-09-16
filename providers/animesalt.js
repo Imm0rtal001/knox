@@ -32,6 +32,10 @@ async function fetchTmdbMetadata(tmdbId, mediaType) {
         `${TMDB_API}/${endpoint}/${tmdbId}?api_key=${TMDB_API_KEY}`
     );
     if (!data) return null;
+    const genreIds = (data.genres || []).map(g => g.id);
+    const originCountries = data.origin_country || [];
+    const isAnime = genreIds.includes(16) || originCountries.includes("JP");
+    if (!isAnime) return null;
     return {
         title: data.title || data.name,
         year: parseInt((data.release_date || data.first_air_date || "").split("-")[0]) || null,
