@@ -160,6 +160,11 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         const media = await fetchTmdb(`${mediaType}/${tmdbId}`);
         if (!media) return [];
 
+        const genreIds = (media.genres || []).map((g) => g.id);
+        const originCountries = media.origin_country || [];
+        const isAnime = genreIds.includes(16) || originCountries.includes("JP");
+        if (!isAnime) return [];
+
         const title = media.name || media.title;
         if (!title) return [];
 
