@@ -515,4 +515,21 @@ function applySettings(streams, settings) {
 }
 
 async function getStreams(tmdbId, mediaType, season, episode) {
+    if (!tmdbId) return [];
+    if (mediaType !== "movie" && mediaType !== "tv") return [];
+    if (mediaType === "tv" && (season == null || episode == null)) return [];
+
+    try {
+        const info = await getTMDBInfo(tmdbId, mediaType);
+        if (!info.title) return [];
+
+        const pageUrl = await searchSite(info.title, info.year, info.imdbId, mediaType === "tv", season);
+        if (!pageUrl) return [];
+
+        const streams = await extractStreams(pageUrl, mediaType === "tv", +season, +episode, info.runtime);
+        return applySettings(streams, resolveSettings());
+    } catch (_) { return []; }
+}
+
+module.exports = { getStreams, onSettings };
 
