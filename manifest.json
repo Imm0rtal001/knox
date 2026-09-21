@@ -27,6 +27,20 @@
       ]
     },
     {
+      "id": "moviebox",
+      "name": "MovieBox",
+      "description": "MovieBox streaming with multiple language support (DASH + MP4)",
+      "version": "1.2.0",
+      "author": "Imm0rtal001",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/moviebox.js",
+      "enabled": true,
+      "hasSettings": false,
+      "formats": ["mp4", "mpd"],
+      "logo": "https://i.postimg.cc/TPwkfqHh/moviebox.png",
+      "contentLanguage": ["en", "hi", "ta", "te"]
+    },
+    {
       "id": "movieBlast",
       "name": "MovieBlast.",
       "description": "Disabled: requires crypto-js, which is not available in the Nuvio sandbox. | Fire TV: kept enabled; no overall response timeout.",
