@@ -28,9 +28,9 @@
     },
     {
       "id": "moviebox",
-      "name": "MovieBox",
+      "name": "MovieBox.",
       "description": "MovieBox streaming with multiple language support (DASH + MP4)",
-      "version": "1.2.0",
+      "version": "1.3.0",
       "author": "Imm0rtal001",
       "supportedTypes": ["movie", "tv"],
       "filename": "providers/moviebox.js",
