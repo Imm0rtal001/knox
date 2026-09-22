@@ -1,6 +1,6 @@
 const cheerio = require('cheerio-without-node-native');
 const PROVIDER = "VegaMovies";
-const BASE_URL = "https://new2.vegamovies.futbol";
+const BASE_URL = "https://vegamovies.gallery";
 const TMDB_API = "https://api.themoviedb.org/3";
 const HC_URL = "https://hubcloud.ist";
 const VC_URL = "https://vcloud.fit";
