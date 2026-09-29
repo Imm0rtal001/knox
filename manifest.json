@@ -105,8 +105,8 @@
       ]
     },
      {
-      "id": "hianime",
-      "name": "Hianime.",
+      "id": "anikage",
+      "name": "Anikage.",
       "description": "h!anime • Sub/Dub • Anime",
       "version": "1.3.0",
       "author": "Imm0rtal001",
@@ -114,7 +114,7 @@
         "movie",
         "tv"
       ],
-      "filename": "providers/hianime.js",
+      "filename": "providers/anikage.js",
       "enabled": true,
       "formats": [
         "mp4",
