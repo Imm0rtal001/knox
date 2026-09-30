@@ -152,8 +152,8 @@
       ]
     },
     {
-      "id": "anizone",
-      "name": "Anizone.",
+      "id": "anikoto",
+      "name": "Anikoto.",
       "description": "Watch AnimeWorld India • Nuvio TV / Fire TV compatible",
       "version": "1.2.0",
       "author": "Imm0rtal001",
@@ -161,7 +161,7 @@
         "movie",
         "tv"
       ],
-      "filename": "providers/anizone.js",
+      "filename": "providers/anikoto.js",
       "enabled": true,
       "formats": [
         "m3u8"
