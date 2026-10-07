@@ -5,7 +5,6 @@ const cheerio = require('cheerio-without-node-native');
 const PROVIDER_NAME = 'Movies4u';
 const BASE_URL = 'https://movies4u.cr';
 const TMDB_API_KEY = 'd80ba92bc7cefe3359668d30d06f3305';
-const DOMAINS_JSON_URL = 'https://raw.githubusercontent.com/SaurabhKaperwan/Utils/refs/heads/main/urls.json';
 const REQUEST_TIMEOUT = 12000;
 const DOMAIN_TIMEOUT = 8000;
 
