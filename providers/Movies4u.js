@@ -4,7 +4,7 @@ const cheerio = require('cheerio-without-node-native');
 
 const PROVIDER_NAME = 'Movies4u';
 const BASE_URL = 'https://movies4u.cr';
-const TMDB_API_KEY = '439c478a771f35c05022f9feabcca01c';
+const TMDB_API_KEY = 'd80ba92bc7cefe3359668d30d06f3305';
 const DOMAINS_JSON_URL = 'https://raw.githubusercontent.com/SaurabhKaperwan/Utils/refs/heads/main/urls.json';
 const REQUEST_TIMEOUT = 12000;
 const DOMAIN_TIMEOUT = 8000;
@@ -21,7 +21,7 @@ const MOBILE_HEADERS = {
 };
 
 const EXCLUDED_BUTTONS = ['filepress', 'gdtot', 'dropgalaxy', 'gdflix', 'gdlink'];
-const LINK_HINTS = ['mdrive', 'genxfm', 'fastdl', 'vcloud', 'hubcloud'];
+const LINK_HINTS = ['mdrive.cloud', 'genxfm', 'fastdl', 'vcloud', 'hubcloud'];
 
 let baseUrl = BASE_URL;
 let cachedDomains = null;
@@ -373,7 +373,7 @@ function extractQualityFromElement($, element, html) {
   return parseQuality(`${localText} ${context}`);
 }
 
-function extractNexdriveLinks(contentHtml) {
+function extractMdriveLinks(contentHtml) {
   if (!contentHtml) return [];
   const $ = cheerio.load(contentHtml);
   const links = [];
@@ -385,7 +385,8 @@ function extractNexdriveLinks(contentHtml) {
       const text = String($(el).text() || '').trim();
       if (!href || href === '#') return;
 
-      const full = absoluteUrl(href, baseUrl);
+      const dataHref = String($(el).attr('data-href') || $(el).attr('data-url') || '').trim();
+      const full = absoluteUrl(href || dataHref, baseUrl);
       const lowerHref = full.toLowerCase();
       const lowerText = text.toLowerCase();
 
@@ -547,7 +548,7 @@ async function loadStreamsFromUrl(url, label, quality, referer, targetSeason, ta
     return extractSingleVc(url, referer || url, targetSeason, targetEpisode);
   }
 
-  if (/(mdrive|genxfm|fastdl)/i.test(lower)) {
+  if (/(mdrive\.cloud|genxfm|fastdl)/i.test(lower)) {
     const $ = await fetchHtml(url, { headers: { ...HEADERS, Referer: referer || `${baseUrl}/` } }, 15000);
     if (!$) return [];
 
@@ -586,7 +587,7 @@ async function extractFromPost(post, label, isTv, targetSeason, targetEpisode) {
     if (targetEpisode != null) seasonLabel += `E${targetEpisode}`;
   }
 
-  const links = capLinksForEfficiency(extractNexdriveLinks(contentHtml));
+  const links = capLinksForEfficiency(extractMdriveLinks(contentHtml));
   log(`Found ${links.length} candidate links${seasonLabel}`);
   if (!links.length) return [];
 
@@ -619,16 +620,10 @@ async function getStreams(tmdbId, mediaType, season, episode) {
     }
 
     let searchResults = [];
-    if (imdbId && /^tt\d+$/i.test(imdbId)) {
-      searchResults = await searchByTitle(imdbId, null);
-    }
-
-    if (!searchResults.length) {
-      const query = isTv && season != null ? `${mediaTitle} season ${Number(season)}` : mediaTitle;
-      searchResults = await searchByTitle(query, mediaYear);
-      if (!searchResults.length && isTv && season != null) {
-        searchResults = await searchByTitle(mediaTitle, mediaYear);
-      }
+    const query = isTv && season != null ? `${mediaTitle} season ${Number(season)}` : mediaTitle;
+    searchResults = await searchByTitle(query, mediaYear);
+    if (!searchResults.length && isTv && season != null) {
+      searchResults = await searchByTitle(mediaTitle, mediaYear);
     }
 
     if (!searchResults.length) return [];
