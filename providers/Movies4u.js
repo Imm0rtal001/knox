@@ -300,7 +300,7 @@ function extractNexdriveLinks(contentHtml) {
   const links = [];
   const $ = cheerio.load(contentHtml);
   const seenUrls = /* @__PURE__ */ new Set();
-  $('a[href*="nexdrive"], a[href*="genxfm"], a[href*="fastdl"]').each((i, el) => {
+  $('a[href*="mdrive"], a[href*="genxfm"], a[href*="fastdl"]').each((i, el) => {
     try {
       const href = $(el).attr("href");
       if (!href) return;
@@ -378,7 +378,7 @@ function extractSingleVc(vcUrl, referer, targetSeason, targetEpisode) {
   return __async(this, null, function* () {
     const streams = [];
     const lower = vcUrl.toLowerCase();
-    if (lower.includes("vcloud") || lower.includes("hubcloud") || lower.includes("nexdrive") || lower.includes("fastdl")) {
+    if (lower.includes("vcloud") || lower.includes("hubcloud") || lower.includes("mdrive") || lower.includes("fastdl")) {
       const isHub = lower.includes("hubcloud");
       const latestBase = isHub ? getLatestHubDomain() : getLatestVcDomain();
       const curBase = getOrigin(vcUrl);
@@ -482,7 +482,7 @@ function loadStreamsFromUrl(url, label, quality, referer, targetSeason, targetEp
     if (lower.includes("vcloud") || lower.includes("hubcloud")) {
       return yield extractSingleVc(url, referer || url, targetSeason, targetEpisode);
     }
-    if (lower.includes("nexdrive") || lower.includes("genxfm") || lower.includes("fastdl")) {
+    if (lower.includes("mdrive") || lower.includes("genxfm") || lower.includes("fastdl")) {
       const $ = yield fetchHtml(url, { headers: __spreadProps(__spreadValues({}, HEADERS), { "Referer": referer || baseUrl + "/" }), redirect: "manual" });
       if (!$) return [];
       const tasks = [];
