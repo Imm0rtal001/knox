@@ -4,7 +4,6 @@ const BASE_URL = "https://vegamovies.gallery";
 const TMDB_API = "https://api.themoviedb.org/3";
 const HC_URL = "https://hubcloud.ist";
 const VC_URL = "https://vcloud.beer";
-const MAX_1080P = 4;
 const ALLOWED_Q = ['2160p', '4k', '1440p', '1080p'];
 const Q_WEIGHTS = { '2160p': 4, '4k': 4, '1440p': 3, '1080p': 2, '720p': 1, 'HD': 0 };
 const EXCLUDED = ['filepress', 'gdtot', 'dropgalaxy', 'gdflix', 'gdlink'];
@@ -75,7 +74,7 @@ const fetchHtml = async (url, opts = {}) => {
 function makeStream(_, title, url, quality, headers, mediaInfo, fallbackQ = 'HD') {
     if (!url || !url.startsWith('https://')) return null;
     const nq = normalizeQ(quality) || normalizeQ(fallbackQ);
-    if (!nq || (nq === '1080p' && count1080p >= MAX_1080P)) return null;
+    if (!nq || (nq === '1080p' && count1080p >= 4)) return null;
 
     const t = decodeEnt(title || '').replace(/[\n\t]+/g, ' ').replace(/\s{2,}/g, ' ').trim();
     const sizeM = t.match(/\[\s*(\d+(?:\.\d+)?\s*[MG]B)\s*\]/i);
