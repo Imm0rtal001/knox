@@ -41,8 +41,8 @@
       "contentLanguage": ["en", "hi", "ta", "te"]
     },
     {
-      "id": "movies4u",
-      "name": "Movies4u.",
+      "id": "desiflix",
+      "name": "Desiflix.",
       "description": "Disabled: requires crypto-js, which is not available in the Nuvio sandbox. | Fire TV: kept enabled; no overall response timeout.",
       "version": "1.1.0",
       "author": "Imm0rtal001",
@@ -50,7 +50,7 @@
         "movie",
         "tv"
       ],
-      "filename": "providers/Movies4u.js",
+      "filename": "providers/desiflix.js",
       "enabled": true,
       "formats": [
         "mp4",
