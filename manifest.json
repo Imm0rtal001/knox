@@ -1,6 +1,6 @@
 {
   "name": "Knox Providers",
-  "version": "3.8.0",
+  "version": "3.9.0",
   "scrapers": [
     {
       "id": "4khdhub",
@@ -129,8 +129,8 @@
       "hasSettings": true
     },
     {
-      "id": "animesalt",
-      "name": "AnimeSalt.",
+      "id": "animedekho",
+      "name": "Animedekho.",
       "description": "AnimeSalt India • Nuvio TV / Fire TV compatible",
       "version": "1.0.0",
       "author": "Imm0rtal001",
@@ -138,7 +138,7 @@
         "movie",
         "tv"
       ],
-      "filename": "providers/animesalt.js",
+      "filename": "providers/animedekho.js",
       "enabled": true,
       "formats": [
         "m3u8",
