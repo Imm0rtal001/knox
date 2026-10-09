@@ -83,7 +83,8 @@
         "bn",
         "hi",
         "en"
-      ]
+      ],
+       "hasSettings": true
     },
     {
       "id": "moviesHunt",
