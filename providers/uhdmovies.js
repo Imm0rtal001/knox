@@ -1,11 +1,6 @@
 "use strict";
 // src/uhdmovies/index.js
 var DOMAIN = "https://uhdmovies.my";
-// Mirrors tried in order when the main domain is dead / returns no results.
-// The site changes domains often: add the newest working one at the TOP of this list.
-var DOMAINS = [DOMAIN, "https://uhdmovies.site", "https://uhdmovies.rodeo"];
-var FETCH_TIMEOUT = 15000;
-var MAX_RESULTS = 3;
 var TMDB_API = "https://api.themoviedb.org/3";
 var TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 var USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
@@ -35,11 +30,8 @@ function stripTags(html) {
     return (html || "").replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, " ").trim();
 }
 function extractFormAction(html) {
-    var tag = html.match(/<form[^>]*id=["']landing["'][^>]*>/i) || html.match(/<form[^>]*>/i);
-    if (!tag)
-        return null;
-    var m = tag[0].match(/action=["']([^"']+)["']/i);
-    return m ? decodeHtml(m[1]) : null;
+    var m = html.match(/<form[^>]*id="landing"[^>]*action="([^"]+)"/i) || html.match(/<form[^>]*action="([^"]+)"[^>]*id="landing"/i);
+    return m ? m[1] : null;
 }
 function extractFormInputs(html) {
     var obj = {};
@@ -48,10 +40,10 @@ function extractFormInputs(html) {
     var re = /<input[^>]+>/gi;
     var m;
     while ((m = re.exec(formHtml)) !== null) {
-        var nameM = m[0].match(/name=["']([^"']+)["']/i);
-        var valueM = m[0].match(/value=["']([^"']*)["']/i);
+        var nameM = m[0].match(/name="([^"]+)"/i);
+        var valueM = m[0].match(/value="([^"]*)"/i);
         if (nameM)
-            obj[nameM[1]] = valueM ? decodeHtml(valueM[1]) : "";
+            obj[nameM[1]] = valueM ? valueM[1] : "";
     }
     return obj;
 }
@@ -82,10 +74,9 @@ function extractBtnSuccessLinks(html) {
         var re = patterns[pi];
         var m;
         while ((m = re.exec(html)) !== null) {
-            var href = decodeHtml(m[1]);
-            if (href.indexOf("http") === 0 && !seen[href]) {
-                seen[href] = true;
-                links.push(href);
+            if (m[1].indexOf("http") === 0 && !seen[m[1]]) {
+                seen[m[1]] = true;
+                links.push(m[1]);
             }
         }
     }
@@ -93,10 +84,15 @@ function extractBtnSuccessLinks(html) {
 }
 function extractTextCenterLinks(html) {
     var links = [];
-    var aRe = /<a\s[^>]*href=["']([^"']*)["'][^>]*>([\s\S]*?)<\/a>/gi;
-    var aM;
-    while ((aM = aRe.exec(html)) !== null) {
-        links.push({ href: decodeHtml(aM[1]), text: stripTags(aM[2]) });
+    var divRe = /<div[^>]*class="[^"]*text-center[^"]*"[^>]*>([\s\S]*?)<\/div>/gi;
+    var divM;
+    while ((divM = divRe.exec(html)) !== null) {
+        var divHtml = divM[1];
+        var aRe = /<a\s[^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi;
+        var aM;
+        while ((aM = aRe.exec(divHtml)) !== null) {
+            links.push({ href: aM[1], text: stripTags(aM[2]) });
+        }
     }
     return links;
 }
@@ -194,42 +190,14 @@ function cleanTitle(title) {
     }
     return parts.slice(-3).join(".");
 }
-function decodeHtml(str) {
-    return (str || "").replace(/&amp;/g, "&").replace(/&#038;/g, "&").replace(/&#39;/g, "'").replace(/&quot;/g, '"').trim();
-}
-// fetch() with a hard timeout so one dead host can't hang the whole getStreams() call
-function fetchT(url, opts) {
-    opts = opts || {};
-    if (typeof AbortController === "undefined") {
-        return Promise.race([
-            fetch(url, opts),
-            new Promise(function (_, reject) { setTimeout(function () { reject(new Error("timeout " + url)); }, FETCH_TIMEOUT); })
-        ]);
-    }
-    var ctrl = new AbortController();
-    var timer = setTimeout(function () { ctrl.abort(); }, FETCH_TIMEOUT);
-    opts.signal = ctrl.signal;
-    return fetch(url, opts).then(function (res) { clearTimeout(timer); return res; }, function (e) { clearTimeout(timer); throw e; });
-}
-function getSetCookies(res) {
-    var raw = [];
-    try {
-        if (res.headers.getSetCookie)
-            raw = res.headers.getSetCookie();
-        else if (res.headers.get("set-cookie"))
-            raw = res.headers.get("set-cookie").split(/,(?=\s*[^;,=\s]+=)/);
-    }
-    catch (e) { }
-    return raw.map(function (c) { return c.split(";")[0].trim(); }).filter(Boolean).join("; ");
-}
 function fetchText(url, extraHeaders) {
     var headers = Object.assign({ "User-Agent": USER_AGENT }, extraHeaders || {});
-    return fetchT(url, { headers, redirect: "follow" }).then(function (res) {
+    return fetch(url, { headers, redirect: "follow" }).then(function (res) {
         return res.text();
     });
 }
 function fetchJson(url) {
-    return fetchT(url, { headers: { "User-Agent": USER_AGENT } }).then(function (res) {
+    return fetch(url, { headers: { "User-Agent": USER_AGENT } }).then(function (res) {
         return res.json();
     });
 }
@@ -254,38 +222,16 @@ function getTmdbDetails(tmdbId, mediaType) {
         return null;
     });
 }
-function normTitle(t) {
-    return (t || "").toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, " ").trim();
-}
-function searchOnDomain(domain, queryText) {
-    var url = domain + "/?s=" + encodeURIComponent(queryText);
+function searchByTitle(title, year) {
+    var query = encodeURIComponent((title + " " + (year || "")).trim());
+    var url = DOMAIN + "/?s=" + query;
     console.log("[UHDMovies] Search: " + url);
     return fetchText(url).then(function (html) {
         return parseSearchResults(html);
     }).catch(function (err) {
-        console.error("[UHDMovies] Search error (" + domain + "): " + err.message);
+        console.error("[UHDMovies] Search error: " + err.message);
         return [];
     });
-}
-function searchByTitle(title, year) {
-    var queries = [(title + " " + (year || "")).trim()];
-    if (year)
-        queries.push(title);
-    var wanted = normTitle(title);
-    function tryDomain(di, qi) {
-        if (di >= DOMAINS.length)
-            return Promise.resolve([]);
-        if (qi >= queries.length)
-            return tryDomain(di + 1, 0);
-        return searchOnDomain(DOMAINS[di], queries[qi]).then(function (results) {
-            // keep only results that actually match the requested title
-            var good = results.filter(function (r) { return normTitle(r.title).indexOf(wanted) !== -1; });
-            if (good.length)
-                return good;
-            return tryDomain(di, qi + 1);
-        });
-    }
-    return tryDomain(0, 0);
 }
 function parseSearchResults(html) {
     var results = [];
@@ -316,12 +262,11 @@ function bypassHrefli(url) {
         var formData = extractFormInputs(html);
         if (!formUrl)
             return Promise.resolve(null);
-        return fetchT(fixUrl(formUrl, host), {
+        return fetch(formUrl, {
             method: "POST",
             headers: {
                 "User-Agent": USER_AGENT,
-                "Content-Type": "application/x-www-form-urlencoded",
-                "Referer": url
+                "Content-Type": "application/x-www-form-urlencoded"
             },
             body: toFormEncoded(formData)
         }).then(function (res) {
@@ -334,12 +279,11 @@ function bypassHrefli(url) {
         var formData = extractFormInputs(html);
         if (!formUrl)
             return null;
-        return fetchT(fixUrl(formUrl, host), {
+        return fetch(formUrl, {
             method: "POST",
             headers: {
                 "User-Agent": USER_AGENT,
-                "Content-Type": "application/x-www-form-urlencoded",
-                "Referer": host + "/"
+                "Content-Type": "application/x-www-form-urlencoded"
             },
             body: toFormEncoded(formData)
         }).then(function (res) {
@@ -351,7 +295,7 @@ function bypassHrefli(url) {
         if (!result)
             return null;
         var script = extractScriptContaining(result.html, "?go=");
-        var skTokenM = script.match(/\?go=([^"'&\s]+)/);
+        var skTokenM = script.match(/\?go=([^"]+)/);
         if (!skTokenM)
             return null;
         var skToken = skTokenM[1];
@@ -363,12 +307,12 @@ function bypassHrefli(url) {
         if (!html)
             return null;
         var driveUrl = extractMetaRefresh(html);
-        return driveUrl ? decodeHtml(driveUrl).replace(/^["']|["']$/g, "") : null;
+        return driveUrl || null;
     }).then(function (driveUrl) {
         if (!driveUrl)
             return null;
         return fetchText(driveUrl).then(function (html) {
-            var pathM = html.match(/replace\(["']([^"']+)["']\)/);
+            var pathM = html.match(/replace\("([^"]+)"\)/);
             if (!pathM || pathM[1] === "/404")
                 return null;
             return fixUrl(pathM[1], getBaseUrl(driveUrl));
@@ -378,25 +322,15 @@ function bypassHrefli(url) {
         return null;
     });
 }
-function parseApiUrl(text) {
-    try {
-        var j = JSON.parse(text);
-        if (j && typeof j.url === "string" && j.url.indexOf("http") === 0)
-            return j.url;
-    }
-    catch (e) { }
-    var m = text.match(/"url"\s*:\s*"([^"]+)"/);
-    return m ? m[1].replace(/\\\//g, "/").replace(/\\u0026/g, "&") : null;
-}
 function extractVideoSeed(finallink) {
     console.log("[UHDMovies] VideoSeed: " + finallink);
     var hostM = finallink.match(/^https?:\/\/([^\/]+)/);
     var host = hostM ? hostM[1] : "video-seed.xyz";
-    var tokenParts = finallink.split(/[?&]url=/);
+    var tokenParts = finallink.split("?url=");
     if (tokenParts.length < 2)
         return Promise.resolve(null);
     var token = tokenParts[1];
-    return fetchT("https://" + host + "/api", {
+    return fetch("https://" + host + "/api", {
         method: "POST",
         headers: {
             "User-Agent": USER_AGENT,
@@ -408,7 +342,8 @@ function extractVideoSeed(finallink) {
     }).then(function (res) {
         return res.text();
     }).then(function (text) {
-        return parseApiUrl(text);
+        var m = text.match(/url":"([^"]+)"/);
+        return m ? m[1].replace(/\\\//g, "/") : null;
     }).catch(function (err) {
         console.error("[UHDMovies] VideoSeed error: " + err.message);
         return null;
@@ -418,11 +353,11 @@ function extractInstantLink(finallink) {
     console.log("[UHDMovies] InstantLink: " + finallink);
     var hostM = finallink.match(/^https?:\/\/([^\/]+)/);
     var host = hostM ? hostM[1] : finallink.indexOf("video-leech") !== -1 ? "video-leech.pro" : "video-seed.pro";
-    var tokenParts = finallink.split(/[?&]url=/);
+    var tokenParts = finallink.split("url=");
     if (tokenParts.length < 2)
         return Promise.resolve(null);
     var token = tokenParts[1];
-    return fetchT("https://" + host + "/api", {
+    return fetch("https://" + host + "/api", {
         method: "POST",
         headers: {
             "User-Agent": USER_AGENT,
@@ -434,7 +369,8 @@ function extractInstantLink(finallink) {
     }).then(function (res) {
         return res.text();
     }).then(function (text) {
-        return parseApiUrl(text);
+        var m = text.match(/url":"([^"]+)"/);
+        return m ? m[1].replace(/\\\//g, "/") : null;
     }).catch(function (err) {
         console.error("[UHDMovies] InstantLink error: " + err.message);
         return null;
@@ -442,30 +378,24 @@ function extractInstantLink(finallink) {
 }
 function extractResumeBot(url) {
     console.log("[UHDMovies] ResumeBot: " + url);
-    return fetchT(url, { headers: { "User-Agent": USER_AGENT }, redirect: "follow" }).then(function (res0) {
-        var cookie = getSetCookies(res0);
-        return res0.text().then(function (html) {
-            var tokenM = html.match(/formData\.append\(\s*['"]token['"]\s*,\s*['"]([a-zA-Z0-9]+)['"]\s*\)/);
-            var pathM = html.match(/fetch\(\s*['"]\/download\?id=([^'"]+)['"]/);
-            if (!tokenM || !pathM)
-                return null;
-            var token = tokenM[1];
-            var path = pathM[1];
-            var baseUrl = url.indexOf("/download") !== -1 ? url.split("/download")[0] : getBaseUrl(url);
-            var headers = {
+    return fetchText(url).then(function (html) {
+        var tokenM = html.match(/formData\.append\('token', '([a-f0-9]+)'\)/);
+        var pathM = html.match(/fetch\('\/download\?id=([a-zA-Z0-9\/+]+)'/);
+        if (!tokenM || !pathM)
+            return null;
+        var token = tokenM[1];
+        var path = pathM[1];
+        var baseUrl = url.split("/download")[0];
+        return fetch(baseUrl + "/download?id=" + path, {
+            method: "POST",
+            headers: {
                 "User-Agent": USER_AGENT,
                 "Content-Type": "application/x-www-form-urlencoded",
                 "Accept": "*/*",
                 "Origin": baseUrl,
                 "Referer": url
-            };
-            if (cookie)
-                headers["Cookie"] = cookie;
-            return fetchT(baseUrl + "/download?id=" + path, {
-                method: "POST",
-                headers: headers,
-                body: "token=" + encodeURIComponent(token)
-            });
+            },
+            body: "token=" + encodeURIComponent(token)
         });
     }).then(function (res) {
         if (!res)
@@ -594,19 +524,6 @@ function getMovieLinks(pageUrl) {
                 }
             }
         }
-        if (links.length === 0) {
-            // Fallback: layout changed -> grab any download-host anchors in the post body
-            var seenL = {};
-            var aRe = /<a\s[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
-            var aM;
-            while ((aM = aRe.exec(entryHtml)) !== null) {
-                var h = decodeHtml(aM[1]);
-                if (/unblockedgames|driveseed|driveleech|video-seed|video-leech/i.test(h) && !seenL[h]) {
-                    seenL[h] = true;
-                    links.push({ sourceName: stripTags(aM[2]) || "Download", sourceLink: h });
-                }
-            }
-        }
         console.log("[UHDMovies] Movie links found: " + links.length);
         return links;
     }).catch(function (err) {
@@ -674,7 +591,6 @@ function getStreams(tmdbId, mediaType, season, episode) {
             return [];
         }
         var isSeries = mediaType === "series" || mediaType === "tv";
-        searchResults = searchResults.slice(0, MAX_RESULTS);
         function processResult(index) {
             if (index >= searchResults.length)
                 return Promise.resolve(allStreams);
@@ -717,13 +633,6 @@ function getStreams(tmdbId, mediaType, season, episode) {
             });
         }
         return processResult(0).then(function (streams) {
-            var seenUrl = {};
-            streams = streams.filter(function (s) {
-                if (!s || !s.url || seenUrl[s.url])
-                    return false;
-                seenUrl[s.url] = true;
-                return true;
-            });
             function scoreStream(s) {
                 var q = s.quality || "";
                 var rScore = 0;
