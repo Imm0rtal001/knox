@@ -130,8 +130,8 @@
       "hasSettings": true
     },
     {
-      "id": "cinejoy",
-      "name": "Cinejoy.",
+      "id": "pikahd",
+      "name": "Pikahd.",
       "description": "AnimeSalt India • Nuvio TV / Fire TV compatible",
       "version": "1.0.0",
       "author": "Imm0rtal001",
@@ -139,7 +139,7 @@
         "movie",
         "tv"
       ],
-      "filename": "providers/cinejoy.js",
+      "filename": "providers/pikahd.js",
       "enabled": true,
       "formats": [
         "m3u8",
