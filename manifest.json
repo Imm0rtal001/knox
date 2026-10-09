@@ -129,8 +129,8 @@
       "hasSettings": true
     },
     {
-      "id": "animedekho",
-      "name": "Animedekho.",
+      "id": "cinejoy",
+      "name": "Cinejoy.",
       "description": "AnimeSalt India • Nuvio TV / Fire TV compatible",
       "version": "1.0.0",
       "author": "Imm0rtal001",
@@ -138,7 +138,7 @@
         "movie",
         "tv"
       ],
-      "filename": "providers/animedekho.js",
+      "filename": "providers/cinejoy.js",
       "enabled": true,
       "formats": [
         "m3u8",
