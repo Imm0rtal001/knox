@@ -66,7 +66,8 @@ var __async = (__this, __arguments, generator) => {
 var import_cheerio_without_node_native2 = __toESM(require("cheerio-without-node-native"));
 
 // src/uhdmovies/constants.js
-var DOMAIN = "https://uhdmovies.my";
+var DOMAINS_URL = "https://raw.githubusercontent.com/phisher98/TVVVV/refs/heads/main/domains.json";
+var FALLBACK_DOMAIN = "https://uhdmovies.my";
 var TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 var TMDB_BASE_URL = "https://api.themoviedb.org/3";
 var HEADERS = {
