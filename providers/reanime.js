@@ -1,366 +1,1432 @@
-"use strict";
-
-const TMDB_API_URL = `https://api.themoviedb.org/3`;
-const TMDB_API_KEY = "307b7b8ef035c6aa336900aef4e203bd";
+const PROVIDER = "Re:ANIME";
+const BASE_URL = "https://reanime.to";
 const API_BASE = "https://flixcloud.cc";
-const ANIZIP_API = "https://api.ani.zip/mappings";
-const BASE_URLS = ["https://reanime.to", "https://reanime.cz", "https://reanime.wtf"];
-const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36";
-const HEADERS = {
-    "User-Agent": USER_AGENT,
-    "Accept": "application/json, text/plain, */*",
-    "Accept-Language": "en-US,en;q=0.9",
-};
+const ENC_DEC_API = "https://enc-dec.app/api";
+const TMDB_API = "https://api.themoviedb.org/3";
+const USER_AGENT = "Mozilla/5.0 (Linux; Android 16; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Mobile Safari/537.36";
 
-let activeReanimeOrigin = BASE_URLS[0];
-
-function toAbsoluteUrl(path, base) {
-    if (!path) return "";
-    if (path.startsWith("http")) return path;
-    const b = base || activeReanimeOrigin;
-    return b + (path.startsWith("/") ? path : "/" + path);
+function createSortTag(rank) {
+    return Math.max(0, 23 - rank)
+        .toString(2)
+        .padStart(20, "0")
+        .split("")
+        .map(b => b === "1" ? "\uFEFF" : "\u200B")
+        .join("");
 }
 
-async function httpGetText(url, options) {
-    options = options || {};
-    const isAbsolute = url.startsWith("http");
-    const targets = isAbsolute ? [url] : BASE_URLS.map(function (d) { return toAbsoluteUrl(url, d); });
-    let lastErr;
-    for (let i = 0; i < targets.length; i++) {
-        const target = targets[i];
-        try {
-            const res = await fetch(target, Object.assign({}, options, {
-                headers: Object.assign({}, HEADERS, options.headers || {}),
-            }));
-            if (res.ok) {
-                if (!isAbsolute) {
-                    const m = target.match(/^(https?:\/\/[^/]+)/);
-                    if (m) activeReanimeOrigin = m[1];
-                }
-                return await res.text();
+function parseJsObjectLiteral(source) {
+    let json = "";
+    let cursor = 0;
+
+    while (cursor < source.length) {
+        const char = source[cursor];
+
+        if (char === '"' || char === "'") {
+            let end = cursor + 1;
+            let body = "";
+            while (end < source.length && source[end] !== char) {
+                if (source[end] === "\\") { body += source[end] + source[end + 1]; end += 2; }
+                else { body += source[end]; end += 1; }
             }
-            lastErr = new Error("HTTP " + res.status + ": " + target);
-        } catch (e) {
-            lastErr = e;
+            json += char === '"' ? `"${body}"` : JSON.stringify(body.replace(/\\'/g, "'"));
+            cursor = end + 1;
+        } else if (/[A-Za-z_$]/.test(char)) {
+            let end = cursor;
+            while (end < source.length && /[\w$]/.test(source[end])) end += 1;
+            const word = source.slice(cursor, end);
+
+            let lookahead = end;
+            while (lookahead < source.length && /\s/.test(source[lookahead])) lookahead += 1;
+
+            if (source[lookahead] === ":") {
+                json += JSON.stringify(word);
+            } else if (word === "void") {
+                if (source[lookahead] === "0") lookahead += 1;
+                json += "null";
+                end = lookahead;
+            } else if (word === "true" || word === "false" || word === "null") {
+                json += word;
+            } else {
+                json += "null";
+            }
+            cursor = end;
+        } else if (char === "!" && (source[cursor + 1] === "0" || source[cursor + 1] === "1")) {
+            json += source[cursor + 1] === "0" ? "true" : "false";
+            cursor += 2;
+        } else {
+            json += char;
+            cursor += 1;
         }
     }
-    throw lastErr || new Error("Failed: " + url);
+
+    return JSON.parse(json.replace(/,(\s*[}\]])/g, "$1"));
 }
 
-async function httpGetJson(url, options) {
-    options = options || {};
-    const text = await httpGetText(url, Object.assign({}, options, {
-        headers: Object.assign({ "Accept": "application/json, text/plain, */*" }, options.headers || {}),
-    }));
-    return JSON.parse(text);
-}
-
-async function fetchAniZip(param, value) {
-    return httpGetJson(ANIZIP_API + "?" + encodeURIComponent(param) + "=" + encodeURIComponent(value));
-}
-
-async function resolveAnilistId(tmdbId) {
-    const data = await fetchAniZip("themoviedb_id", tmdbId);
-    if (!data || !data.mappings) throw new Error("ani.zip: no mappings for " + tmdbId);
-    const mappings = data.mappings;
-    const anilistId = mappings.anilist_id ? String(mappings.anilist_id) : null;
-    const titles = data.titles || {};
-    const title = titles.en || titles["x-jat"] || titles.ja || "";
-    return { anilistId, title };
-}
-
-async function fetchTmdbTitle(tmdbId, mediaType) {
+async function request(url, init, format) {
     try {
-        const endpoint = mediaType === "tv" ? "tv" : "movie";
-        const res = await fetch(
-            `${TMDB_API_URL}/${endpoint}/${tmdbId}?api_key=${TMDB_API_KEY}`,
-            { headers: HEADERS }
-        );
-        if (!res.ok) return { title: "", year: null };
-        const data = await res.json();
-        const title = mediaType === "tv" ? (data.name || "") : (data.title || "");
-        const year = ((data.first_air_date || data.release_date || "").slice(0, 4)) || null;
-        return { title, year };
-    } catch (e) {
-        return { title: "", year: null };
-    }
-}
-
-function slugifyTitle(val) {
-    return String(val || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
-}
-
-function computeMatchScore(title, query, year, targetAlId, candidateAlId) {
-    if (targetAlId && candidateAlId && String(targetAlId) === String(candidateAlId)) return 1000;
-    const a = slugifyTitle(title);
-    const b = slugifyTitle(query);
-    if (!a || !b) return 0;
-    let score = 0;
-    if (a === b) score += 100;
-    if (a.indexOf(b) !== -1 || b.indexOf(a) !== -1) score += 50;
-    const words = b.split(/\s+/).filter(Boolean);
-    for (let i = 0; i < words.length; i++) {
-        if (a.indexOf(words[i]) !== -1) score += 4;
-    }
-    if (year && String(title).indexOf(String(year)) !== -1) score += 10;
-    return score;
-}
-
-function parseAnilistId(item) {
-    const direct = item && (item.anilist_id || item.anilistId);
-    if (direct) return String(direct);
-    const urls = [
-        item && item.cover_image && item.cover_image.extra_large,
-        item && item.cover_image && item.cover_image.large,
-        item && item.cover_image && item.cover_image.medium,
-        item && item.banner_image,
-    ].filter(Boolean);
-    for (let i = 0; i < urls.length; i++) {
-        const m = String(urls[i]).match(/\/b?x?(\d+)-|\/(\d+)[-.]/);
-        if (m) return m[1] || m[2];
-    }
-    return null;
-}
-
-async function queryReanimeIndex(query, year, targetAlId) {
-    targetAlId = targetAlId || null;
-    const endpoints = [
-        "/api/v1/search?q=" + encodeURIComponent(query) + "&limit=36",
-        "/api/search?q=" + encodeURIComponent(query),
-    ];
-
-    const candidates = [];
-
-    for (let ei = 0; ei < endpoints.length; ei++) {
-        try {
-            const text = await httpGetText(endpoints[ei]);
-            const trimmed = text.trim();
-            if (!trimmed.startsWith("{") && !trimmed.startsWith("[")) continue;
-            const json = JSON.parse(text);
-            const list = json.results || json.data || json.anime || (Array.isArray(json) ? json : null);
-            if (!Array.isArray(list)) continue;
-
-            for (let li = 0; li < list.length; li++) {
-                const item = list[li];
-                const rawSlug = item.anime_id || item.slug || item.id || item.url;
-                if (!rawSlug) continue;
-                const cleanSlug = String(rawSlug).replace(/-[a-z0-9]{6}$/, "");
-                const rawTitle = typeof item.title === "object"
-                    ? ((item.title && (item.title.english || item.title.romaji || item.title.native)) || cleanSlug)
-                    : (item.title || item.name || cleanSlug);
-                const alId = parseAnilistId(item);
-                candidates.push({
-                    slug: String(rawSlug),
-                    cleanSlug: cleanSlug,
-                    title: rawTitle,
-                    anilistId: alId,
-                    score: computeMatchScore(rawTitle, query, year, targetAlId, alId),
-                });
-            }
-        } catch (e) { }
-
-        let hasExact = false;
-        for (let ci = 0; ci < candidates.length; ci++) {
-            if (candidates[ci].score >= 1000) { hasExact = true; break; }
-        }
-        if (hasExact) break;
-        if (candidates.length > 0 && !targetAlId) break;
-    }
-
-    const seen = {};
-    const unique = [];
-    for (let i = 0; i < candidates.length; i++) {
-        const c = candidates[i];
-        if (!c.slug || seen[c.slug]) continue;
-        seen[c.slug] = true;
-        unique.push(c);
-    }
-    unique.sort(function (a, b) { return b.score - a.score; });
-    return unique.length > 0 ? unique[0] : null;
-}
-
-async function fetchFlixServerList(slug, episodeNum, language, anilistId) {
-    const watchPath = "/watch/" + (slug || "anime") + "?ep=" + episodeNum;
-
-    async function tryFlixApi(alId) {
-        const json = await httpGetJson("/api/flix/" + alId + "/" + episodeNum, {
-            headers: { "Referer": toAbsoluteUrl(watchPath) },
-        });
-        if (!json.success || !json.servers || !json.servers.length) return null;
-        const filtered = json.servers.filter(function (s) {
-            return !language || !s.dataType || s.dataType === language;
-        });
-        return filtered.length > 0 ? filtered : json.servers;
-    }
-
-    if (anilistId) {
-        try {
-            const servers = await tryFlixApi(anilistId);
-            if (servers) return servers;
-        } catch (e) { }
-    }
-
-    if (slug) {
-        try {
-            const html = await httpGetText("/anime/" + slug + "?_ep=" + episodeNum);
-            const m = html.match(/anilist_id:\s*(\d+)/);
-            if (m) {
-                const servers = await tryFlixApi(m[1]);
-                if (servers) return servers;
-            }
-        } catch (e) { }
-    }
-
-    return [];
-}
-
-async function resolveFlixDownloadUrl(embedUrl) {
-    try {
-        const m = embedUrl.match(/\/e\/([a-z0-9]+)/i);
-        if (!m) return null;
-        const aid = m[1];
-        const dlHeaders = { "Accept": "*/*", "Referer": API_BASE + "/", "User-Agent": USER_AGENT };
-        const res = await fetch(API_BASE + "/d/" + aid + "/__data.json", { headers: dlHeaders });
-        if (!res.ok) return null;
-
-        const body = await res.text();
-        const fileIdM = body.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
-        const tokenM = body.match(/eyJ[\w-]+\.[\w-]+\.[\w-]+/);
-        const baseM = body.match(/https:\/\/fetch\d*\.flixcloud\.cc/);
-
-        if (!fileIdM || !tokenM) return null;
-        const fileId = fileIdM[0];
-        const token = tokenM[0];
-        const fetchBase = baseM ? baseM[0] : API_BASE;
-
-        for (let attempt = 0; attempt < 2; attempt++) {
-            try {
-                const progRes = await fetch(
-                    fetchBase + "/download/" + fileId + "/progress?token=" + token,
-                    { headers: dlHeaders }
-                );
-                if (progRes.ok) {
-                    const t = await progRes.text();
-                    if (t.indexOf('"status":"ready"') !== -1 || t.indexOf('"ready"') !== -1) break;
-                    if (t.indexOf('"status":"failed"') !== -1) return null;
-                }
-            } catch (e) { }
-        }
-
-        return {
-            url: fetchBase + "/download/" + fileId + "?token=" + token,
-            headers: dlHeaders,
-        };
-    } catch (e) {
+        const res = await fetch(url, init);
+        if (!res?.ok) return null;
+        return format === "json" ? await res.json() : await res.text();
+    } catch {
         return null;
     }
 }
 
+async function callEncDec(path, body) {
+    try {
+        const res = await fetch(ENC_DEC_API + path, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "User-Agent": USER_AGENT },
+            body: JSON.stringify(body),
+        });
+        if (!res?.ok) return null;
+        const payload = await res.json();
+        return payload?.status === 200 && payload.result ? payload.result : null;
+    } catch {
+        return null;
+    }
+}
+
+async function resolveEmbed(embedUrl) {
+    try {
+        const page = await request(embedUrl, { headers: { "User-Agent": USER_AGENT, Referer: `${BASE_URL}/` } }, "text");
+        const rawData = page ? /type:\s*"data",\s*data:\s*(\{[\s\S]*?\})\s*,\s*uses:/.exec(page)?.[1] : null;
+        if (!rawData) return null;
+
+        const { subtitles, ...payload } = parseJsObjectLiteral(rawData);
+
+        const tokenResult = await callEncDec("/dec-flixcloud?type=token", { data: payload });
+        if (!tokenResult?.token) return null;
+
+        const streamResponse = await request(
+            `${API_BASE}/api/m3u8/${tokenResult.token}`,
+            { headers: { "User-Agent": USER_AGENT, Referer: `${BASE_URL}/` } },
+            "json"
+        );
+        if (!streamResponse) return null;
+
+        const streamResult = await callEncDec("/dec-flixcloud?type=stream", {
+            data: { context: tokenResult.context, stream_response: streamResponse },
+        });
+        if (!streamResult?.stream || !streamResult.context) return null;
+
+        const manifestUrl =
+            `${ENC_DEC_API}/parse-flixcloud?url=${encodeURIComponent(streamResult.stream)}` +
+            `&w_payload=${encodeURIComponent(streamResult.context.w_payload)}`;
+
+        const manifest = await request(manifestUrl, { headers: { "User-Agent": USER_AGENT, Referer: `${API_BASE}/` } }, "text");
+        if (!manifest?.includes("#EXTM3U")) return null;
+
+        return { manifestUrl, manifest, subtitles: Array.isArray(subtitles) ? subtitles : [] };
+    } catch {
+        return null;
+    }
+}
+
+async function resolveDownloadLink(embedUrl) {
+    const embedId = /\/e\/([a-z0-9]+)/i.exec(embedUrl)?.[1];
+    if (!embedId) return null;
+
+    const payload = await request(
+        `${API_BASE}/d/${embedId}/__data.json`,
+        { headers: { Accept: "*/*", Referer: `${API_BASE}/`, "User-Agent": USER_AGENT } },
+        "text"
+    );
+    if (!payload) return null;
+
+    const fileId = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i.exec(payload)?.[0];
+    const token = /eyJ[\w-]+\.[\w-]+\.[\w-]+/.exec(payload)?.[0];
+    if (!fileId || !token) return null;
+
+    const fetchHost = /https:\/\/fetch\d*\.flixcloud\.cc/.exec(payload)?.[0] ?? API_BASE;
+    const progress = await request(
+        `${fetchHost}/download/${fileId}/progress?token=${token}`,
+        { headers: { Accept: "*/*", Referer: `${API_BASE}/`, "User-Agent": USER_AGENT } },
+        "text"
+    );
+    if (progress?.includes('"status":"failed"')) return null;
+
+    return { url: `${fetchHost}/download/${fileId}?token=${token}`, headers: { Accept: "*/*", Referer: `${API_BASE}/`, "User-Agent": USER_AGENT } };
+}
+
+function matchGroup(text, pattern) {
+    return pattern.exec(text)?.[1] ?? null;
+}
+
+function isEnglishTrack(mediaLine) {
+    const lang = (matchGroup(mediaLine, /LANGUAGE="([^"]*)"/) ?? "").toLowerCase();
+    const name = (matchGroup(mediaLine, /NAME="([^"]*)"/) ?? "").toLowerCase();
+    return lang.startsWith("en") || name.includes("english");
+}
+
+function encodePlaylist(text) {
+    return "data:application/vnd.apple.mpegurl;base64," + btoa(unescape(encodeURIComponent(text)));
+}
+
+function toAbsoluteUrl(ref, base) {
+    if (/^https?:\/\//i.test(ref)) return ref;
+    try { return new URL(ref, base).href; } catch { return null; }
+}
+
+function rewriteUriAttribute(line, transform) {
+    return line.replace(/URI="([^"]+)"/, (match, uri) => {
+        const r = transform(uri);
+        return r ? `URI="${r}"` : match;
+    });
+}
+
+function absolutizePlaylist(playlist, base) {
+    const rewritten = playlist
+        .split("\n")
+        .map(l => l.trim())
+        .filter(Boolean)
+        .map(line => {
+            if (!line.startsWith("#")) return toAbsoluteUrl(line, base) ?? line;
+            if (line.startsWith("#EXT-X-KEY") || line.startsWith("#EXT-X-MAP")) return rewriteUriAttribute(line, uri => toAbsoluteUrl(uri, base));
+            return line;
+        });
+    return `${rewritten.join("\n")}\n`;
+}
+
+async function fetchPlaylistDataUri(url) {
+    const playlist = await request(url, { headers: { "User-Agent": USER_AGENT, Referer: `${API_BASE}/` } }, "text");
+    if (!playlist?.includes("#EXTM3U")) return null;
+    const target = matchGroup(url, /[?&]url=([^&]+)/);
+    return encodePlaylist(absolutizePlaylist(playlist, target ? decodeURIComponent(target) : url));
+}
+
+async function buildMasterPlaylists({ manifest, manifestUrl }) {
+    const lines = manifest.split("\n").map(l => l.trim()).filter(Boolean);
+
+    const audioIndexes = [];
+    lines.forEach((line, i) => {
+        if (line.startsWith("#EXT-X-MEDIA") && line.includes("TYPE=AUDIO")) audioIndexes.push(i);
+    });
+    const audioIndexSet = new Set(audioIndexes);
+    const englishIndexes = audioIndexes.filter(i => isEnglishTrack(lines[i]));
+    const otherIndexes = audioIndexes.filter(i => !englishIndexes.includes(i));
+
+    const variants = [];
+    if (audioIndexes.length === 0) {
+        variants.push({ language: "sub", keep: new Set() });
+    } else {
+        if (otherIndexes.length) variants.push({ language: "sub", keep: new Set(otherIndexes) });
+        if (englishIndexes.length) variants.push({ language: "dub", keep: new Set(englishIndexes) });
+    }
+
+    const keptAudioIndexes = new Set(variants.flatMap(v => [...v.keep]));
+    const playlistUrls = new Set();
+    let expectingVariantUrl = false;
+
+    lines.forEach((line, i) => {
+        if (audioIndexSet.has(i)) {
+            if (!keptAudioIndexes.has(i)) return;
+            const uri = matchGroup(line, /URI="([^"]+)"/);
+            const absolute = uri && toAbsoluteUrl(uri, manifestUrl);
+            if (absolute) playlistUrls.add(absolute);
+        } else if (line.startsWith("#EXT-X-STREAM-INF")) {
+            expectingVariantUrl = true;
+        } else if (expectingVariantUrl && !line.startsWith("#")) {
+            const absolute = toAbsoluteUrl(line, manifestUrl);
+            if (absolute) playlistUrls.add(absolute);
+            expectingVariantUrl = false;
+        }
+    });
+
+    const urls = [...playlistUrls];
+    const dataUris = await Promise.all(urls.map(fetchPlaylistDataUri));
+    const dataUriByUrl = new Map();
+    urls.forEach((url, i) => { if (dataUris[i]) dataUriByUrl.set(url, dataUris[i]); });
+
+    const masters = [];
+    for (const variant of variants) {
+        const output = [];
+        let pendingStreamInf = null;
+        let variantCount = 0;
+
+        lines.forEach((line, i) => {
+            if (line.startsWith("#EXT-X-MEDIA")) {
+                if (!audioIndexSet.has(i)) {
+                    output.push(rewriteUriAttribute(line, uri => toAbsoluteUrl(uri, manifestUrl)));
+                    return;
+                }
+                if (!variant.keep.has(i)) return;
+                const uri = matchGroup(line, /URI="([^"]+)"/);
+                if (!uri) { output.push(line); return; }
+                const dataUri = dataUriByUrl.get(toAbsoluteUrl(uri, manifestUrl));
+                if (dataUri) output.push(rewriteUriAttribute(line, () => dataUri));
+                return;
+            }
+            if (line.startsWith("#EXT-X-STREAM-INF")) { pendingStreamInf = line; return; }
+            if (pendingStreamInf !== null && !line.startsWith("#")) {
+                const dataUri = dataUriByUrl.get(toAbsoluteUrl(line, manifestUrl));
+                if (dataUri) { output.push(pendingStreamInf, dataUri); variantCount += 1; }
+                pendingStreamInf = null;
+                return;
+            }
+            output.push(line);
+        });
+
+        if (variantCount > 0) masters.push({ language: variant.language, url: encodePlaylist(`${output.join("\n")}\n`) });
+    }
+
+    return masters;
+}
+
+function toSubtitleTracks(subtitles) {
+    return subtitles
+        .filter(s => typeof s?.url === "string" && s.url.startsWith("http"))
+        .map(s => {
+            const language = s.language || "Subtitle";
+            const format = s.format ? ` (${String(s.format).toUpperCase()})` : "";
+            return { url: s.url, language, name: `${language}${format}` };
+        });
+}
+
+async function collectHlsStreams(embedUrl) {
+    const embed = await resolveEmbed(embedUrl);
+    if (!embed) return [];
+
+    const masters = await buildMasterPlaylists(embed);
+    const subtitles = toSubtitleTracks(embed.subtitles);
+
+    return masters.map(({ language, url }) => {
+        const isDub = language === "dub";
+        const label = `${PROVIDER} \u2022 ${isDub ? "English" : "Japanese"}`;
+        return {
+            name: label,
+            title: label,
+            url,
+            quality: "1080p \u2022 HLS",
+            type: "hls",
+            headers: { "User-Agent": USER_AGENT, Referer: `${API_BASE}/` },
+            subtitles,
+            rank: isDub ? 18 : 19,
+        };
+    });
+}
+
+async function collectServerStreams(embedUrl, audioType, hlsEnabled) {
+    const [hlsOutcome, downloadOutcome] = await Promise.allSettled([
+        hlsEnabled ? collectHlsStreams(embedUrl) : Promise.resolve([]),
+        resolveDownloadLink(embedUrl),
+    ]);
+
+    const streams = hlsOutcome.status === "fulfilled" ? [...hlsOutcome.value] : [];
+    const download = downloadOutcome.status === "fulfilled" ? downloadOutcome.value : null;
+
+    if (download) {
+        streams.push({
+            name: PROVIDER,
+            title: PROVIDER,
+            url: download.url,
+            quality: "1080p \u2022 MKV",
+            headers: download.headers,
+            rank: audioType === "dub" ? 16 : 17,
+        });
+    }
+
+    return streams;
+}
+
+async function fetchServerList(path) {
+    const res = await request(
+        BASE_URL + path,
+        { headers: { "User-Agent": USER_AGENT, Accept: "application/json", Referer: `${BASE_URL}/watch/` } },
+        "json"
+    );
+    return res?.success === true && Array.isArray(res.servers) ? res.servers : [];
+}
+
+async function locateServers(tmdbId, mediaType, season, episode) {
+    const directServers = await fetchServerList(
+        `/api/flix/0/${episode}?tmdb=${encodeURIComponent(tmdbId)}&season=${season}`
+    );
+    if (directServers.length) return directServers;
+
+    const kind = mediaType === "tv" ? "tv" : "movie";
+    const details = await request(`${TMDB_API}/${kind}/${tmdbId}?api_key=${TMDB_API_KEY}`, {}, "json");
+    if (!details) return [];
+
+    const titles = [
+        ...new Set([details.name, details.title, details.original_name, details.original_title].filter(Boolean)),
+    ].slice(0, 3);
+
+    const searchResults = await Promise.all(
+        titles.map(title =>
+            request(
+                `${BASE_URL}/api/v1/search?q=${encodeURIComponent(title)}&limit=10&offset=0`,
+                { headers: { "User-Agent": USER_AGENT, Accept: "application/json", Referer: `${BASE_URL}/` } },
+                "json"
+            )
+        )
+    );
+
+    const slugs = [
+        ...new Set(
+            searchResults.flatMap(r => (r?.results ?? []).map(item => item?.anime_id).filter(Boolean))
+        ),
+    ].slice(0, 10);
+
+    const candidates = await Promise.all(
+        slugs.map(slug =>
+            request(
+                `${BASE_URL}/api/v1/anime/${encodeURIComponent(slug)}`,
+                { headers: { "User-Agent": USER_AGENT, Accept: "application/json", Referer: `${BASE_URL}/` } },
+                "json"
+            )
+        )
+    );
+
+    const targetId = parseInt(tmdbId, 10);
+    const match = candidates.find(c => {
+        if (!c?.anilist_id || parseInt(c.themoviedb_id, 10) !== targetId) return false;
+        const tmdbSeason = c.external_seasons?.tmdb;
+        return !(mediaType === "tv" && tmdbSeason != null && tmdbSeason !== season);
+    });
+
+    return match ? fetchServerList(`/api/flix/${match.anilist_id}/${episode}`) : [];
+}
+
+function extractEmbeds(servers) {
+    const seen = new Set();
+    const embeds = [];
+
+    for (const server of servers) {
+        const link = typeof server?.dataLink === "string" && server.dataLink.startsWith("http")
+            ? server.dataLink : null;
+        if (!link) continue;
+
+        const serverName = String(server.serverName || "HD").trim();
+        if (/^hd-?2$/i.test(serverName)) continue;
+
+        const key = link.split("?")[0] + serverName;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        embeds.push({ link, audioType: server.dataType });
+    }
+
+    return embeds;
+}
+
+function dedupeStreams(streams) {
+    const seenUrls = new Set();
+    const seenHlsLabels = new Set();
+
+    return streams.filter(stream => {
+        if (!stream.url || seenUrls.has(stream.url)) return false;
+        seenUrls.add(stream.url);
+
+        if (stream.type !== "hls") return true;
+        const labelKey = `${stream.name}|${stream.quality}`;
+        if (seenHlsLabels.has(labelKey)) return false;
+        seenHlsLabels.add(labelKey);
+        return true;
+    });
+}
+
+function toResult(stream) {
+    const tag = createSortTag(stream.rank);
+    const result = {
+        name: tag + stream.name,
+        title: tag + stream.title,
+        url: stream.url,
+        quality: stream.quality,
+        headers: stream.headers,
+    };
+    if (stream.type) result.type = stream.type;
+    if (stream.subtitles?.length) result.subtitles = stream.subtitles;
+    return result;
+}
+
+async function onSettings() {
+    return [
+        { type: "header", label: `${PROVIDER} Settings` },
+        {
+            type: "toggle",
+            key: "hlsEnabled",
+            label: "Enable HLS Streams",
+            defaultValue: false,
+            description: "HLS streams in addition to MKV stream. Doesn't work on iOS & Disabled by default.",
+        },
+    ];
+}
+
 async function getStreams(tmdbId, mediaType, season, episode) {
     try {
-        if (mediaType !== "tv" && mediaType !== "movie") return [];
-        if (mediaType === "tv" && episode == null) return [];
+        if (mediaType === "tv" && (season == null || episode == null)) return [];
 
-        const isAnilist = typeof tmdbId === "string" && tmdbId.startsWith("anilist:");
-        let alId = null;
-        let episodeNum = mediaType === "tv" ? Number(episode) : 1;
-        let searchTitle = "";
-        let searchYear = null;
+        const hlsEnabled = SCRAPER_SETTINGS.hlsEnabled === true;
+        const isTv = mediaType === "tv";
 
-        if (isAnilist) {
-            alId = tmdbId.split(":")[1];
-        } else {
-            try {
-                const info = await resolveAnilistId(tmdbId);
-                alId = info.anilistId;
-                searchTitle = info.title || "";
-            } catch (e) { }
-        }
+        const servers = await locateServers(tmdbId, mediaType, isTv ? season : 1, isTv ? episode : 1);
+        if (!servers.length) return [];
 
-        if (!searchTitle && !isAnilist) {
-            const meta = await fetchTmdbTitle(tmdbId, mediaType);
-            searchTitle = meta.title;
-            searchYear = meta.year;
-        }
+        const outcomes = await Promise.allSettled(
+            extractEmbeds(servers).map(({ link, audioType }) =>
+                collectServerStreams(link, audioType, hlsEnabled)
+            )
+        );
 
-        const serversByLang = {};
-        const langs = ["sub", "dub"];
-
-        if (alId) {
-            const langResults = await Promise.allSettled([
-                fetchFlixServerList(null, episodeNum, "sub", alId),
-                fetchFlixServerList(null, episodeNum, "dub", alId),
-            ]);
-            for (let i = 0; i < langResults.length; i++) {
-                if (langResults[i].status === "fulfilled" && langResults[i].value.length) {
-                    serversByLang[langs[i]] = langResults[i].value;
-                }
-            }
-        }
-
-        if (!Object.keys(serversByLang).length && searchTitle) {
-            const anime = await queryReanimeIndex(searchTitle, searchYear, alId);
-            if (anime) {
-                const finalAlId = alId || anime.anilistId;
-                const langResults = await Promise.allSettled([
-                    fetchFlixServerList(anime.slug, episodeNum, "sub", finalAlId),
-                    fetchFlixServerList(anime.slug, episodeNum, "dub", finalAlId),
-                ]);
-                for (let i = 0; i < langResults.length; i++) {
-                    if (langResults[i].status === "fulfilled" && langResults[i].value.length) {
-                        serversByLang[langs[i]] = langResults[i].value;
-                    }
-                }
-            }
-        }
-
-        if (!Object.keys(serversByLang).length) return [];
-
-        const streams = [];
-        const seenUrls = {};
-        const displayTitle = searchTitle || "Anime";
-
-        for (let li = 0; li < langs.length; li++) {
-            const lang = langs[li];
-            const serverList = serversByLang[lang] || [];
-            const streamLabel = mediaType === "movie"
-                ? displayTitle + " (" + lang + ")"
-                : displayTitle + " - Episode " + episodeNum + " (" + lang + ")";
-
-            const jobs = [];
-            for (let si = 0; si < serverList.length; si++) {
-                const server = serverList[si];
-                const dataLink = server.dataLink;
-                if (!dataLink) continue;
-                const serverTag = server.serverName || ("HD-" + (si + 1));
-                jobs.push({ dataLink, serverTag, streamLabel });
-            }
-
-            const jobResults = await Promise.allSettled(jobs.map(async function (job) {
-                const dl = await resolveFlixDownloadUrl(job.dataLink).catch(function () { return null; });
-                return dl && dl.url ? { data: dl, job } : null;
-            }));
-
-            for (let ri = 0; ri < jobResults.length; ri++) {
-                if (jobResults[ri].status !== "fulfilled" || !jobResults[ri].value) continue;
-                const { data, job } = jobResults[ri].value;
-                const dedupeKey = data.url.split("?")[0];
-                if (seenUrls[dedupeKey]) continue;
-                seenUrls[dedupeKey] = true;
-                streams.push({
-                    name: "Re:ANIME \u2022 " + job.serverTag,
-                    title: "Re:ANIME \u2022 " + job.serverTag,
-                    url: data.url,
-                    quality: "1080p \u2022 MKV",
-                    headers: data.headers || {},
-                });
-            }
-        }
-
-        return streams;
-    } catch (e) {
+        const streams = outcomes.flatMap(o => o.status === "fulfilled" ? o.value : []);
+        return dedupeStreams(streams).map(toResult);
+    } catch {
         return [];
     }
 }
 
-module.exports = { getStreams };
+module.exports = { getStreams, onSettings };const PROVIDER = "Re:ANIME";
+const BASE_URL = "https://reanime.to";
+const API_BASE = "https://flixcloud.cc";
+const ENC_DEC_API = "https://enc-dec.app/api";
+const TMDB_API = "https://api.themoviedb.org/3";
+const USER_AGENT = "Mozilla/5.0 (Linux; Android 16; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Mobile Safari/537.36";
+
+function createSortTag(rank) {
+    return Math.max(0, 23 - rank)
+        .toString(2)
+        .padStart(20, "0")
+        .split("")
+        .map(b => b === "1" ? "\uFEFF" : "\u200B")
+        .join("");
+}
+
+function parseJsObjectLiteral(source) {
+    let json = "";
+    let cursor = 0;
+
+    while (cursor < source.length) {
+        const char = source[cursor];
+
+        if (char === '"' || char === "'") {
+            let end = cursor + 1;
+            let body = "";
+            while (end < source.length && source[end] !== char) {
+                if (source[end] === "\\") { body += source[end] + source[end + 1]; end += 2; }
+                else { body += source[end]; end += 1; }
+            }
+            json += char === '"' ? `"${body}"` : JSON.stringify(body.replace(/\\'/g, "'"));
+            cursor = end + 1;
+        } else if (/[A-Za-z_$]/.test(char)) {
+            let end = cursor;
+            while (end < source.length && /[\w$]/.test(source[end])) end += 1;
+            const word = source.slice(cursor, end);
+
+            let lookahead = end;
+            while (lookahead < source.length && /\s/.test(source[lookahead])) lookahead += 1;
+
+            if (source[lookahead] === ":") {
+                json += JSON.stringify(word);
+            } else if (word === "void") {
+                if (source[lookahead] === "0") lookahead += 1;
+                json += "null";
+                end = lookahead;
+            } else if (word === "true" || word === "false" || word === "null") {
+                json += word;
+            } else {
+                json += "null";
+            }
+            cursor = end;
+        } else if (char === "!" && (source[cursor + 1] === "0" || source[cursor + 1] === "1")) {
+            json += source[cursor + 1] === "0" ? "true" : "false";
+            cursor += 2;
+        } else {
+            json += char;
+            cursor += 1;
+        }
+    }
+
+    return JSON.parse(json.replace(/,(\s*[}\]])/g, "$1"));
+}
+
+async function request(url, init, format) {
+    try {
+        const res = await fetch(url, init);
+        if (!res?.ok) return null;
+        return format === "json" ? await res.json() : await res.text();
+    } catch {
+        return null;
+    }
+}
+
+async function callEncDec(path, body) {
+    try {
+        const res = await fetch(ENC_DEC_API + path, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "User-Agent": USER_AGENT },
+            body: JSON.stringify(body),
+        });
+        if (!res?.ok) return null;
+        const payload = await res.json();
+        return payload?.status === 200 && payload.result ? payload.result : null;
+    } catch {
+        return null;
+    }
+}
+
+async function resolveEmbed(embedUrl) {
+    try {
+        const page = await request(embedUrl, { headers: { "User-Agent": USER_AGENT, Referer: `${BASE_URL}/` } }, "text");
+        const rawData = page ? /type:\s*"data",\s*data:\s*(\{[\s\S]*?\})\s*,\s*uses:/.exec(page)?.[1] : null;
+        if (!rawData) return null;
+
+        const { subtitles, ...payload } = parseJsObjectLiteral(rawData);
+
+        const tokenResult = await callEncDec("/dec-flixcloud?type=token", { data: payload });
+        if (!tokenResult?.token) return null;
+
+        const streamResponse = await request(
+            `${API_BASE}/api/m3u8/${tokenResult.token}`,
+            { headers: { "User-Agent": USER_AGENT, Referer: `${BASE_URL}/` } },
+            "json"
+        );
+        if (!streamResponse) return null;
+
+        const streamResult = await callEncDec("/dec-flixcloud?type=stream", {
+            data: { context: tokenResult.context, stream_response: streamResponse },
+        });
+        if (!streamResult?.stream || !streamResult.context) return null;
+
+        const manifestUrl =
+            `${ENC_DEC_API}/parse-flixcloud?url=${encodeURIComponent(streamResult.stream)}` +
+            `&w_payload=${encodeURIComponent(streamResult.context.w_payload)}`;
+
+        const manifest = await request(manifestUrl, { headers: { "User-Agent": USER_AGENT, Referer: `${API_BASE}/` } }, "text");
+        if (!manifest?.includes("#EXTM3U")) return null;
+
+        return { manifestUrl, manifest, subtitles: Array.isArray(subtitles) ? subtitles : [] };
+    } catch {
+        return null;
+    }
+}
+
+async function resolveDownloadLink(embedUrl) {
+    const embedId = /\/e\/([a-z0-9]+)/i.exec(embedUrl)?.[1];
+    if (!embedId) return null;
+
+    const payload = await request(
+        `${API_BASE}/d/${embedId}/__data.json`,
+        { headers: { Accept: "*/*", Referer: `${API_BASE}/`, "User-Agent": USER_AGENT } },
+        "text"
+    );
+    if (!payload) return null;
+
+    const fileId = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i.exec(payload)?.[0];
+    const token = /eyJ[\w-]+\.[\w-]+\.[\w-]+/.exec(payload)?.[0];
+    if (!fileId || !token) return null;
+
+    const fetchHost = /https:\/\/fetch\d*\.flixcloud\.cc/.exec(payload)?.[0] ?? API_BASE;
+    const progress = await request(
+        `${fetchHost}/download/${fileId}/progress?token=${token}`,
+        { headers: { Accept: "*/*", Referer: `${API_BASE}/`, "User-Agent": USER_AGENT } },
+        "text"
+    );
+    if (progress?.includes('"status":"failed"')) return null;
+
+    return { url: `${fetchHost}/download/${fileId}?token=${token}`, headers: { Accept: "*/*", Referer: `${API_BASE}/`, "User-Agent": USER_AGENT } };
+}
+
+function matchGroup(text, pattern) {
+    return pattern.exec(text)?.[1] ?? null;
+}
+
+function isEnglishTrack(mediaLine) {
+    const lang = (matchGroup(mediaLine, /LANGUAGE="([^"]*)"/) ?? "").toLowerCase();
+    const name = (matchGroup(mediaLine, /NAME="([^"]*)"/) ?? "").toLowerCase();
+    return lang.startsWith("en") || name.includes("english");
+}
+
+function encodePlaylist(text) {
+    return "data:application/vnd.apple.mpegurl;base64," + btoa(unescape(encodeURIComponent(text)));
+}
+
+function toAbsoluteUrl(ref, base) {
+    if (/^https?:\/\//i.test(ref)) return ref;
+    try { return new URL(ref, base).href; } catch { return null; }
+}
+
+function rewriteUriAttribute(line, transform) {
+    return line.replace(/URI="([^"]+)"/, (match, uri) => {
+        const r = transform(uri);
+        return r ? `URI="${r}"` : match;
+    });
+}
+
+function absolutizePlaylist(playlist, base) {
+    const rewritten = playlist
+        .split("\n")
+        .map(l => l.trim())
+        .filter(Boolean)
+        .map(line => {
+            if (!line.startsWith("#")) return toAbsoluteUrl(line, base) ?? line;
+            if (line.startsWith("#EXT-X-KEY") || line.startsWith("#EXT-X-MAP")) return rewriteUriAttribute(line, uri => toAbsoluteUrl(uri, base));
+            return line;
+        });
+    return `${rewritten.join("\n")}\n`;
+}
+
+async function fetchPlaylistDataUri(url) {
+    const playlist = await request(url, { headers: { "User-Agent": USER_AGENT, Referer: `${API_BASE}/` } }, "text");
+    if (!playlist?.includes("#EXTM3U")) return null;
+    const target = matchGroup(url, /[?&]url=([^&]+)/);
+    return encodePlaylist(absolutizePlaylist(playlist, target ? decodeURIComponent(target) : url));
+}
+
+async function buildMasterPlaylists({ manifest, manifestUrl }) {
+    const lines = manifest.split("\n").map(l => l.trim()).filter(Boolean);
+
+    const audioIndexes = [];
+    lines.forEach((line, i) => {
+        if (line.startsWith("#EXT-X-MEDIA") && line.includes("TYPE=AUDIO")) audioIndexes.push(i);
+    });
+    const audioIndexSet = new Set(audioIndexes);
+    const englishIndexes = audioIndexes.filter(i => isEnglishTrack(lines[i]));
+    const otherIndexes = audioIndexes.filter(i => !englishIndexes.includes(i));
+
+    const variants = [];
+    if (audioIndexes.length === 0) {
+        variants.push({ language: "sub", keep: new Set() });
+    } else {
+        if (otherIndexes.length) variants.push({ language: "sub", keep: new Set(otherIndexes) });
+        if (englishIndexes.length) variants.push({ language: "dub", keep: new Set(englishIndexes) });
+    }
+
+    const keptAudioIndexes = new Set(variants.flatMap(v => [...v.keep]));
+    const playlistUrls = new Set();
+    let expectingVariantUrl = false;
+
+    lines.forEach((line, i) => {
+        if (audioIndexSet.has(i)) {
+            if (!keptAudioIndexes.has(i)) return;
+            const uri = matchGroup(line, /URI="([^"]+)"/);
+            const absolute = uri && toAbsoluteUrl(uri, manifestUrl);
+            if (absolute) playlistUrls.add(absolute);
+        } else if (line.startsWith("#EXT-X-STREAM-INF")) {
+            expectingVariantUrl = true;
+        } else if (expectingVariantUrl && !line.startsWith("#")) {
+            const absolute = toAbsoluteUrl(line, manifestUrl);
+            if (absolute) playlistUrls.add(absolute);
+            expectingVariantUrl = false;
+        }
+    });
+
+    const urls = [...playlistUrls];
+    const dataUris = await Promise.all(urls.map(fetchPlaylistDataUri));
+    const dataUriByUrl = new Map();
+    urls.forEach((url, i) => { if (dataUris[i]) dataUriByUrl.set(url, dataUris[i]); });
+
+    const masters = [];
+    for (const variant of variants) {
+        const output = [];
+        let pendingStreamInf = null;
+        let variantCount = 0;
+
+        lines.forEach((line, i) => {
+            if (line.startsWith("#EXT-X-MEDIA")) {
+                if (!audioIndexSet.has(i)) {
+                    output.push(rewriteUriAttribute(line, uri => toAbsoluteUrl(uri, manifestUrl)));
+                    return;
+                }
+                if (!variant.keep.has(i)) return;
+                const uri = matchGroup(line, /URI="([^"]+)"/);
+                if (!uri) { output.push(line); return; }
+                const dataUri = dataUriByUrl.get(toAbsoluteUrl(uri, manifestUrl));
+                if (dataUri) output.push(rewriteUriAttribute(line, () => dataUri));
+                return;
+            }
+            if (line.startsWith("#EXT-X-STREAM-INF")) { pendingStreamInf = line; return; }
+            if (pendingStreamInf !== null && !line.startsWith("#")) {
+                const dataUri = dataUriByUrl.get(toAbsoluteUrl(line, manifestUrl));
+                if (dataUri) { output.push(pendingStreamInf, dataUri); variantCount += 1; }
+                pendingStreamInf = null;
+                return;
+            }
+            output.push(line);
+        });
+
+        if (variantCount > 0) masters.push({ language: variant.language, url: encodePlaylist(`${output.join("\n")}\n`) });
+    }
+
+    return masters;
+}
+
+function toSubtitleTracks(subtitles) {
+    return subtitles
+        .filter(s => typeof s?.url === "string" && s.url.startsWith("http"))
+        .map(s => {
+            const language = s.language || "Subtitle";
+            const format = s.format ? ` (${String(s.format).toUpperCase()})` : "";
+            return { url: s.url, language, name: `${language}${format}` };
+        });
+}
+
+async function collectHlsStreams(embedUrl) {
+    const embed = await resolveEmbed(embedUrl);
+    if (!embed) return [];
+
+    const masters = await buildMasterPlaylists(embed);
+    const subtitles = toSubtitleTracks(embed.subtitles);
+
+    return masters.map(({ language, url }) => {
+        const isDub = language === "dub";
+        const label = `${PROVIDER} \u2022 ${isDub ? "English" : "Japanese"}`;
+        return {
+            name: label,
+            title: label,
+            url,
+            quality: "1080p \u2022 HLS",
+            type: "hls",
+            headers: { "User-Agent": USER_AGENT, Referer: `${API_BASE}/` },
+            subtitles,
+            rank: isDub ? 18 : 19,
+        };
+    });
+}
+
+async function collectServerStreams(embedUrl, audioType, hlsEnabled) {
+    const [hlsOutcome, downloadOutcome] = await Promise.allSettled([
+        hlsEnabled ? collectHlsStreams(embedUrl) : Promise.resolve([]),
+        resolveDownloadLink(embedUrl),
+    ]);
+
+    const streams = hlsOutcome.status === "fulfilled" ? [...hlsOutcome.value] : [];
+    const download = downloadOutcome.status === "fulfilled" ? downloadOutcome.value : null;
+
+    if (download) {
+        streams.push({
+            name: PROVIDER,
+            title: PROVIDER,
+            url: download.url,
+            quality: "1080p \u2022 MKV",
+            headers: download.headers,
+            rank: audioType === "dub" ? 16 : 17,
+        });
+    }
+
+    return streams;
+}
+
+async function fetchServerList(path) {
+    const res = await request(
+        BASE_URL + path,
+        { headers: { "User-Agent": USER_AGENT, Accept: "application/json", Referer: `${BASE_URL}/watch/` } },
+        "json"
+    );
+    return res?.success === true && Array.isArray(res.servers) ? res.servers : [];
+}
+
+async function locateServers(tmdbId, mediaType, season, episode) {
+    const directServers = await fetchServerList(
+        `/api/flix/0/${episode}?tmdb=${encodeURIComponent(tmdbId)}&season=${season}`
+    );
+    if (directServers.length) return directServers;
+
+    const kind = mediaType === "tv" ? "tv" : "movie";
+    const details = await request(`${TMDB_API}/${kind}/${tmdbId}?api_key=${TMDB_API_KEY}`, {}, "json");
+    if (!details) return [];
+
+    const titles = [
+        ...new Set([details.name, details.title, details.original_name, details.original_title].filter(Boolean)),
+    ].slice(0, 3);
+
+    const searchResults = await Promise.all(
+        titles.map(title =>
+            request(
+                `${BASE_URL}/api/v1/search?q=${encodeURIComponent(title)}&limit=10&offset=0`,
+                { headers: { "User-Agent": USER_AGENT, Accept: "application/json", Referer: `${BASE_URL}/` } },
+                "json"
+            )
+        )
+    );
+
+    const slugs = [
+        ...new Set(
+            searchResults.flatMap(r => (r?.results ?? []).map(item => item?.anime_id).filter(Boolean))
+        ),
+    ].slice(0, 10);
+
+    const candidates = await Promise.all(
+        slugs.map(slug =>
+            request(
+                `${BASE_URL}/api/v1/anime/${encodeURIComponent(slug)}`,
+                { headers: { "User-Agent": USER_AGENT, Accept: "application/json", Referer: `${BASE_URL}/` } },
+                "json"
+            )
+        )
+    );
+
+    const targetId = parseInt(tmdbId, 10);
+    const match = candidates.find(c => {
+        if (!c?.anilist_id || parseInt(c.themoviedb_id, 10) !== targetId) return false;
+        const tmdbSeason = c.external_seasons?.tmdb;
+        return !(mediaType === "tv" && tmdbSeason != null && tmdbSeason !== season);
+    });
+
+    return match ? fetchServerList(`/api/flix/${match.anilist_id}/${episode}`) : [];
+}
+
+function extractEmbeds(servers) {
+    const seen = new Set();
+    const embeds = [];
+
+    for (const server of servers) {
+        const link = typeof server?.dataLink === "string" && server.dataLink.startsWith("http")
+            ? server.dataLink : null;
+        if (!link) continue;
+
+        const serverName = String(server.serverName || "HD").trim();
+        if (/^hd-?2$/i.test(serverName)) continue;
+
+        const key = link.split("?")[0] + serverName;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        embeds.push({ link, audioType: server.dataType });
+    }
+
+    return embeds;
+}
+
+function dedupeStreams(streams) {
+    const seenUrls = new Set();
+    const seenHlsLabels = new Set();
+
+    return streams.filter(stream => {
+        if (!stream.url || seenUrls.has(stream.url)) return false;
+        seenUrls.add(stream.url);
+
+        if (stream.type !== "hls") return true;
+        const labelKey = `${stream.name}|${stream.quality}`;
+        if (seenHlsLabels.has(labelKey)) return false;
+        seenHlsLabels.add(labelKey);
+        return true;
+    });
+}
+
+function toResult(stream) {
+    const tag = createSortTag(stream.rank);
+    const result = {
+        name: tag + stream.name,
+        title: tag + stream.title,
+        url: stream.url,
+        quality: stream.quality,
+        headers: stream.headers,
+    };
+    if (stream.type) result.type = stream.type;
+    if (stream.subtitles?.length) result.subtitles = stream.subtitles;
+    return result;
+}
+
+async function onSettings() {
+    return [
+        { type: "header", label: `${PROVIDER} Settings` },
+        {
+            type: "toggle",
+            key: "hlsEnabled",
+            label: "Enable HLS Streams",
+            defaultValue: false,
+            description: "HLS streams in addition to MKV stream. Doesn't work on iOS & Disabled by default.",
+        },
+    ];
+}
+
+async function getStreams(tmdbId, mediaType, season, episode) {
+    try {
+        if (mediaType === "tv" && (season == null || episode == null)) return [];
+
+        const hlsEnabled = SCRAPER_SETTINGS.hlsEnabled === true;
+        const isTv = mediaType === "tv";
+
+        const servers = await locateServers(tmdbId, mediaType, isTv ? season : 1, isTv ? episode : 1);
+        if (!servers.length) return [];
+
+        const outcomes = await Promise.allSettled(
+            extractEmbeds(servers).map(({ link, audioType }) =>
+                collectServerStreams(link, audioType, hlsEnabled)
+            )
+        );
+
+        const streams = outcomes.flatMap(o => o.status === "fulfilled" ? o.value : []);
+        return dedupeStreams(streams).map(toResult);
+    } catch {
+        return [];
+    }
+}
+
+module.exports = { getStreams, onSettings };const PROVIDER = "Re:ANIME";
+const BASE_URL = "https://reanime.to";
+const API_BASE = "https://flixcloud.cc";
+const ENC_DEC_API = "https://enc-dec.app/api";
+const TMDB_API = "https://api.themoviedb.org/3";
+const USER_AGENT = "Mozilla/5.0 (Linux; Android 16; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Mobile Safari/537.36";
+
+function createSortTag(rank) {
+    return Math.max(0, 23 - rank)
+        .toString(2)
+        .padStart(20, "0")
+        .split("")
+        .map(b => b === "1" ? "\uFEFF" : "\u200B")
+        .join("");
+}
+
+function parseJsObjectLiteral(source) {
+    let json = "";
+    let cursor = 0;
+
+    while (cursor < source.length) {
+        const char = source[cursor];
+
+        if (char === '"' || char === "'") {
+            let end = cursor + 1;
+            let body = "";
+            while (end < source.length && source[end] !== char) {
+                if (source[end] === "\\") { body += source[end] + source[end + 1]; end += 2; }
+                else { body += source[end]; end += 1; }
+            }
+            json += char === '"' ? `"${body}"` : JSON.stringify(body.replace(/\\'/g, "'"));
+            cursor = end + 1;
+        } else if (/[A-Za-z_$]/.test(char)) {
+            let end = cursor;
+            while (end < source.length && /[\w$]/.test(source[end])) end += 1;
+            const word = source.slice(cursor, end);
+
+            let lookahead = end;
+            while (lookahead < source.length && /\s/.test(source[lookahead])) lookahead += 1;
+
+            if (source[lookahead] === ":") {
+                json += JSON.stringify(word);
+            } else if (word === "void") {
+                if (source[lookahead] === "0") lookahead += 1;
+                json += "null";
+                end = lookahead;
+            } else if (word === "true" || word === "false" || word === "null") {
+                json += word;
+            } else {
+                json += "null";
+            }
+            cursor = end;
+        } else if (char === "!" && (source[cursor + 1] === "0" || source[cursor + 1] === "1")) {
+            json += source[cursor + 1] === "0" ? "true" : "false";
+            cursor += 2;
+        } else {
+            json += char;
+            cursor += 1;
+        }
+    }
+
+    return JSON.parse(json.replace(/,(\s*[}\]])/g, "$1"));
+}
+
+async function request(url, init, format) {
+    try {
+        const res = await fetch(url, init);
+        if (!res?.ok) return null;
+        return format === "json" ? await res.json() : await res.text();
+    } catch {
+        return null;
+    }
+}
+
+async function callEncDec(path, body) {
+    try {
+        const res = await fetch(ENC_DEC_API + path, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "User-Agent": USER_AGENT },
+            body: JSON.stringify(body),
+        });
+        if (!res?.ok) return null;
+        const payload = await res.json();
+        return payload?.status === 200 && payload.result ? payload.result : null;
+    } catch {
+        return null;
+    }
+}
+
+async function resolveEmbed(embedUrl) {
+    try {
+        const page = await request(embedUrl, { headers: { "User-Agent": USER_AGENT, Referer: `${BASE_URL}/` } }, "text");
+        const rawData = page ? /type:\s*"data",\s*data:\s*(\{[\s\S]*?\})\s*,\s*uses:/.exec(page)?.[1] : null;
+        if (!rawData) return null;
+
+        const { subtitles, ...payload } = parseJsObjectLiteral(rawData);
+
+        const tokenResult = await callEncDec("/dec-flixcloud?type=token", { data: payload });
+        if (!tokenResult?.token) return null;
+
+        const streamResponse = await request(
+            `${API_BASE}/api/m3u8/${tokenResult.token}`,
+            { headers: { "User-Agent": USER_AGENT, Referer: `${BASE_URL}/` } },
+            "json"
+        );
+        if (!streamResponse) return null;
+
+        const streamResult = await callEncDec("/dec-flixcloud?type=stream", {
+            data: { context: tokenResult.context, stream_response: streamResponse },
+        });
+        if (!streamResult?.stream || !streamResult.context) return null;
+
+        const manifestUrl =
+            `${ENC_DEC_API}/parse-flixcloud?url=${encodeURIComponent(streamResult.stream)}` +
+            `&w_payload=${encodeURIComponent(streamResult.context.w_payload)}`;
+
+        const manifest = await request(manifestUrl, { headers: { "User-Agent": USER_AGENT, Referer: `${API_BASE}/` } }, "text");
+        if (!manifest?.includes("#EXTM3U")) return null;
+
+        return { manifestUrl, manifest, subtitles: Array.isArray(subtitles) ? subtitles : [] };
+    } catch {
+        return null;
+    }
+}
+
+async function resolveDownloadLink(embedUrl) {
+    const embedId = /\/e\/([a-z0-9]+)/i.exec(embedUrl)?.[1];
+    if (!embedId) return null;
+
+    const payload = await request(
+        `${API_BASE}/d/${embedId}/__data.json`,
+        { headers: { Accept: "*/*", Referer: `${API_BASE}/`, "User-Agent": USER_AGENT } },
+        "text"
+    );
+    if (!payload) return null;
+
+    const fileId = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i.exec(payload)?.[0];
+    const token = /eyJ[\w-]+\.[\w-]+\.[\w-]+/.exec(payload)?.[0];
+    if (!fileId || !token) return null;
+
+    const fetchHost = /https:\/\/fetch\d*\.flixcloud\.cc/.exec(payload)?.[0] ?? API_BASE;
+    const progress = await request(
+        `${fetchHost}/download/${fileId}/progress?token=${token}`,
+        { headers: { Accept: "*/*", Referer: `${API_BASE}/`, "User-Agent": USER_AGENT } },
+        "text"
+    );
+    if (progress?.includes('"status":"failed"')) return null;
+
+    return { url: `${fetchHost}/download/${fileId}?token=${token}`, headers: { Accept: "*/*", Referer: `${API_BASE}/`, "User-Agent": USER_AGENT } };
+}
+
+function matchGroup(text, pattern) {
+    return pattern.exec(text)?.[1] ?? null;
+}
+
+function isEnglishTrack(mediaLine) {
+    const lang = (matchGroup(mediaLine, /LANGUAGE="([^"]*)"/) ?? "").toLowerCase();
+    const name = (matchGroup(mediaLine, /NAME="([^"]*)"/) ?? "").toLowerCase();
+    return lang.startsWith("en") || name.includes("english");
+}
+
+function encodePlaylist(text) {
+    return "data:application/vnd.apple.mpegurl;base64," + btoa(unescape(encodeURIComponent(text)));
+}
+
+function toAbsoluteUrl(ref, base) {
+    if (/^https?:\/\//i.test(ref)) return ref;
+    try { return new URL(ref, base).href; } catch { return null; }
+}
+
+function rewriteUriAttribute(line, transform) {
+    return line.replace(/URI="([^"]+)"/, (match, uri) => {
+        const r = transform(uri);
+        return r ? `URI="${r}"` : match;
+    });
+}
+
+function absolutizePlaylist(playlist, base) {
+    const rewritten = playlist
+        .split("\n")
+        .map(l => l.trim())
+        .filter(Boolean)
+        .map(line => {
+            if (!line.startsWith("#")) return toAbsoluteUrl(line, base) ?? line;
+            if (line.startsWith("#EXT-X-KEY") || line.startsWith("#EXT-X-MAP")) return rewriteUriAttribute(line, uri => toAbsoluteUrl(uri, base));
+            return line;
+        });
+    return `${rewritten.join("\n")}\n`;
+}
+
+async function fetchPlaylistDataUri(url) {
+    const playlist = await request(url, { headers: { "User-Agent": USER_AGENT, Referer: `${API_BASE}/` } }, "text");
+    if (!playlist?.includes("#EXTM3U")) return null;
+    const target = matchGroup(url, /[?&]url=([^&]+)/);
+    return encodePlaylist(absolutizePlaylist(playlist, target ? decodeURIComponent(target) : url));
+}
+
+async function buildMasterPlaylists({ manifest, manifestUrl }) {
+    const lines = manifest.split("\n").map(l => l.trim()).filter(Boolean);
+
+    const audioIndexes = [];
+    lines.forEach((line, i) => {
+        if (line.startsWith("#EXT-X-MEDIA") && line.includes("TYPE=AUDIO")) audioIndexes.push(i);
+    });
+    const audioIndexSet = new Set(audioIndexes);
+    const englishIndexes = audioIndexes.filter(i => isEnglishTrack(lines[i]));
+    const otherIndexes = audioIndexes.filter(i => !englishIndexes.includes(i));
+
+    const variants = [];
+    if (audioIndexes.length === 0) {
+        variants.push({ language: "sub", keep: new Set() });
+    } else {
+        if (otherIndexes.length) variants.push({ language: "sub", keep: new Set(otherIndexes) });
+        if (englishIndexes.length) variants.push({ language: "dub", keep: new Set(englishIndexes) });
+    }
+
+    const keptAudioIndexes = new Set(variants.flatMap(v => [...v.keep]));
+    const playlistUrls = new Set();
+    let expectingVariantUrl = false;
+
+    lines.forEach((line, i) => {
+        if (audioIndexSet.has(i)) {
+            if (!keptAudioIndexes.has(i)) return;
+            const uri = matchGroup(line, /URI="([^"]+)"/);
+            const absolute = uri && toAbsoluteUrl(uri, manifestUrl);
+            if (absolute) playlistUrls.add(absolute);
+        } else if (line.startsWith("#EXT-X-STREAM-INF")) {
+            expectingVariantUrl = true;
+        } else if (expectingVariantUrl && !line.startsWith("#")) {
+            const absolute = toAbsoluteUrl(line, manifestUrl);
+            if (absolute) playlistUrls.add(absolute);
+            expectingVariantUrl = false;
+        }
+    });
+
+    const urls = [...playlistUrls];
+    const dataUris = await Promise.all(urls.map(fetchPlaylistDataUri));
+    const dataUriByUrl = new Map();
+    urls.forEach((url, i) => { if (dataUris[i]) dataUriByUrl.set(url, dataUris[i]); });
+
+    const masters = [];
+    for (const variant of variants) {
+        const output = [];
+        let pendingStreamInf = null;
+        let variantCount = 0;
+
+        lines.forEach((line, i) => {
+            if (line.startsWith("#EXT-X-MEDIA")) {
+                if (!audioIndexSet.has(i)) {
+                    output.push(rewriteUriAttribute(line, uri => toAbsoluteUrl(uri, manifestUrl)));
+                    return;
+                }
+                if (!variant.keep.has(i)) return;
+                const uri = matchGroup(line, /URI="([^"]+)"/);
+                if (!uri) { output.push(line); return; }
+                const dataUri = dataUriByUrl.get(toAbsoluteUrl(uri, manifestUrl));
+                if (dataUri) output.push(rewriteUriAttribute(line, () => dataUri));
+                return;
+            }
+            if (line.startsWith("#EXT-X-STREAM-INF")) { pendingStreamInf = line; return; }
+            if (pendingStreamInf !== null && !line.startsWith("#")) {
+                const dataUri = dataUriByUrl.get(toAbsoluteUrl(line, manifestUrl));
+                if (dataUri) { output.push(pendingStreamInf, dataUri); variantCount += 1; }
+                pendingStreamInf = null;
+                return;
+            }
+            output.push(line);
+        });
+
+        if (variantCount > 0) masters.push({ language: variant.language, url: encodePlaylist(`${output.join("\n")}\n`) });
+    }
+
+    return masters;
+}
+
+function toSubtitleTracks(subtitles) {
+    return subtitles
+        .filter(s => typeof s?.url === "string" && s.url.startsWith("http"))
+        .map(s => {
+            const language = s.language || "Subtitle";
+            const format = s.format ? ` (${String(s.format).toUpperCase()})` : "";
+            return { url: s.url, language, name: `${language}${format}` };
+        });
+}
+
+async function collectHlsStreams(embedUrl) {
+    const embed = await resolveEmbed(embedUrl);
+    if (!embed) return [];
+
+    const masters = await buildMasterPlaylists(embed);
+    const subtitles = toSubtitleTracks(embed.subtitles);
+
+    return masters.map(({ language, url }) => {
+        const isDub = language === "dub";
+        const label = `${PROVIDER} \u2022 ${isDub ? "English" : "Japanese"}`;
+        return {
+            name: label,
+            title: label,
+            url,
+            quality: "1080p \u2022 HLS",
+            type: "hls",
+            headers: { "User-Agent": USER_AGENT, Referer: `${API_BASE}/` },
+            subtitles,
+            rank: isDub ? 18 : 19,
+        };
+    });
+}
+
+async function collectServerStreams(embedUrl, audioType, hlsEnabled) {
+    const [hlsOutcome, downloadOutcome] = await Promise.allSettled([
+        hlsEnabled ? collectHlsStreams(embedUrl) : Promise.resolve([]),
+        resolveDownloadLink(embedUrl),
+    ]);
+
+    const streams = hlsOutcome.status === "fulfilled" ? [...hlsOutcome.value] : [];
+    const download = downloadOutcome.status === "fulfilled" ? downloadOutcome.value : null;
+
+    if (download) {
+        streams.push({
+            name: PROVIDER,
+            title: PROVIDER,
+            url: download.url,
+            quality: "1080p \u2022 MKV",
+            headers: download.headers,
+            rank: audioType === "dub" ? 16 : 17,
+        });
+    }
+
+    return streams;
+}
+
+async function fetchServerList(path) {
+    const res = await request(
+        BASE_URL + path,
+        { headers: { "User-Agent": USER_AGENT, Accept: "application/json", Referer: `${BASE_URL}/watch/` } },
+        "json"
+    );
+    return res?.success === true && Array.isArray(res.servers) ? res.servers : [];
+}
+
+async function locateServers(tmdbId, mediaType, season, episode) {
+    const directServers = await fetchServerList(
+        `/api/flix/0/${episode}?tmdb=${encodeURIComponent(tmdbId)}&season=${season}`
+    );
+    if (directServers.length) return directServers;
+
+    const kind = mediaType === "tv" ? "tv" : "movie";
+    const details = await request(`${TMDB_API}/${kind}/${tmdbId}?api_key=${TMDB_API_KEY}`, {}, "json");
+    if (!details) return [];
+
+    const titles = [
+        ...new Set([details.name, details.title, details.original_name, details.original_title].filter(Boolean)),
+    ].slice(0, 3);
+
+    const searchResults = await Promise.all(
+        titles.map(title =>
+            request(
+                `${BASE_URL}/api/v1/search?q=${encodeURIComponent(title)}&limit=10&offset=0`,
+                { headers: { "User-Agent": USER_AGENT, Accept: "application/json", Referer: `${BASE_URL}/` } },
+                "json"
+            )
+        )
+    );
+
+    const slugs = [
+        ...new Set(
+            searchResults.flatMap(r => (r?.results ?? []).map(item => item?.anime_id).filter(Boolean))
+        ),
+    ].slice(0, 10);
+
+    const candidates = await Promise.all(
+        slugs.map(slug =>
+            request(
+                `${BASE_URL}/api/v1/anime/${encodeURIComponent(slug)}`,
+                { headers: { "User-Agent": USER_AGENT, Accept: "application/json", Referer: `${BASE_URL}/` } },
+                "json"
+            )
+        )
+    );
+
+    const targetId = parseInt(tmdbId, 10);
+    const match = candidates.find(c => {
+        if (!c?.anilist_id || parseInt(c.themoviedb_id, 10) !== targetId) return false;
+        const tmdbSeason = c.external_seasons?.tmdb;
+        return !(mediaType === "tv" && tmdbSeason != null && tmdbSeason !== season);
+    });
+
+    return match ? fetchServerList(`/api/flix/${match.anilist_id}/${episode}`) : [];
+}
+
+function extractEmbeds(servers) {
+    const seen = new Set();
+    const embeds = [];
+
+    for (const server of servers) {
+        const link = typeof server?.dataLink === "string" && server.dataLink.startsWith("http")
+            ? server.dataLink : null;
+        if (!link) continue;
+
+        const serverName = String(server.serverName || "HD").trim();
+        if (/^hd-?2$/i.test(serverName)) continue;
+
+        const key = link.split("?")[0] + serverName;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        embeds.push({ link, audioType: server.dataType });
+    }
+
+    return embeds;
+}
+
+function dedupeStreams(streams) {
+    const seenUrls = new Set();
+    const seenHlsLabels = new Set();
+
+    return streams.filter(stream => {
+        if (!stream.url || seenUrls.has(stream.url)) return false;
+        seenUrls.add(stream.url);
+
+        if (stream.type !== "hls") return true;
+        const labelKey = `${stream.name}|${stream.quality}`;
+        if (seenHlsLabels.has(labelKey)) return false;
+        seenHlsLabels.add(labelKey);
+        return true;
+    });
+}
+
+function toResult(stream) {
+    const tag = createSortTag(stream.rank);
+    const result = {
+        name: tag + stream.name,
+        title: tag + stream.title,
+        url: stream.url,
+        quality: stream.quality,
+        headers: stream.headers,
+    };
+    if (stream.type) result.type = stream.type;
+    if (stream.subtitles?.length) result.subtitles = stream.subtitles;
+    return result;
+}
+
+async function onSettings() {
+    return [
+        { type: "header", label: `${PROVIDER} Settings` },
+        {
+            type: "toggle",
+            key: "hlsEnabled",
+            label: "Enable HLS Streams",
+            defaultValue: false,
+            description: "HLS streams in addition to MKV stream. Doesn't work on iOS & Disabled by default.",
+        },
+    ];
+}
+
+async function getStreams(tmdbId, mediaType, season, episode) {
+    try {
+        if (mediaType === "tv" && (season == null || episode == null)) return [];
+
+        const hlsEnabled = SCRAPER_SETTINGS.hlsEnabled === true;
+        const isTv = mediaType === "tv";
+
+        const servers = await locateServers(tmdbId, mediaType, isTv ? season : 1, isTv ? episode : 1);
+        if (!servers.length) return [];
+
+        const outcomes = await Promise.allSettled(
+            extractEmbeds(servers).map(({ link, audioType }) =>
+                collectServerStreams(link, audioType, hlsEnabled)
+            )
+        );
+
+        const streams = outcomes.flatMap(o => o.status === "fulfilled" ? o.value : []);
+        return dedupeStreams(streams).map(toResult);
+    } catch {
+        return [];
+    }
+}
+
+module.exports = { getStreams, onSettings };
