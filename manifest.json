@@ -130,8 +130,8 @@
       "hasSettings": true
     },
     {
-      "id": "pikahd",
-      "name": "Pikahd.",
+      "id": "fibwatch",
+      "name": "Fibwatch.",
       "description": "AnimeSalt India • Nuvio TV / Fire TV compatible",
       "version": "1.0.0",
       "author": "Imm0rtal001",
@@ -139,7 +139,7 @@
         "movie",
         "tv"
       ],
-      "filename": "providers/pikahd.js",
+      "filename": "providers/fibwatch.js",
       "enabled": true,
       "formats": [
         "m3u8",
