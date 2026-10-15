@@ -153,8 +153,8 @@
       ]
     },
     {
-      "id": "anikoto",
-      "name": "Anikoto.",
+      "id": "toonworld4all",
+      "name": "Toonworld4all.",
       "description": "Watch AnimeWorld India • Nuvio TV / Fire TV compatible",
       "version": "1.2.0",
       "author": "Imm0rtal001",
@@ -162,7 +162,7 @@
         "movie",
         "tv"
       ],
-      "filename": "providers/anikoto.js",
+      "filename": "providers/toonworld4all.js",
       "enabled": true,
       "formats": [
         "m3u8"
