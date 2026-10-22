@@ -2,6 +2,8 @@ const BASE_URL = "https://cinefreak.ch";
 const TMDB_API = "https://api.themoviedb.org/3";
 // TMDB key: uses a host-provided global TMDB_API_KEY if present, otherwise set it here.
 const TMDB_KEY = typeof TMDB_API_KEY !== "undefined" ? TMDB_API_KEY : "";
+const DEBUG = true; // set to false to silence logs
+function log() { if (DEBUG) { try { console.log.apply(console, ["[novus]"].concat([].slice.call(arguments))); } catch (e) {} } }
 const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36";
 
 function buildHeaders(extra) {
@@ -81,8 +83,9 @@ function extractAnchors(html, base) {
 async function fetchText(url, extra) {
     try {
         const response = await fetch(url, { headers: buildHeaders(extra) });
+        if (!response.ok) log("fetchText failed", response.status, url);
         return response.ok ? response.text() : "";
-    } catch { return ""; }
+    } catch (e) { log("fetchText error", String(e), url); return ""; }
 }
 
 function tryExtractEmbeddedUrl(url) {
@@ -287,7 +290,7 @@ async function fetchTmdbDetails(tmdbId, mediaType) {
         if (!TMDB_KEY) return null;
         const endpoint = mediaType === "tv" ? "tv" : "movie";
         const response = await fetch(`${TMDB_API}/${endpoint}/${tmdbId}?api_key=${TMDB_KEY}`, { headers: buildHeaders() });
-        if (!response.ok) return null;
+        if (!response.ok) { log("TMDB failed", response.status); return null; }
         const tmdbData = await response.json();
         if (!tmdbData) return null;
         const title = mediaType === "tv" ? (tmdbData.name || tmdbData.original_name) : (tmdbData.title || tmdbData.original_title);
@@ -298,7 +301,7 @@ async function fetchTmdbDetails(tmdbId, mediaType) {
 async function searchCinefreak(query) {
     try {
         const response = await fetch(`${BASE_URL}/search-api.php?q=${encodeURIComponent(query)}`, { headers: buildHeaders() });
-        if (!response.ok) return [];
+        if (!response.ok) { log("search failed", response.status, response.headers && response.headers.get && response.headers.get("cf-mitigated")); return []; }
         const data = await response.json();
         if (!data) return [];
         const items = Array.isArray(data) ? data : (data.results || []);
@@ -311,9 +314,11 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         if (mediaType === "tv" && (season == null || episode == null)) return [];
 
         const tmdbDetails = await fetchTmdbDetails(tmdbId, mediaType);
-        if (!tmdbDetails || !tmdbDetails.title) return [];
+        if (!tmdbDetails || !tmdbDetails.title) { log("no TMDB details (missing/invalid key?)"); return []; }
+        log("TMDB", tmdbDetails.title, tmdbDetails.year);
 
         const searchResults = await searchCinefreak(tmdbDetails.title);
+        log("search results", searchResults.length);
         if (!searchResults.length) return [];
 
         const siteMatch = selectBestMatch(searchResults, tmdbDetails.title, tmdbDetails.year, mediaType);
@@ -323,12 +328,13 @@ async function getStreams(tmdbId, mediaType, season, episode) {
         if (!/\/(\?|#|$)/.test(contentPageUrl) && !/\.\w{2,4}$/.test(contentPageUrl)) contentPageUrl = contentPageUrl.replace(/\/?$/, "/");
 
         const pageHtml = await fetchText(contentPageUrl, { Referer: BASE_URL + "/" });
-        if (!pageHtml) return [];
+        if (!pageHtml) { log("content page empty", contentPageUrl); return []; }
 
         const downloadLinks = mediaType === "movie"
             ? extractMovieDownloadLinks(pageHtml, BASE_URL)
             : extractEpisodeDownloadLinks(pageHtml, BASE_URL, season, episode);
 
+        log("download links", downloadLinks.length);
         if (!downloadLinks.length) return [];
 
         const resolvedStreams = await Promise.all(downloadLinks.map(linkUrl => {
