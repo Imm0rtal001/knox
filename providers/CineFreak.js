@@ -1,5 +1,7 @@
 const BASE_URL = "https://cinefreak.ch";
 const TMDB_API = "https://api.themoviedb.org/3";
+// TMDB key: uses a host-provided global TMDB_API_KEY if present, otherwise set it here.
+const TMDB_KEY = typeof TMDB_API_KEY !== "undefined" ? TMDB_API_KEY : "";
 const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36";
 
 function buildHeaders(extra) {
@@ -249,7 +251,7 @@ function extractEpisodeDownloadLinks(html, base, season, episode) {
         const qualityBoxMatch = cardHtml.match(/<div\b[^>]*class=["'][^"']*quality-box[^"']*download-links[^"']*["'][^>]*>([\s\S]*?)<\/div>\s*<\/div>/i);
         for (const anchor of extractAnchors(qualityBoxMatch ? qualityBoxMatch[1] : cardHtml, base)) {
             if (!anchor.href || seenUrls.has(anchor.href)) continue;
-            if (!/generate\.php/i.test(anchor.href) && !/^https?:\/\/(?!.*cinefreak\.nl)/i.test(anchor.href)) continue;
+            if (!/generate\.php/i.test(anchor.href) && !/^https?:\/\/(?!.*cinefreak\.ch)/i.test(anchor.href)) continue;
             seenUrls.add(anchor.href);
             downloadLinks.push(anchor.href);
         }
@@ -282,8 +284,9 @@ function selectBestMatch(results, title, year, mediaType) {
 
 async function fetchTmdbDetails(tmdbId, mediaType) {
     try {
+        if (!TMDB_KEY) return null;
         const endpoint = mediaType === "tv" ? "tv" : "movie";
-        const response = await fetch(`${TMDB_API}/${endpoint}/${tmdbId}?api_key=${TMDB_API_KEY}`, { headers: buildHeaders() });
+        const response = await fetch(`${TMDB_API}/${endpoint}/${tmdbId}?api_key=${TMDB_KEY}`, { headers: buildHeaders() });
         if (!response.ok) return null;
         const tmdbData = await response.json();
         if (!tmdbData) return null;
