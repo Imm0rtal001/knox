@@ -77,16 +77,16 @@
       ]
     },
     {
-      "id": "CineFreak",
-      "name": "CineFreak.",
-      "description": "Provider: CineFreak | Bangla, English, Hindi • Nuvio TV / Fire TV compatible",
+      "id": "movielinkbd",
+      "name": "Movielinkbd.",
+      "description": "Provider: movielinkbd | Bangla, English, Hindi • Nuvio TV / Fire TV compatible",
       "version": "3.3.0",
       "author": "Imm0rtal001",
       "supportedTypes": [
         "movie",
         "tv"
       ],
-      "filename": "providers/CineFreak.js",
+      "filename": "providers/movielinkbd.js",
       "enabled": true,
       "formats": [
         "mkv",
