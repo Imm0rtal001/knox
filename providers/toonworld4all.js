@@ -2,6 +2,7 @@ const CryptoJS = require("crypto-js");
 const cheerio = require("cheerio-without-node-native");
 const BASE_URL = "https://toonworld4all.me";
 const TMDB_API = "https://api.themoviedb.org/3";
+const TMDB_KEY = (typeof TMDB_API_KEY !== "undefined" && TMDB_API_KEY) || "307b7b8ef035c6aa336900aef4e203bd";
 const ARCV_BASE = "https://archive.toonworld4all.me";
 const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36";
 
@@ -167,7 +168,7 @@ async function resolveRedirectTarget(redirectPath) {
 }
 
 function getTmdbKey() {
-    return (typeof TMDB_API_KEY !== "undefined" && TMDB_API_KEY) || "";
+    return TMDB_KEY;
 }
 
 async function fetchTmdbMetadata(tmdbId, isSeries) {
