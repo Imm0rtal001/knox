@@ -1,6 +1,6 @@
 const cheerio = require('cheerio-without-node-native');
 const PROVIDER = "Rogmovies";
-const BASE_URL = "https://rogmovies.one";
+const BASE_URL = "https://rogmovies.im";
 const TMDB_API = "https://api.themoviedb.org/3";
 const HC_URL = "https://hubcloud.ist";
 const VC_URL = "https://vcloud.beer";
