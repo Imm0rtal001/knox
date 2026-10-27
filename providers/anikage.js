@@ -2,6 +2,7 @@ const BASE_URL = "https://anikage.cc";
 const API_BASE = "https://anikage.cc/api/media/anime";
 const BKY_BASE = "https://og.bakayaro.live";
 const TMDB_API = "https://api.themoviedb.org/3";
+const TMDB_KEY = (typeof TMDB_API_KEY !== "undefined" && TMDB_API_KEY) || "307b7b8ef035c6aa336900aef4e203bd";
 const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36";
 const SOURCES = ["koto", "kiwi", "wave"];
 const LANGS = ["sub", "dub"];
@@ -32,9 +33,9 @@ async function getJson(url) {
 async function getTmdbDetails(tmdbId, mediaType, season) {
     const endpoint = mediaType === "tv" ? "tv" : "movie";
     const [showData, seasonData] = await Promise.all([
-        getJson(`${TMDB_API}/${endpoint}/${tmdbId}?api_key=${TMDB_API_KEY}`),
+        getJson(`${TMDB_API}/${endpoint}/${tmdbId}?api_key=${TMDB_KEY}`),
         mediaType === "tv" && season != null
-            ? getJson(`${TMDB_API}/tv/${tmdbId}/season/${season}?api_key=${TMDB_API_KEY}`)
+            ? getJson(`${TMDB_API}/tv/${tmdbId}/season/${season}?api_key=${TMDB_KEY}`)
             : Promise.resolve(null),
     ]);
     if (!showData) return null;
