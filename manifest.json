@@ -41,6 +41,20 @@
       "contentLanguage": ["en", "hi", "ta", "te"]
     },
     {
+      "id": "hicine",
+      "name": "Hicine.",
+      "description": "hicine  streaming with multiple language support (DASH + MP4)",
+      "version": "1.3.0",
+      "author": "Imm0rtal001",
+      "supportedTypes": ["movie", "tv"],
+      "filename": "providers/hicine.js",
+      "enabled": true,
+      "hasSettings": false,
+      "formats": ["mp4", "mpd"],
+      "logo": "https://i.postimg.cc/TPwkfqHh/moviebox.png",
+      "contentLanguage": ["en", "hi", "ta", "te"]
+    },
+    {
       "id": "vidbolt",
       "name": "Vidbolt.",
       "description": "vidbolt streaming with multiple language support (DASH + MP4)",
