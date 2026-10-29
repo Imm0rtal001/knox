@@ -21,7 +21,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 console.log('[DahmerMovies] Initializing Scraper');
 const TMDB_API_KEY = "439c478a771f35c05022f9feabcca01c";
 const DAHMER_MOVIES_API = 'https://a.111477.xyz';
-const DAHMER_WORKER_API = 'https://p.111477.xyz/bulk?u=';
 function makeRequest(url) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
