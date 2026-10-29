@@ -27,30 +27,50 @@ catch (_0x26da6a) {
 }
 catch (_0x2f76d5) {
     _0x45fe7f(_0x2f76d5);
-} }, _0x2151b1 = _0x3ec6b5 => _0x3ec6b5['done'] ? _0x2ab46f(_0x3ec6b5[_0x9d20ff(0xc6)]) : Promise[_0x9d20ff(0x83)](_0x3ec6b5[_0x9d20ff(0xc6)])[_0x9d20ff(0x95)](_0x29e5d0, _0x587f7f); _0x2151b1((_0x57ab12 = _0x57ab12['apply'](_0x5f27bd, _0x107c28))[_0x9d20ff(_0x53c138._0x5aede1)]()); }); }, PROVIDER_NAME = 'ZinkMovies', TMDB_API_KEY = _0x4e9a2b(0xa2), MAIN_URL = 'https://zinkmovies.beer', DOMAINS_JSON_URL = 'https://raw.githubusercontent.com/PirateZoro9/asura-providers/main/urls.json', baseUrl = MAIN_URL, cachedDomains = null, domainCacheTime = 0x0, DOMAIN_CACHE_TTL = 0x4 * 0x3c * 0x3c * 0x3e8, currentUA = _0x4e9a2b(0x89), UAS = ['Mozilla/5.0\x20(Linux;\x20Android\x2014;\x20Pixel\x208\x20Pro)\x20AppleWebKit/537.36\x20(KHTML,\x20like\x20Gecko)\x20Chrome/124.0.0.0\x20Mobile\x20Safari/537.36', _0x4e9a2b(0xd2), 'Mozilla/5.0\x20(Linux;\x20Android\x2012;\x20Pixel\x206)\x20AppleWebKit/537.36\x20(KHTML,\x20like\x20Gecko)\x20Chrome/115.0.0.0\x20Mobile\x20Safari/537.36', _0x4e9a2b(0x8b)];
+} }, _0x2151b1 = _0x3ec6b5 => _0x3ec6b5['done'] ? _0x2ab46f(_0x3ec6b5[_0x9d20ff(0xc6)]) : Promise[_0x9d20ff(0x83)](_0x3ec6b5[_0x9d20ff(0xc6)])[_0x9d20ff(0x95)](_0x29e5d0, _0x587f7f); _0x2151b1((_0x57ab12 = _0x57ab12['apply'](_0x5f27bd, _0x107c28))[_0x9d20ff(_0x53c138._0x5aede1)]()); }); }, PROVIDER_NAME = 'ZinkMovies', TMDB_API_KEY = _0x4e9a2b(0xa2), MAIN_URL = 'https://zinkmovies.wtf', DOMAINS_JSON_URL = 'https://raw.githubusercontent.com/PirateZoro9/asura-providers/main/urls.json', baseUrl = MAIN_URL, cachedDomains = null, domainCacheTime = 0x0, DOMAIN_CACHE_TTL = 0x4 * 0x3c * 0x3c * 0x3e8, currentUA = _0x4e9a2b(0x89), UAS = ['Mozilla/5.0\x20(Linux;\x20Android\x2014;\x20Pixel\x208\x20Pro)\x20AppleWebKit/537.36\x20(KHTML,\x20like\x20Gecko)\x20Chrome/124.0.0.0\x20Mobile\x20Safari/537.36', _0x4e9a2b(0xd2), 'Mozilla/5.0\x20(Linux;\x20Android\x2012;\x20Pixel\x206)\x20AppleWebKit/537.36\x20(KHTML,\x20like\x20Gecko)\x20Chrome/115.0.0.0\x20Mobile\x20Safari/537.36', _0x4e9a2b(0x8b)];
 function refreshDomains() { return __async(this, null, function* () { const _0x3ab462 = _0x4dda; if (cachedDomains && Date[_0x3ab462(0x7c)]() - domainCacheTime < DOMAIN_CACHE_TTL)
     return; try {
     const _0x31b943 = yield fetch(DOMAINS_JSON_URL, { 'headers': { 'User-Agent': 'Mozilla/5.0' } });
     if (_0x31b943 == null ? void 0x0 : _0x31b943['ok']) {
         const _0x1f9711 = JSON['parse'](yield _0x31b943[_0x3ab462(0xe1)]());
-        (_0x1f9711 == null ? void 0x0 : _0x1f9711[_0x3ab462(0x8c)]) && (cachedDomains = _0x1f9711, domainCacheTime = Date['now'](), baseUrl = _0x1f9711['zinkmovies']);
+        (_0x1f9711 == null ? void 0x0 : _0x1f9711[_0x3ab462(0x8c)]) && (cachedDomains = _0x1f9711, domainCacheTime = Date['now']()); if (_0x1f9711 && typeof _0x1f9711.zinkmovies === 'string' && /^https?:\/\//i.test(_0x1f9711.zinkmovies)) { baseUrl = _0x1f9711.zinkmovies.replace(/\/$/, ''); debugLog('domain-updated', { baseUrl }); } else { debugLog('domain-config-missing', { fallback: baseUrl }); }
     }
 }
-catch (_0x53cbf9) { } }); }
+catch (_0x53cbf9) { debugLog('domain-refresh-error', { error: String(_0x53cbf9 && _0x53cbf9.message || _0x53cbf9) }); } }); }
 function hdrs(_0x9212bf = {}) { const _0x27d929 = { _0x198d78: 0x97 }, _0x222913 = _0x4e9a2b; return __spreadValues({ 'User-Agent': currentUA, 'Accept-Language': _0x222913(_0x27d929._0x198d78) }, _0x9212bf); }
 function _0x24a9() { const _0x254aa7 = ['Edi2na', 'Ahr0Ca', 'BwfYyxrOAq', 'CgfKu3rHCNq', 'mtvXtNv5rMO', 'DgHLBG', 'DhLWzq', 'zw4TvvmSzw47Ct0WlJK', 'lM0ZDtG', 'Adi2nq', 'DgvZDa', 'Aw5JBhvKzxm', 'nZiWCa', 'AhvIy2XVDwq', 'C3vIC3rYAw5N', 'BgvUz3rO', 'BMfTzq', 'mJyXnJm3mLD0yLb3Dq', 'ndm5yZq3oge3nZfMmZvJmduWmJjMowzLywjJy2eWmwm', 'Dg9vChbLCKnHC2u', 'yuHsmgm', 'nJm2otrksK1Av2G', 'mta4mha', 'vgLTzw91Da', 'lNr4Da', 'ihWG8j+sVIa', 'lZ9Zpq', 'oty3mZe0t09tA2vQ', 'zhvHBa', 'BwfW', 'mJrbwMnKANG', 'ihWG', 'ihWGuW', 'CMvWBgfJzq', 'zgrWns4X', 'A2fUBMfKyq', 'ihWGAgqGFcbhzw1Tyq', 'ihWG8j+uIIbeB2XIEsbbDg1VCW', 'ANnVBG', 'ntCXndCWmMPcDLrUAq', 'C29Tzq', 'C3bSAxq', 'p2fWAv9RzxK9', 'mJe2mha', 'ihWG4PM+ierVBgj5ifzPC2LVBG', 'zMLSzq', 'mti5odqYmhbuuLHTuW', 'DgL0Bgu', 'AgrY', 'CMfJzq', 'tva0', 'AgfZt3DUuhjVCgvYDhK', 'zxHLyW', 'C2rY', 'DMfSDwu', 'pgrPDIbJBgfZCZ0IC2vYAwvJB250ywLUzxiIpG', 'C3rHCNrZv2L0Aa', 'C3vJy2vZCW', 'Dg9mB3DLCKnHC2u', 'ue9tva', 'EgXHpxm0Da', 'zxbPC29Kzq', 'D2vIzgW', 'AgrYAxa', 'yMvUz2fSAq', 'mtmXmgjRtezwzG', 'tw96AwXSys81lJaGkeXPBNv4oYbbBMrYB2LKideZoYbtts1tote4qIKGqxbWBgvxzwjlAxqVntm3lJm2icHlsfrntcWGBgLRzsbhzwnRBYKGq2HYB21LlZeXnI4WlJaUmcbnB2jPBguGu2fMyxjPlZuZnY4ZnG', 'D2vICMLW', 'CxvHBgL0Eq', 'DhjPBq', 'ndGWua', '8j+oPsbilJi2nq', 'Bw92Awu', 'CMvSzwfZzv9KyxrL', 'C29YDa', 'zMXHDa', 'Aw5KzxHpzG', 'r2vTBwe', 'mJe2ma', 'yxbWBgLJyxrPB24VEc13D3CTzM9YBs11CMXLBMnVzgvK', 'z2v0t3DUuhjVCgvYDhLtEw1IB2XZ', 'Dgv4Da', 'mZC0ntCYvM1Pt1fI', 'tuTw', 'Bwf0y2G', 'mtqZmJGYn3vdEMTIBW', 'Ahr0Chm6lY9PlwfYy2GTndaWlMTLEw1Pnde3zxH4lMnVBs8', 'yxrTB3m', 'ihWG8j+mKcbxruiTuMLW', 'Ahr0Chm6lY9UzxC0lNPPBMTJBg91zc5UzxqVC2vYDMvYlwHHBMrSzxiUCgHW', 'zM9SzgvY', 'ihWG8j+mIcbirfiXmcS', 'ndHXC2vpBuG', 'ihWG8j+mIcbtrfi', 'zMXVB3i', 't3jPz2LUywWTqxvKAw8', 'AgLUzgK', 'BM93', 'Agv2yW', 'zMLYC3rFywLYx2rHDgu', 'ChjVCgvYDhLjC0vUDw1LCMfIBgu', 'zw4TvvmSzw47Ct0WlJu', 'Ahr0Chm6lY9HCgKUDgHLBw92AwvKyI5VCMCVmY8', 'BMv4Da', 'CMvZB2X2zq', 'yxbWBgLJyxrPB24VANnVBG', 'D2vIlxjPCa', 'zg9SyNKGDMLZAw9U', 'BxvSDgK', 'txvSDgKTqxvKAw8', 'tw96AwXSys81lJaGkeXPBNv4oYbbBMrYB2LKide0oYbqAxHLBca4ifbYBYKGqxbWBgvxzwjlAxqVntm3lJm2icHlsfrntcWGBgLRzsbhzwnRBYKGq2HYB21LlZeYnc4WlJaUmcbnB2jPBguGu2fMyxjPlZuZnY4ZnG', 'vw5RBM93BIbtAxPL', 'tw96AwXSys81lJaGkgLqAg9UztSGq1bvigLqAg9UzsbpuYaXn18WigXPA2uGtwfJie9tifGPiefWCgXLv2vIs2L0lZyWns4XlJe1icHlsfrntcWGBgLRzsbhzwnRBYKGvMvYC2LVBI8XnY4Wie1VyMLSzs8XnuuXndGGu2fMyxjPlZyWnc4X', 'EMLUA21VDMLLCW', 'DgvSDwD1', 'mta4ma', 'ChvZAa']; _0x24a9 = function () { return _0x254aa7; }; return _0x24a9(); }
-function fetchText(_0x2e5a0c, _0x52fa21) { return __async(this, null, function* () { const _0x487faf = _0x4dda; try {
-    const _0x25554d = yield fetch(_0x2e5a0c, _0x52fa21 || {});
-    if (_0x25554d['ok'])
-        return yield _0x25554d[_0x487faf(0xe1)]();
+function debugLog(stage, details = {}) {
+    try { console.warn(`[ZinkMovies][${stage}]`, JSON.stringify(details)); } catch (_) {}
 }
-catch (_0x400ccf) { } return null; }); }
-function fetchJson(_0x43ff6c, _0x4098ff) { const _0x3480a7 = { _0x2c0f06: 0xc1 }; return __async(this, null, function* () { const _0x40bd45 = _0x4dda; try {
-    const _0x117050 = yield fetch(_0x43ff6c, _0x4098ff || {});
-    if (_0x117050['ok'])
-        return yield _0x117050[_0x40bd45(0xb6)]();
-}
-catch (_0x582f62) { } return null; }); }
+function fetchText(url, options) { return __async(this, null, function* () {
+    try {
+        const response = yield fetch(url, options || {});
+        if (!response || !response.ok) {
+            debugLog('http-text-failed', { url, status: response && response.status, statusText: response && response.statusText });
+            return null;
+        }
+        const body = yield response.text();
+        if (!body) debugLog('http-text-empty', { url, status: response.status });
+        return body || null;
+    } catch (error) {
+        debugLog('fetch-text-error', { url, error: String(error && error.message || error) });
+        return null;
+    }
+}); }
+function fetchJson(url, options) { return __async(this, null, function* () {
+    try {
+        const response = yield fetch(url, options || {});
+        if (!response || !response.ok) {
+            debugLog('http-json-failed', { url, status: response && response.status, statusText: response && response.statusText });
+            return null;
+        }
+        try { return yield response.json(); }
+        catch (error) { debugLog('json-parse-failed', { url, error: String(error && error.message || error) }); return null; }
+    } catch (error) {
+        debugLog('fetch-json-error', { url, error: String(error && error.message || error) });
+        return null;
+    }
+}); }
 function _0x4dda(_0x2b3092, _0x5894f1) { _0x2b3092 = _0x2b3092 - 0x71; const _0x24a93f = _0x24a9(); let _0x4dda9e = _0x24a93f[_0x2b3092]; if (_0x4dda['HCylnp'] === undefined) {
     var _0x37a8d2 = function (_0x1f1486) { const _0x2c7d10 = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/='; let _0x1da1f9 = '', _0x54ab6e = ''; for (let _0x3b9027 = 0x0, _0x1b5dc7, _0x4cfce2, _0x332c7a = 0x0; _0x4cfce2 = _0x1f1486['charAt'](_0x332c7a++); ~_0x4cfce2 && (_0x1b5dc7 = _0x3b9027 % 0x4 ? _0x1b5dc7 * 0x40 + _0x4cfce2 : _0x4cfce2, _0x3b9027++ % 0x4) ? _0x1da1f9 += String['fromCharCode'](0xff & _0x1b5dc7 >> (-0x2 * _0x3b9027 & 0x6)) : 0x0) {
         _0x4cfce2 = _0x2c7d10['indexOf'](_0x4cfce2);
@@ -135,13 +155,13 @@ function resolveTpiLink(_0xa0e161) { const _0x5783f5 = { _0xb2382d: 0xdc, _0x315
     const _0x530676 = atob(_0x389a75[0x1][_0x1f4ee5(_0x5783f5._0x315228)](_0x48af9d));
     return _0x530676[_0x1f4ee5(0xc8)](_0x1f4ee5(0x91)) ? _0x530676 : null;
 }
-catch (_0x208532) { } return null; }); }
+catch (_0x208532) { debugLog('tpi-resolve-error', { url: _0xa0e161, error: String(_0x208532 && _0x208532.message || _0x208532) }); } return null; }); }
 function serverHandler(_0x885959, _0x363984) { const _0x344bcf = { _0x47cfdf: 0x74, _0x362588: 0x84, _0x32b2f7: 0xb6, _0x514897: 0xc9 }; return __async(this, null, function* () { const _0x53c408 = _0x4dda; try {
     const _0x2d0438 = yield fetch(_0x53c408(_0x344bcf._0x47cfdf), { 'method': 'POST', 'headers': { 'Content-Type': _0x53c408(_0x344bcf._0x362588), 'X-Requested-With': 'XMLHttpRequest', 'User-Agent': currentUA }, 'body': JSON['stringify']({ 'server': _0x363984, 'random_id': _0x885959 }) }), _0x3cb59b = yield _0x2d0438[_0x53c408(_0x344bcf._0x32b2f7)]();
     if ((_0x3cb59b == null ? void 0x0 : _0x3cb59b[_0x53c408(_0x344bcf._0x514897)]) && _0x3cb59b['url'])
         return _0x3cb59b['url'];
 }
-catch (_0x20667e) { } return null; }); }
+catch (_0x20667e) { debugLog('server-resolve-error', { server: _0x363984, error: String(_0x20667e && _0x20667e.message || _0x20667e) }); } return null; }); }
 function processFile(_0x473301, _0x4734a1, _0x591063, _0x3efeb6, _0xa5e450, _0x93e92c, _0x57b536) { const _0x4121d1 = { _0x1cdf14: 0x9d, _0x23ea62: 0xe4, _0x37b1ee: 0x80, _0x275d4b: 0xd5, _0x2ecde3: 0x9a, _0x41b15c: 0x96 }; return __async(this, null, function* () { const _0x517b48 = _0x4dda, _0xb6c3e1 = _0x3efeb6 || parseQuality(_0x591063), _0x10b578 = []; if (_0xb6c3e1['toUpperCase']() === _0x517b48(0xd6))
     return _0x10b578; const [_0x5d7d6e, _0x282e54] = yield Promise['all']([serverHandler(_0x4734a1, _0x517b48(_0x4121d1._0x1cdf14)), serverHandler(_0x4734a1, 'worker')]); let _0x15cd4 = _0x591063; if (_0x5d7d6e) {
     const _0xee024c = yield fetchText(_0x5d7d6e, { 'headers': hdrs() });
@@ -156,7 +176,7 @@ function processFile(_0x473301, _0x4734a1, _0x591063, _0x3efeb6, _0xa5e450, _0x9
                 let _0x8702b0;
                 while ((_0x8702b0 = _0x893335[_0x517b48(0xc4)](_0x3f825d)) !== null) {
                     const _0xb7caa0 = _0x8702b0[0x1][_0x517b48(0xb1)](/&amp;/g, '&'), _0xdb9604 = _0x8702b0[0x2][_0x517b48(0xb1)](/<[^>]+>/g, '')[_0x517b48(_0x4121d1._0x275d4b)]();
-                    if (!_0xb7caa0 || _0xb7caa0['includes']('javascript:') || /telegram|tg\/|pixeldrain|hubcloud\.ist|gpdl2/i['test'](_0xb7caa0))
+                    if (!_0xb7caa0 || _0xb7caa0['includes']('javascript:') || /telegram|tg\/|pixeldrain|hubcloud\.cx|gpdl2/i['test'](_0xb7caa0))
                         continue;
                     if (!/cdn\.fsl-buckets\.life|r2\.cloudflarestorage|r2\.dev|workers\.dev|hub\.(latent|whistle)/i[_0x517b48(0x9a)](_0xb7caa0))
                         continue;
@@ -228,22 +248,19 @@ function getGemmaStreams(_0x990de8, _0x2a6789, _0x2e19d2, _0x5e2a52, _0x41036f, 
 }
 catch (_0x4ca536) { } return _0x5a87b4; }); }
 function scrapeZinkCloud(_0x237e2a, _0x1e580e, _0x197f2e, _0x5119ab, _0x536b1d, _0x284dd3) { const _0x4c077b = { _0x3684dd: 0x9b, _0xf1232f: 0xe4, _0x213ed5: 0xb1, _0x57f868: 0xda, _0x463316: 0xd5, _0x2e4306: 0x8f, _0x5467fc: 0xad }; return __async(this, null, function* () { const _0x3d8b42 = { _0x142c21: 0xe4 }, _0x509d9a = _0x4dda, _0x102c81 = []; try {
-    const _0x374a6b = yield fetchText(baseUrl + _0x509d9a(0xaa) + encodeURIComponent(_0x1e580e));
-    if (!_0x374a6b)
-        return _0x102c81;
-    const _0x32a51e = _0x5119ab ? 'tvshows' : 'movies', _0x3839e8 = new RegExp('href=\x22(https?:\x5c/\x5c/[^\x5c/]+\x5c/' + _0x32a51e + '\x5c/([^\x22]+))\x22', 'ig');
+    const searchUrl = baseUrl + _0x509d9a(0xaa) + encodeURIComponent(_0x1e580e); debugLog('search-start', { searchUrl, title: _0x1e580e, isSeries: !!_0x5119ab }); const _0x374a6b = yield fetchText(searchUrl);
+    if (!_0x374a6b) { debugLog('search-no-html', { searchUrl }); return _0x102c81; } debugLog('search-html', { length: _0x374a6b.length });
+    const _0x32a51e = _0x5119ab ? 'tvshows' : 'movies', _0x3839e8 = new RegExp('href=[\"\\\']((?:https?:\\/\\/[^\\s\"\\\']+)?\\/' + _0x32a51e + '\\/[^\"\\\']+)[\"\\\']', 'ig');
     let _0x14b853, _0x537def;
     while ((_0x537def = _0x3839e8[_0x509d9a(0xc4)](_0x374a6b)) !== null) {
         if (!_0x197f2e || _0x537def[0x1][_0x509d9a(_0x4c077b._0x3684dd)](_0x197f2e)) {
-            _0x14b853 = _0x537def[0x1];
+            _0x14b853 = _0x537def[0x1].startsWith('http') ? _0x537def[0x1] : new URL(_0x537def[0x1], baseUrl).href;
             break;
         }
     }
-    if (!_0x14b853)
-        return _0x102c81;
+    if (!_0x14b853) { debugLog('search-result-not-found', { title: _0x1e580e, expectedPath: _0x32a51e, htmlLength: _0x374a6b.length }); return _0x102c81; } debugLog('search-result-found', { url: _0x14b853 });
     const _0x2472a9 = yield fetchText(_0x14b853);
-    if (!_0x2472a9)
-        return _0x102c81;
+    if (!_0x2472a9) { debugLog('detail-page-empty', { url: _0x14b853 }); return _0x102c81; } debugLog('detail-page-loaded', { length: _0x2472a9.length });
     if (_0x5119ab) {
         let _0x33ee58 = null, _0x52d50a = '', _0x4b2a79 = '';
         const _0x1048a1 = _0x2472a9['split']('<div\x20class=\x22seriecontainer\x22>');
@@ -270,7 +287,7 @@ function scrapeZinkCloud(_0x237e2a, _0x1e580e, _0x197f2e, _0x5119ab, _0x536b1d, 
             if (_0x27f81a) {
                 const _0x464fcd = yield fetchText(_0x27f81a, { 'headers': hdrs() });
                 if (_0x464fcd) {
-                    const _0x7b0080 = [], _0x564461 = /href="(https:\/.zinkmovies\.beer\/file\/([^"]+))"[^>]*>\s*<span[^>]*>(.*?)<\/span>/ig;
+                    const _0x7b0080 = [], _0x564461 = /href="(https:\/\/new3\.zinkcloud\.net\/file\/([^"]+))"[^>]*>\s*<span[^>]*>(.*?)<\/span>/ig;
                     while ((_0x537def = _0x564461[_0x509d9a(0xc4)](_0x464fcd)) !== null) {
                         const _0x1fdf9a = _0x537def[0x3]['replace'](/<[^>]+>/g, '')[_0x509d9a(_0x4c077b._0x463316)]();
                         if (_0x1fdf9a['toLowerCase']()['includes']('all\x20episodes'))
@@ -298,8 +315,8 @@ function scrapeZinkCloud(_0x237e2a, _0x1e580e, _0x197f2e, _0x5119ab, _0x536b1d, 
         }
     }
 }
-catch (_0x4908fe) { } return _0x102c81; }); }
-function getStreams(_0x530d4d, _0x536ff7, _0x292943, _0x482b8d) { const _0x240181 = { _0x4c5adb: 0x9f, _0x53bc2c: 0x81, _0x482c15: 0xba, _0x4973c3: 0xa0, _0x14363: 0xbf, _0x114443: 0x7e, _0x5cf05c: 0x93, _0x247d31: 0xd8, _0x3124dd: 0x8f }; return __async(this, null, function* () { const _0xa711c9 = { _0x2112dd: 0xbb, _0x3e8e6a: 0xa6 }, _0x28cf9c = _0x4dda; yield refreshDomains(), currentUA = UAS[Math[_0x28cf9c(0x79)](Math['random']() * UAS[_0x28cf9c(_0x240181._0x4c5adb)])]; const _0x5ed221 = _0x536ff7 === 'series' || _0x536ff7 === 'tv', _0x272d37 = []; let _0x58b65c = '', _0x45a91c = null; try {
+catch (_0x4908fe) { debugLog('scrape-error', { error: String(_0x4908fe && _0x4908fe.stack || _0x4908fe) }); } debugLog('scrape-finished', { streamCount: _0x102c81.length, title: _0x1e580e }); return _0x102c81; }); }
+function getStreams(_0x530d4d, _0x536ff7, _0x292943, _0x482b8d) { const _0x240181 = { _0x4c5adb: 0x9f, _0x53bc2c: 0x81, _0x482c15: 0xba, _0x4973c3: 0xa0, _0x14363: 0xbf, _0x114443: 0x7e, _0x5cf05c: 0x93, _0x247d31: 0xd8, _0x3124dd: 0x8f }; return __async(this, null, function* () { const _0xa711c9 = { _0x2112dd: 0xbb, _0x3e8e6a: 0xa6 }, _0x28cf9c = _0x4dda; debugLog('getStreams-start', { id: _0x530d4d, type: _0x536ff7, season: _0x292943, episode: _0x482b8d }); yield refreshDomains(); currentUA = UAS[Math[_0x28cf9c(0x79)](Math['random']() * UAS[_0x28cf9c(_0x240181._0x4c5adb)])]; debugLog('active-domain', { baseUrl }); const _0x5ed221 = _0x536ff7 === 'series' || _0x536ff7 === 'tv', _0x272d37 = []; let _0x58b65c = '', _0x45a91c = null; try {
     _0x45a91c = yield fetchJson(_0x28cf9c(_0x240181._0x53bc2c) + (_0x5ed221 ? 'tv' : _0x28cf9c(0xd8)) + '/' + _0x530d4d + _0x28cf9c(_0x240181._0x482c15) + TMDB_API_KEY);
     if (_0x45a91c) {
         const _0x3e6917 = _0x5ed221 ? _0x45a91c[_0x28cf9c(_0x240181._0x4973c3)] : _0x45a91c[_0x28cf9c(_0x240181._0x14363)], _0x3a6ab3 = _0x5ed221 ? (_0x45a91c[_0x28cf9c(_0x240181._0x114443)] || '')['split']('-')[0x0] : (_0x45a91c[_0x28cf9c(0xd9)] || '')['split']('-')[0x0];
@@ -309,7 +326,7 @@ function getStreams(_0x530d4d, _0x536ff7, _0x292943, _0x482b8d) { const _0x24018
             _0x272d37[_0x28cf9c(0x8f)](_0x9f56ef);
     }
 }
-catch (_0x44c8b0) { } if (_0x45a91c)
+catch (_0x44c8b0) { debugLog('tmdb-or-scrape-error', { error: String(_0x44c8b0 && _0x44c8b0.stack || _0x44c8b0) }); } debugLog('primary-scrape-count', { count: _0x272d37.length, tmdbFound: !!_0x45a91c }); if (_0x45a91c)
     try {
         const _0x1ed05b = yield fetchJson('https://api.themoviedb.org/3/' + (_0x5ed221 ? 'tv' : _0x28cf9c(_0x240181._0x247d31)) + '/' + _0x530d4d + '/external_ids?api_key=' + TMDB_API_KEY);
         if (_0x1ed05b == null ? void 0x0 : _0x1ed05b['imdb_id']) {
@@ -318,7 +335,7 @@ catch (_0x44c8b0) { } if (_0x45a91c)
                 _0x272d37[_0x28cf9c(_0x240181._0x3124dd)](_0x3d2eee);
         }
     }
-    catch (_0x1eb45e) { } function _0x31437a(_0x3bb34b) { const _0x130e1a = _0x28cf9c, _0x2f9f1f = _0x3bb34b['toLowerCase'](); if (_0x2f9f1f['includes'](_0x130e1a(_0xa711c9._0x2112dd)) || _0x2f9f1f[_0x130e1a(0x9b)]('4k'))
+    catch (_0x1eb45e) { debugLog('external-id-or-embed-error', { error: String(_0x1eb45e && _0x1eb45e.stack || _0x1eb45e) }); } debugLog('getStreams-finished', { count: _0x272d37.length }); function _0x31437a(_0x3bb34b) { const _0x130e1a = _0x28cf9c, _0x2f9f1f = _0x3bb34b['toLowerCase'](); if (_0x2f9f1f['includes'](_0x130e1a(_0xa711c9._0x2112dd)) || _0x2f9f1f[_0x130e1a(0x9b)]('4k'))
     return 0x870; if (_0x2f9f1f[_0x130e1a(0x9b)](_0x130e1a(_0xa711c9._0x3e8e6a)))
     return 0x438; if (_0x2f9f1f[_0x130e1a(0x9b)]('720p'))
     return 0x2d0; return 0x0; } return _0x272d37['sort']((_0xbfddd5, _0x31d6a0) => { const _0x898c87 = _0x28cf9c; return _0x31437a(_0x31d6a0['name']) - _0x31437a(_0xbfddd5[_0x898c87(0xa0)]); }); }); }
