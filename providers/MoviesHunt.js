@@ -1,5 +1,5 @@
 const PROVIDER = 'MoviesHunt';
-const BASE_URL = 'https://new2.movieshunt.website';
+const BASE_URL = 'https://new4.movieshunt.website';
 const TMDB_API = "https://api.themoviedb.org/3";
 const ABHL_URL = 'https://abhilinks.site';
 const Q_KEEP = new Set(['1080P', '2160P']);
