@@ -115,16 +115,16 @@
        "hasSettings": true
     },
     {
-      "id": "mkvbase",
-      "name": "mkvbase.",
-      "description": "Provider: movielinkbd | Bangla, English, Hindi • Nuvio TV / Fire TV compatible",
+      "id": "zinkmovies",
+      "name": "Zinkmovies.",
+      "description": "Provider: zinkmovies | Bangla, English, Hindi • Nuvio TV / Fire TV compatible",
       "version": "3.3.0",
       "author": "Imm0rtal001",
       "supportedTypes": [
         "movie",
         "tv"
       ],
-      "filename": "providers/mkvbase.js",
+      "filename": "providers/zinkmovies.js",
       "enabled": true,
       "formats": [
         "mkv",
