@@ -1,6 +1,6 @@
 const cheerio = require("cheerio");
 const PROVIDER = "MoviesDrive";
-const BASE_URL = "https://new5.moviesdrive.beer";
+const BASE_URL = "https://new1.moviesdrive.cyou";
 const QUALITY_FILTER = new Set(["1080p", "2160p"]);
 const QUALITY_RANK_MAX = 2;
 const DEFAULT_HEADERS = {
