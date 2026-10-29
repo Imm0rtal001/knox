@@ -20,14 +20,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 // Dahmer Movies Scraper - Format Column Added (MKV/MP4/M3U8)
 console.log('[DahmerMovies] Initializing Scraper');
 const TMDB_API_KEY = "439c478a771f35c05022f9feabcca01c";
-const DAHMER_MOVIES_API = 'https://st.111477.xyz';
+const DAHMER_MOVIES_API = 'https://a.111477.xyz';
 const DAHMER_WORKER_API = 'https://p.111477.xyz/bulk?u=';
 function makeRequest(url) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             return yield fetch(url, {
                 headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+                    'User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36',
                     'Referer': DAHMER_MOVIES_API + '/'
                 }
             });
