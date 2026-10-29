@@ -115,6 +115,30 @@
        "hasSettings": true
     },
     {
+      "id": "mkvbase",
+      "name": "mkvbase.",
+      "description": "Provider: movielinkbd | Bangla, English, Hindi • Nuvio TV / Fire TV compatible",
+      "version": "3.3.0",
+      "author": "Imm0rtal001",
+      "supportedTypes": [
+        "movie",
+        "tv"
+      ],
+      "filename": "providers/mkvbase.js",
+      "enabled": true,
+      "formats": [
+        "mkv",
+        "mp4"
+      ],
+      "logo": "",
+      "contentLanguage": [
+        "bn",
+        "hi",
+        "en"
+      ],
+       "hasSettings": true
+    },
+    {
       "id": "moviesHunt",
       "name": "MoviesHunt.",
       "description": "Provider: MoviesHunt | Multi-Lang • Nuvio TV / Fire TV compatible",
