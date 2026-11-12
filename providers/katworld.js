@@ -1,5 +1,5 @@
 const MOVIE_BASE = "https://new2.katmoviehd.top";
-const TVSHW_BASE = "https://new.katdrama.my";
+const TVSHW_BASE = "https://new2.katdrama.my";
 const ANIME_BASE = "https://new.pikahd.co";
 const TMDB_API = "https://api.themoviedb.org/3";
 const TMDB_KEY = (typeof TMDB_API_KEY !== "undefined" && TMDB_API_KEY) || "307b7b8ef035c6aa336900aef4e203bd";
