@@ -1,5 +1,5 @@
 const PROVIDER = 'MoviesHunt';
-const BASE_URL = 'https://movieshunt.hair';
+const BASE_URL = 'https://movieshunt.actor';
 const TMDB_API = "https://api.themoviedb.org/3";
 const TMDB_KEY = (typeof TMDB_API_KEY !== "undefined" && TMDB_API_KEY) || "307b7b8ef035c6aa336900aef4e203bd";
 const ABHL_URL = 'https://abhilinks.site';
