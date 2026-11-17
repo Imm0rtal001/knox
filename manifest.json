@@ -1,6 +1,6 @@
 {
   "name": "Knox Providers",
-  "version": "4.5.0",
+  "version": "4.6.0",
   "scrapers": [
     {
       "id": "4khdhub",
@@ -197,16 +197,16 @@
       "hasSettings": true
     },
     {
-      "id": "fibwatch",
-      "name": "Fibwatch.",
-      "description": "AnimeSalt India • Nuvio TV / Fire TV compatible",
-      "version": "1.0.0",
+      "id": "play4u",
+      "name": "Play4u.",
+      "description": "Play4u • 1080p • Mainstream",
+      "version": "1.3.0",
       "author": "Imm0rtal001",
       "supportedTypes": [
         "movie",
         "tv"
       ],
-      "filename": "providers/fibwatch.js",
+      "filename": "providers/play4u.js",
       "enabled": true,
       "formats": [
         "m3u8",
@@ -263,16 +263,16 @@
       ]
     },
     {
-      "id": "dahmermovies.",
-      "name": "Dahmermovies.",
+      "id": "vidnest.",
+      "name": "Vidnest.",
       "description": "Only works on Android TV • Nuvio TV / Fire TV compatible",
-      "version": "1.0.1",
+      "version": "1.7.1",
       "author": "Imm0rtal001",
       "supportedTypes": [
         "movie",
         "tv"
       ],
-      "filename": "providers/dahmermovies.js",
+      "filename": "providers/Vidnest.js",
       "enabled": true,
       "formats": [
         "mp4",
