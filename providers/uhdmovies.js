@@ -1,6 +1,7 @@
 /*
  * CVN-UHDMovies — Nuvio single-file provider
  * Promise-based implementation for the Nuvio/Hermes plugin runtime.
+ * Includes public TheNaukriAdda redirect/form resolution for UHDMovies links.
  * Requires Nuvio's bundled module: cheerio-without-node-native
  *
  * This provider only returns publicly exposed direct media URLs and normal
@@ -296,29 +297,86 @@ function submitPublicForm(html, pageUrl, depth) {
 }
 
 function resolvePublicShortener(url) {
+  // TheNaukriAdda is an intermediate public link page used by UHDMovies.
+  // Follow ordinary HTTP redirects and publicly exposed page redirects/forms.
+  // Do not attempt CAPTCHA, login, token forgery, or anti-bot circumvention.
   return request(url).then(function (response) {
     const finalUrl = response.url || url;
-    if (finalUrl !== url && !/thenaukriadda/i.test(finalUrl)) return resolveLink(finalUrl);
-    const redirected = redirectFromHtml(response.data, finalUrl);
-    if (redirected && redirected !== finalUrl) return resolveLink(redirected);
-    const exposed = mediaFromHtml(response.data, finalUrl).filter(function (link) {
-      return link !== finalUrl && !/thenaukriadda/i.test(link);
+
+    if (finalUrl !== url && !/thenaukriadda/i.test(finalUrl)) {
+      return resolveLink(finalUrl);
+    }
+
+    const html = response.data || "";
+    const redirected = redirectFromHtml(html, finalUrl);
+    if (redirected && redirected !== finalUrl) {
+      return resolveLink(redirected);
+    }
+
+    const $ = load(html);
+    const candidates = [];
+    const seen = {};
+
+    function addCandidate(value) {
+      const candidate = absUrl(String(value || "").trim(), finalUrl);
+      if (!candidate || candidate === finalUrl || seen[candidate]) return;
+      if (!/^https?:\/\//i.test(candidate)) return;
+      if (/^(mailto:|javascript:)/i.test(candidate)) return;
+      if (/facebook|twitter|telegram|instagram|youtube|whatsapp|t\.me/i.test(candidate)) return;
+      seen[candidate] = true;
+      candidates.push(candidate);
+    }
+
+    // Publicly exposed anchors and common redirect attributes.
+    $("a[href], [data-href], [data-url], [data-link]").each(function (_, el) {
+      const node = $(el);
+      addCandidate(node.attr("href") || node.attr("data-href") ||
+        node.attr("data-url") || node.attr("data-link"));
     });
-    if (exposed.length) {
-      const jobs = exposed.map(function (link) { return resolveLink(link); });
+
+    // Some pages expose the destination in a simple client-side redirect.
+    const scriptPatterns = [
+      /(?:window\.)?location(?:\.href)?\s*=\s*["']([^"']+)["']/ig,
+      /window\.open\(\s*["']([^"']+)["']/ig,
+      /(?:window\.)?location\.replace\(\s*["']([^"']+)["']\s*\)/ig
+    ];
+    scriptPatterns.forEach(function (pattern) {
+      let match;
+      while ((match = pattern.exec(html)) !== null) addCandidate(match[1]);
+    });
+
+    // If an ordinary public redirect target is exposed, follow it.
+    const externalCandidates = candidates.filter(function (candidate) {
+      return !/thenaukriadda/i.test(candidate);
+    });
+    if (externalCandidates.length) {
+      const jobs = externalCandidates.slice(0, 5).map(function (candidate) {
+        return resolveLink(candidate);
+      });
       return Promise.all(jobs).then(function (groups) {
-        const all = [];
-        groups.forEach(function (group) { group.forEach(function (item) { all.push(item); }); });
-        if (all.length) return all;
-        return submitPublicForm(response.data, finalUrl, 1);
+        const output = [];
+        groups.forEach(function (group) {
+          group.forEach(function (item) {
+            if (item && item.link && !output.some(function (old) {
+              return old.link === item.link;
+            })) output.push(item);
+          });
+        });
+        if (output.length) return output;
+        return submitPublicForm(html, finalUrl, 1);
       });
     }
-    return submitPublicForm(response.data, finalUrl, 1);
-  }).catch(function () { return []; });
+
+    // Continue only through normal public HTML form submission.
+    return submitPublicForm(html, finalUrl, 1);
+  }).catch(function (error) {
+    console.error("[CVN-UHDMovies] TheNaukriAdda resolver:", error && error.message ? error.message : String(error));
+    return [];
+  });
 }
 
 function resolveLink(url) {
-  if (/thenaukriadda/i.test(url)) return resolvePublicShortener(url);
+  if (/thenaukriadda\.in/i.test(url)) return resolvePublicShortener(url);
   if (/video-seed\.dev/i.test(url)) {
     return resolveVideoSeed(url).then(function (link) {
       return link ? [{ server: "VideoSeed", link: link }] : [];
