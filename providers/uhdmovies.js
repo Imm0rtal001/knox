@@ -7,7 +7,9 @@ const cheerio = require("cheerio-without-node-native");
 
 // ===== Inlined from http.js =====
 // Minimal fetch-based replacement for the axios calls in the original code.
-const BASE_URL = "https://uhdmovies.my";
+const BASE_URL = "https://uhdmovies.ceo";
+const TMDB_API = "https://api.themoviedb.org/3";
+const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
 
 const commonHeaders = {
   "User-Agent":
