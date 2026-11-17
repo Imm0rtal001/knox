@@ -1,6 +1,7 @@
 /* UHDMovies Nuvio provider - single-file bundle.
  * Configure TMDB_API_KEY below before use.
  * Runtime dependency: cheerio-without-node-native.
+ * VideoSeed links are unwrapped via their public redirect Location where available.
  */
 const cheerio = require("cheerio-without-node-native");
 
@@ -9,7 +10,7 @@ const cheerio = require("cheerio-without-node-native");
 // Minimal fetch-based replacement for the axios calls in the original code.
 const BASE_URL = "https://uhdmovies.ceo";
 const TMDB_API = "https://api.themoviedb.org/3";
-const TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
+const TMDB_API_KEY = ""; // Add your own TMDB v3 API key here
 
 const commonHeaders = {
   "User-Agent":
@@ -166,6 +167,7 @@ const isMediaHost = (href) =>
   href.includes("workers.dev") ||
   href.includes("r2.dev") ||
   href.includes("drive.google.com") ||
+  href.includes("video-seed.dev") ||
   MEDIA_RE.test(href);
 
 const safeDecode = (s) => {
@@ -175,6 +177,69 @@ const safeDecode = (s) => {
     return s;
   }
 };
+
+// VideoSeed is a short-lived redirect/CDN handoff, not a permanent file host.
+// Prefer the redirect Location header; do not follow it to an HTML landing page.
+function unwrapVideoSeedUrl(candidate) {
+  if (!candidate || typeof candidate !== "string") return null;
+  try {
+    const u = new URL(candidate);
+    if (!/(^|\.)video-seed\.dev$/i.test(u.hostname)) return candidate;
+    const embedded = u.searchParams.get("url");
+    if (embedded && /^https?:\/\//i.test(embedded)) return embedded;
+    return null;
+  } catch (e) {
+    return null;
+  }
+}
+
+async function resolveVideoSeedUrl(candidate, signal) {
+  const embedded = unwrapVideoSeedUrl(candidate);
+  if (embedded && embedded !== candidate) return embedded;
+  if (!candidate || !/video-seed\.dev/i.test(candidate)) return candidate;
+
+  try {
+    const response = await request("HEAD", candidate, {
+      headers: { ...commonHeaders, Referer: "https://driveseed.org/" },
+      maxRedirects: 0,
+      validateStatus: (status) => status >= 200 && status < 400,
+      signal,
+    });
+    const location = response.headers.location;
+    if (location) {
+      const absolute = new URL(location, candidate).href;
+      const fromLocation = unwrapVideoSeedUrl(absolute);
+      if (fromLocation && fromLocation !== absolute) return fromLocation;
+      if (!/video-seed\.dev/i.test(absolute)) return absolute;
+    }
+  } catch (e) {
+    // Some CDN edges do not support HEAD; try a non-following GET below.
+  }
+
+  try {
+    const response = await get(candidate, {
+      headers: { ...commonHeaders, Referer: "https://driveseed.org/" },
+      maxRedirects: 0,
+      validateStatus: (status) => status >= 200 && status < 400,
+      signal,
+    });
+    const location = response.headers.location;
+    if (location) {
+      const absolute = new URL(location, candidate).href;
+      const fromLocation = unwrapVideoSeedUrl(absolute);
+      if (fromLocation && fromLocation !== absolute) return fromLocation;
+      if (!/video-seed\.dev/i.test(absolute)) return absolute;
+    }
+    const $ = cheerio.load(response.data || "");
+    const media = $("video source[src], video[src], a[href]").map((_, el) =>
+      $(el).attr("src") || $(el).attr("href")
+    ).get().find((value) => value && /^https?:\/\//i.test(value) &&
+      /\.(mp4|mkv|m3u8)(?:$|\?)/i.test(value));
+    return media ? new URL(media, candidate).href : candidate;
+  } catch (e) {
+    return candidate;
+  }
+}
 
 // Ported from extractStreamsFromDriveseed in the original stream.ts
 async function extractStreamsFromDriveseed(driveUrl, signal) {
@@ -304,7 +369,13 @@ async function extractStreamsFromDriveseed(driveUrl, signal) {
     }
   } catch (e) {}
 
-  return streams;
+  // Worker/instant buttons can point at VideoSeed's temporary redirect wrapper.
+  // Unwrap those links to the underlying media URL before handing them to Nuvio.
+  const resolved = await Promise.all(streams.map(async (stream) => ({
+    ...stream,
+    link: await resolveVideoSeedUrl(stream.link, signal),
+  })));
+  return resolved;
 }
 
 
@@ -375,8 +446,6 @@ async function gdflixExtractor(url, signal) {
 // NOTE: the original search/meta code was not provided, so this is a heuristic
 // implementation. Selectors may need adjusting to the current site layout.
 // Put your own TMDB v3 API key here
-const TMDB_API_KEY = "";
-
 const norm = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
 const QUALITY_RE = /(2160p|4k|1080p|720p|480p)/i;
 const SIZE_RE = /(\d+(?:\.\d+)?\s?(?:GB|MB))/i;
@@ -459,7 +528,7 @@ async function findLinks({ tmdbId, mediaType, season, signal }) {
 
 
 // ===== Inlined from resolve.js =====
-const isKnownHost = (u) => /hubcloud|gdflix|driveseed|driveleech|appdrive/i.test(u);
+const isKnownHost = (u) => /hubcloud|gdflix|driveseed|driveleech|appdrive|video-seed\.dev/i.test(u);
 
 // Turns one shortlink into a list of { server, link, type } (replaces the original getStream)
 async function resolveLink(url, { mediaType, episode, signal } = {}) {
@@ -491,6 +560,14 @@ async function resolveLink(url, { mediaType, episode, signal } = {}) {
         }
       }
     } catch (e) {}
+  }
+
+  if (/video-seed\.dev/i.test(target)) {
+    const mediaUrl = await resolveVideoSeedUrl(target, signal);
+    if (mediaUrl && mediaUrl !== target) {
+      return [{ server: "VideoSeed", link: mediaUrl, type: /\.m3u8(?:$|\?)/i.test(mediaUrl) ? "m3u8" : "mkv" }];
+    }
+    return [];
   }
 
   if (target.includes("hubcloud")) return hubcloudExtractor(target, signal);
