@@ -1,9 +1,9 @@
 const cheerio = require('cheerio-without-node-native');
 const PROVIDER = "Rogmovies";
-const BASE_URL = "https://rogmovies.autos";
+const BASE_URL = "https://rogmovies.cyou";
 const TMDB_API = "https://api.themoviedb.org/3";
-const HC_URL = "https://hubcloud.pw";
-const VC_URL = "https://vcloud.beer";
+const HC_URL = "https://hubcloud.mov";
+const VC_URL = "https://vcloud.my";
 const MAX_1080P = 4;
 const ALLOWED_Q = ['2160p', '4k', '1440p', '1080p'];
 const Q_WEIGHTS = { '2160p': 4, '4k': 4, '1440p': 3, '1080p': 2, '720p': 1, 'HD': 0 };
