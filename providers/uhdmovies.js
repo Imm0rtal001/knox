@@ -202,10 +202,10 @@ function fetchJson(url) {
     });
 }
 function getTmdbDetails(tmdbId, mediaType) {
-    var isSeries = mediaType === "series" || mediaType === "tv";
+    var isSeries = /^(series|tv|show)$/i.test(String(mediaType || ""));
     var endpoint = isSeries ? "tv" : "movie";
     var url = TMDB_API + "/" + endpoint + "/" + tmdbId + "?api_key=" + TMDB_API_KEY;
-    console.log("[UHDMovies] TMDB: " + url);
+    console.log("[UHDMovies] TMDB request: " + endpoint + "/" + tmdbId);
     return fetchJson(url).then(function (data) {
         if (isSeries) {
             return {
@@ -235,22 +235,50 @@ function searchByTitle(title, year) {
 }
 function parseSearchResults(html) {
     var results = [];
+    var seen = {};
     var chunks = html.split(/<article\b/i);
+
+    // Current UHDMovies pages expose WordPress article links with changing
+    // theme classes. Do not depend on the old gridlove-post/sanket classes.
     for (var i = 1; i < chunks.length; i++) {
         var chunk = "<article" + chunks[i];
-        var classM = chunk.match(/<article[^>]*class="([^"]*)"/i);
-        if (!classM || classM[1].indexOf("gridlove-post") === -1)
-            continue;
-        var h1M = chunk.match(/<h1[^>]*class="[^"]*sanket[^"]*"[^>]*>([\s\S]*?)<\/h1>/i);
-        var titleRaw = h1M ? stripTags(h1M[1]).replace(/^Download\s+/i, "") : "";
-        var titleM = titleRaw.match(/^(.*\)\d*)/);
-        var title = titleM ? titleM[1] : titleRaw;
-        var imgDivM = chunk.match(/<div[^>]*class="[^"]*entry-image[^"]*"[^>]*>[\s\S]*?<a\s[^>]*href="([^"]+)"/i);
-        var href = imgDivM ? imgDivM[1] : null;
-        if (href && title) {
-            results.push({ title, url: href, rawTitle: titleRaw });
+        var title = "";
+        var href = "";
+        var heading = chunk.match(/<h[1-4]\b[^>]*>([\s\S]*?)<\/h[1-4]>/i);
+        if (heading)
+            title = stripTags(heading[1]).replace(/^Download\s+/i, "").trim();
+
+        var anchorRe = /<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
+        var am;
+        while ((am = anchorRe.exec(chunk)) !== null) {
+            var label = stripTags(am[2]).replace(/^Download\s+/i, "").trim();
+            if (!href && (/^Download\b/i.test(stripTags(am[2])) || /entry-title|post-title/i.test(am[0]))) {
+                href = am[1];
+                if (!title) title = label;
+            }
+        }
+        if (!href) {
+            var imageLink = chunk.match(/<a\b[^>]*href=["']([^"']+)["'][^>]*>\s*<img\b/i);
+            if (imageLink) href = imageLink[1];
+        }
+        if (href && title && !seen[href]) {
+            seen[href] = true;
+            results.push({ title: title, url: fixUrl(href, DOMAIN), rawTitle: title });
         }
     }
+
+    // Fallback for search layouts that do not wrap results in <article>.
+    if (!results.length) {
+        var linkRe = /<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
+        var lm;
+        while ((lm = linkRe.exec(html)) !== null) {
+            var label = stripTags(lm[2]).trim();
+            if (!/^Download\b/i.test(label) || seen[lm[1]]) continue;
+            seen[lm[1]] = true;
+            results.push({ title: label.replace(/^Download\s+/i, ""), url: fixUrl(lm[1], DOMAIN), rawTitle: label });
+        }
+    }
+
     console.log("[UHDMovies] Results: " + results.length);
     return results;
 }
@@ -323,105 +351,79 @@ function bypassHrefli(url) {
     });
 }
 
-// Resolve ordinary, publicly exposed redirects on TheNaukriAdda.
-// This follows HTTP/meta/JavaScript redirects and submits its public
-// "landing" form when present. It intentionally does not defeat CAPTCHA,
-// login, paywall, or anti-bot challenges.
 function resolveThenaukriAdda(url, depth) {
     depth = depth || 0;
-    if (!url || depth > 5)
-        return Promise.resolve(null);
+    if (!url || depth > 4) return Promise.resolve(null);
 
-    console.log("[UHDMovies] TheNaukriAdda resolver (" + depth + "): " + url);
+    console.log("[UHDMovies] TheNaukriAdda redirect: " + url);
     return fetchText(url, { "Referer": DOMAIN }).then(function (html) {
-        if (!html)
+        if (!html) return null;
+        if (/captcha|recaptcha|hcaptcha|turnstile|verify you are human|cloudflare/i.test(html)) {
+            console.warn("[UHDMovies] TheNaukriAdda returned a verification page");
             return null;
+        }
 
         var base = getBaseUrl(url);
-        var metaTarget = extractMetaRefresh(html);
-        if (metaTarget) {
-            var metaUrl = fixUrl(metaTarget.replace(/^['"]|['"]$/g, ""), base);
-            if (/thenaukriadda\.in$/i.test((metaUrl.match(/^https?:\/\/([^/]+)/i) || [])[1] || "")) {
-                return resolveThenaukriAdda(metaUrl, depth + 1);
-            }
-            return metaUrl;
+        var meta = extractMetaRefresh(html);
+        if (meta) {
+            var target = fixUrl(meta.replace(/^['"]|['"]$/g, ""), base);
+            var host = (target.match(/^https?:\/\/([^/]+)/i) || [])[1] || "";
+            return /(^|\.)thenaukriadda\.in$/i.test(host) ?
+                resolveThenaukriAdda(target, depth + 1) : target;
         }
 
-        // Handle plain JavaScript navigation only when the destination is
-        // explicitly present in the page source.
-        var scriptTarget = html.match(/(?:window\s*\.\s*location(?:\.href)?|location(?:\.href)?)\s*=\s*["']([^"']+)["']/i) ||
-            html.match(/location\.replace\(\s*["']([^"']+)["']\s*\)/i) ||
-            html.match(/(?:window\.)?open\(\s*["']([^"']+)["']/i);
-        if (scriptTarget && scriptTarget[1]) {
-            var scriptUrl = fixUrl(scriptTarget[1], base);
-            var scriptHost = (scriptUrl.match(/^https?:\/\/([^/]+)/i) || [])[1] || "";
-            if (/thenaukriadda\.in$/i.test(scriptHost))
-                return resolveThenaukriAdda(scriptUrl, depth + 1);
-            return scriptUrl;
+        var js = html.match(/(?:window\s*\.\s*location(?:\.href)?|location(?:\.href)?)\s*=\s*["']([^"']+)["']/i) ||
+            html.match(/location\.replace\(\s*["']([^"']+)["']\s*\)/i);
+        if (js && js[1]) {
+            var jsTarget = fixUrl(js[1], base);
+            var jsHost = (jsTarget.match(/^https?:\/\/([^/]+)/i) || [])[1] || "";
+            return /(^|\.)thenaukriadda\.in$/i.test(jsHost) ?
+                resolveThenaukriAdda(jsTarget, depth + 1) : jsTarget;
         }
 
-        // TheNaukriAdda pages may expose a regular landing form. Submit only
-        // that public form; challenge forms are not automated.
-        var formAction = extractFormAction(html);
-        if (formAction) {
+        var action = extractFormAction(html);
+        if (action) {
             var formData = extractFormInputs(html);
-            var formText = html.slice(html.search(/<form[^>]*id=["']landing["']/i));
-            if (!/captcha|recaptcha|hcaptcha|turnstile|cloudflare/i.test(formText || "")) {
-                var actionUrl = fixUrl(formAction, base);
-                return fetch(actionUrl, {
-                    method: "POST",
-                    headers: {
-                        "User-Agent": USER_AGENT,
-                        "Referer": url,
-                        "Origin": base,
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    },
-                    body: toFormEncoded(formData),
-                    redirect: "follow"
-                }).then(function (res) {
-                    return res.text();
-                }).then(function (responseHtml) {
-                    if (!responseHtml)
-                        return null;
-                    var nextMeta = extractMetaRefresh(responseHtml);
-                    if (nextMeta) {
-                        var nextUrl = fixUrl(nextMeta.replace(/^['"]|['"]$/g, ""), actionUrl);
-                        var nextHost = (nextUrl.match(/^https?:\/\/([^/]+)/i) || [])[1] || "";
-                        return /thenaukriadda\.in$/i.test(nextHost) ?
-                            resolveThenaukriAdda(nextUrl, depth + 1) : nextUrl;
-                    }
-                    var nextScript = responseHtml.match(/(?:window\s*\.\s*location(?:\.href)?|location(?:\.href)?)\s*=\s*["']([^"']+)["']/i) ||
-                        responseHtml.match(/location\.replace\(\s*["']([^"']+)["']\s*\)/i);
-                    if (nextScript && nextScript[1]) {
-                        var target = fixUrl(nextScript[1], actionUrl);
-                        var targetHost = (target.match(/^https?:\/\/([^/]+)/i) || [])[1] || "";
-                        return /thenaukriadda\.in$/i.test(targetHost) ?
-                            resolveThenaukriAdda(target, depth + 1) : target;
-                    }
-                    return null;
-                });
-            }
+            var actionUrl = fixUrl(action, base);
+            return fetch(actionUrl, {
+                method: "POST",
+                headers: {
+                    "User-Agent": USER_AGENT,
+                    "Referer": url,
+                    "Origin": base,
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: toFormEncoded(formData),
+                redirect: "follow"
+            }).then(function (res) {
+                return res.text();
+            }).then(function (responseHtml) {
+                var next = extractMetaRefresh(responseHtml || "");
+                if (!next) return null;
+                var nextUrl = fixUrl(next.replace(/^['"]|['"]$/g, ""), actionUrl);
+                var nextHost = (nextUrl.match(/^https?:\/\/([^/]+)/i) || [])[1] || "";
+                return /(^|\.)thenaukriadda\.in$/i.test(nextHost) ?
+                    resolveThenaukriAdda(nextUrl, depth + 1) : nextUrl;
+            });
         }
 
-        // Only accept clearly labelled outbound download/continue anchors.
-        var anchorRe = /<a\b([^>]*?)href=["']([^"']+)["']([^>]*)>([\s\S]*?)<\/a>/gi;
-        var match;
-        while ((match = anchorRe.exec(html)) !== null) {
-            var label = stripTags(match[4] || "").toLowerCase();
-            var attrs = (match[1] + " " + match[3]).toLowerCase();
-            if (!/(download|get link|continue|watch now|proceed)/i.test(label + " " + attrs))
-                continue;
-            var candidate = fixUrl(match[2], base);
-            if (!/^https?:\/\//i.test(candidate) || candidate === url)
-                continue;
-            var candidateHost = (candidate.match(/^https?:\/\/([^/]+)/i) || [])[1] || "";
-            if (/thenaukriadda\.in$/i.test(candidateHost))
-                return resolveThenaukriAdda(candidate, depth + 1);
-            return candidate;
+        // Some pages provide a direct outbound anchor. Do not return the
+        // intermediary domain itself as if it were a playable media URL.
+        var aRe = /<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
+        var a;
+        while ((a = aRe.exec(html)) !== null) {
+            var label = stripTags(a[2]).toLowerCase();
+            if (!/(download|continue|watch|proceed|get link)/i.test(label)) continue;
+            var out = fixUrl(a[1], base);
+            var outHost = (out.match(/^https?:\/\/([^/]+)/i) || [])[1] || "";
+            if (!/^https?:\/\//i.test(out) || out === url) continue;
+            if (/thenaukriadda\.in$/i.test(outHost))
+                return resolveThenaukriAdda(out, depth + 1);
+            return out;
         }
         return null;
     }).catch(function (err) {
-        console.error("[UHDMovies] TheNaukriAdda resolver error: " + err.message);
+        console.error("[UHDMovies] TheNaukriAdda error: " + err.message);
         return null;
     });
 }
@@ -430,10 +432,11 @@ function extractVideoSeed(finallink) {
     console.log("[UHDMovies] VideoSeed: " + finallink);
     var hostM = finallink.match(/^https?:\/\/([^\/]+)/);
     var host = hostM ? hostM[1] : "video-seed.dev";
-    var tokenParts = finallink.split("?url=");
-    if (tokenParts.length < 2)
+    var tokenParts = finallink.match(/[?&]url=([^&]+)/i);
+    if (!tokenParts || !tokenParts[1])
         return Promise.resolve(null);
     var token = tokenParts[1];
+    try { token = decodeURIComponent(token); } catch (e) {}
     return fetch("https://" + host + "/api", {
         method: "POST",
         headers: {
@@ -446,8 +449,9 @@ function extractVideoSeed(finallink) {
     }).then(function (res) {
         return res.text();
     }).then(function (text) {
-        var m = text.match(/url":"([^"]+)"/);
-        return m ? m[1].replace(/\\\//g, "/") : null;
+        var m = text.match(/"url"\s*:\s*"([^"]+)"/i) ||
+            text.match(/https?:\\?\/\\?\/[^"'\s<>]+/i);
+        return m ? (m[1] || m[0]).replace(/\\\//g, "/") : null;
     }).catch(function (err) {
         console.error("[UHDMovies] VideoSeed error: " + err.message);
         return null;
@@ -457,10 +461,11 @@ function extractInstantLink(finallink) {
     console.log("[UHDMovies] InstantLink: " + finallink);
     var hostM = finallink.match(/^https?:\/\/([^\/]+)/);
     var host = hostM ? hostM[1] : finallink.indexOf("video-leech") !== -1 ? "video-leech.dev" : "video-seed.dev";
-    var tokenParts = finallink.split("url=");
-    if (tokenParts.length < 2)
+    var tokenParts = finallink.match(/[?&]url=([^&]+)/i);
+    if (!tokenParts || !tokenParts[1])
         return Promise.resolve(null);
     var token = tokenParts[1];
+    try { token = decodeURIComponent(token); } catch (e) {}
     return fetch("https://" + host + "/api", {
         method: "POST",
         headers: {
@@ -473,8 +478,9 @@ function extractInstantLink(finallink) {
     }).then(function (res) {
         return res.text();
     }).then(function (text) {
-        var m = text.match(/url":"([^"]+)"/);
-        return m ? m[1].replace(/\\\//g, "/") : null;
+        var m = text.match(/"url"\s*:\s*"([^"]+)"/i) ||
+            text.match(/https?:\\?\/\\?\/[^"'\s<>]+/i);
+        return m ? (m[1] || m[0]).replace(/\\\//g, "/") : null;
     }).catch(function (err) {
         console.error("[UHDMovies] InstantLink error: " + err.message);
         return null;
@@ -566,6 +572,20 @@ function extractDriveseedPage(url) {
         if (size)
             labelExtras += "[" + size + "]";
         var textCenterLinks = extractTextCenterLinks(html);
+        var genericAnchorRe = /<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
+        var genericAnchor;
+        var knownHrefs = {};
+        textCenterLinks.forEach(function (item) { knownHrefs[item.href] = true; });
+        while ((genericAnchor = genericAnchorRe.exec(html)) !== null) {
+            var genericText = stripTags(genericAnchor[2]).replace(/\s+/g, " ").trim();
+            if (!genericText || !/(instant download|resume worker bot|direct links|resume cloud|cloud download)/i.test(genericText))
+                continue;
+            var genericHref = fixUrl(genericAnchor[1], getBaseUrl(url));
+            if (!knownHrefs[genericHref]) {
+                knownHrefs[genericHref] = true;
+                textCenterLinks.push({ href: genericHref, text: genericText });
+            }
+        }
         var promises = [];
         textCenterLinks.forEach(function (item) {
             var text = (item.text || "").toLowerCase();
@@ -613,21 +633,53 @@ function getMovieLinks(pageUrl) {
     console.log("[UHDMovies] Movie links: " + pageUrl);
     return fetchText(pageUrl).then(function (html) {
         var links = [];
-        var entryM = html.match(/<div[^>]*class="[^"]*entry-content[^"]*"[^>]*>([\s\S]*)/i);
-        var entryHtml = entryM ? entryM[1] : html;
-        var parts = entryHtml.split(/<\/?p(?:\s[^>]*)?\s*>/i);
-        for (var i = 0; i < parts.length; i++) {
-            if (!/\[.*\]/.test(parts[i]))
+        var seen = {};
+        var anchorRe = /<a\b([^>]*?)href=["']([^"']+)["']([^>]*)>([\s\S]*?)<\/a>/gi;
+        var m;
+        while ((m = anchorRe.exec(html)) !== null) {
+            var label = stripTags(m[4]).replace(/\s+/g, " ").trim();
+            var attrs = (m[1] + " " + m[3]).toLowerCase();
+            if (!/(download|g-drive|google drive|drive link)/i.test(label + " " + attrs))
                 continue;
-            var sourceName = stripTags(parts[i]).split("Download")[0].trim();
-            for (var j = i + 1; j < Math.min(i + 6, parts.length); j++) {
-                var btnM = parts[j].match(/<a[^>]*class="[^"]*maxbutton-1[^"]*"[^>]*href="([^"]+)"/i) || parts[j].match(/<a[^>]*href="([^"]+)"[^>]*class="[^"]*maxbutton-1[^"]*"/i);
-                if (btnM) {
-                    links.push({ sourceName, sourceLink: btnM[1] });
-                    break;
+
+            var href = fixUrl(m[2], getBaseUrl(pageUrl));
+            if (!/^https?:\/\//i.test(href) || seen[href]) continue;
+            seen[href] = true;
+
+            // Capture nearby paragraph/card text to retain quality and file size.
+            var before = html.slice(Math.max(0, m.index - 1800), m.index);
+            var blocks = before.split(/<\/(?:p|div|li|h[1-6])>/i);
+            var context = stripTags(blocks[blocks.length - 1] || "");
+            var sourceName = context.slice(-220).trim() || label || "Download";
+            var quality = buildQualityLabel(sourceName + " " + label);
+            links.push({
+                sourceName: sourceName,
+                sourceLink: href,
+                quality: quality,
+                label: label
+            });
+        }
+
+        // Legacy layout fallback for older UHDMovies pages.
+        if (!links.length) {
+            var entryM = html.match(/<div[^>]*class=["'][^"']*entry-content[^"']*["'][^>]*>([\s\S]*)/i);
+            var entryHtml = entryM ? entryM[1] : html;
+            var parts = entryHtml.split(/<\/?p(?:\s[^>]*)?\s*>/i);
+            for (var i = 0; i < parts.length; i++) {
+                if (!/\[.*\]/.test(parts[i])) continue;
+                var sourceName = stripTags(parts[i]).split("Download")[0].trim();
+                for (var j = i + 1; j < Math.min(i + 6, parts.length); j++) {
+                    var btnM = parts[j].match(/<a[^>]*class=["'][^"']*maxbutton-1[^"']*["'][^>]*href=["']([^"']+)["']/i) ||
+                        parts[j].match(/<a[^>]*href=["']([^"']+)["'][^>]*class=["'][^"']*maxbutton-1[^"']*["']/i);
+                    if (btnM) {
+                        var href = fixUrl(btnM[1], getBaseUrl(pageUrl));
+                        links.push({ sourceName: sourceName, sourceLink: href, quality: buildQualityLabel(sourceName) });
+                        break;
+                    }
                 }
             }
         }
+
         console.log("[UHDMovies] Movie links found: " + links.length);
         return links;
     }).catch(function (err) {
@@ -694,7 +746,7 @@ function getStreams(tmdbId, mediaType, season, episode) {
             console.log("[UHDMovies] No search results");
             return [];
         }
-        var isSeries = mediaType === "series" || mediaType === "tv";
+        var isSeries = /^(series|tv|show)$/i.test(String(mediaType || ""));
         function processResult(index) {
             if (index >= searchResults.length)
                 return Promise.resolve(allStreams);
@@ -714,7 +766,14 @@ function getStreams(tmdbId, mediaType, season, episode) {
                     return finalLinkPromise.then(function (finalLink) {
                         if (!finalLink)
                             return [];
-                        if (finalLink.indexOf("driveseed") !== -1 || finalLink.indexOf("driveleech") !== -1) {
+                        var resolvedHost = (finalLink.match(/^https?:\/\/([^/]+)/i) || [])[1] || "";
+                        if (/(^|\.)thenaukriadda\.in$/i.test(resolvedHost)) {
+                            console.warn("[UHDMovies] Link is still an intermediate TheNaukriAdda page");
+                            return [];
+                        }
+                        if (/(^|\.)driveseed\.org$/i.test(resolvedHost) ||
+                            finalLink.indexOf("driveseed") !== -1 ||
+                            finalLink.indexOf("driveleech") !== -1) {
                             return extractDriveseedPage(finalLink);
                         }
                         if (finalLink.indexOf("video-seed") !== -1) {
