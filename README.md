@@ -1,12 +1,22 @@
-# Knox Fire TV Providers — 3.6.2
+# Nuvio-TV
 
-Compatibility fix for Nuvio TV / Fire TV plugin runtime.
+**Nuvio Android TV Compatible Plugins**
 
-## Fixes in this build
-- Transpiled all provider files to remove runtime `async/await` syntax that can fail in Nuvio's dynamically loaded JavaScript environment.
-- Preserved every scraper as enabled; no scraper was disabled.
-- Fixed MkvBase so numeric TMDB IDs are resolved to the movie/series title before searching.
-- Kept provider failures isolated so one provider returning an error does not prevent the remaining providers from running.
+This repository provides plugins designed for Nuvio, bringing additional content provider integrations to your Android TV experience.
 
-## Important
-This package only fixes the plugin/runtime integration. Third-party source sites can still change, block requests, require authentication, or return no usable source.
+## Plugin Installation
+
+1. Open Nuvio on your Android TV device.
+2. Navigate to the Plugins section.
+3. Add the plugin repository using the manifest URL below.
+4. Refresh the plugin list and enable the available plugins.
+
+## Plugin Manifest
+
+**Direct Manifest URL:**
+
+https://raw.githubusercontent.com/Imm0rtal001/knox/refs/heads/main/manifest.json
+
+**Compatibility:** Nuvio Android TV
+
+**Plugin Source:** GitHub
