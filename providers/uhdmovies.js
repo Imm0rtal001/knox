@@ -191,14 +191,43 @@ function cleanTitle(title) {
     return parts.slice(-3).join(".");
 }
 function fetchText(url, extraHeaders) {
-    var headers = Object.assign({ "User-Agent": USER_AGENT }, extraHeaders || {});
-    return fetch(url, { headers, redirect: "follow" }).then(function (res) {
+    var headers = Object.assign({
+        "User-Agent": USER_AGENT,
+        "Accept": "text/html,application/xhtml+xml,*/*"
+    }, extraHeaders || {});
+    return fetch(url, { headers: headers, redirect: "follow" }).then(function (res) {
+        if (!res || (typeof res.ok === "boolean" && !res.ok)) {
+            throw new Error("HTTP " + (res ? res.status : "no response") + " for " + url);
+        }
         return res.text();
     });
 }
 function fetchJson(url) {
-    return fetch(url, { headers: { "User-Agent": USER_AGENT } }).then(function (res) {
+    return fetch(url, {
+        headers: { "User-Agent": USER_AGENT, "Accept": "application/json,*/*" },
+        redirect: "follow"
+    }).then(function (res) {
+        if (!res || (typeof res.ok === "boolean" && !res.ok)) {
+            throw new Error("HTTP " + (res ? res.status : "no response") + " for TMDB request");
+        }
         return res.json();
+    });
+}
+function resolveTmdbId(id, mediaType) {
+    var value = String(id == null ? "" : id).trim();
+    if (/^\d+$/.test(value))
+        return Promise.resolve(value);
+    if (!/^tt\d{7,10}$/i.test(value))
+        return Promise.reject(new Error("Invalid movie ID. Expected a numeric TMDB ID or IMDb ID such as tt33764258"));
+    var url = TMDB_API + "/find/" + encodeURIComponent(value) + "?api_key=" + TMDB_API_KEY + "&external_source=imdb_id";
+    console.log("[UHDMovies] Resolving IMDb ID through TMDB: " + value);
+    return fetchJson(url).then(function (data) {
+        var isSeries = mediaType === "series" || mediaType === "tv";
+        var matches = isSeries ? data.tv_results : data.movie_results;
+        if (!matches || !matches.length || !matches[0].id)
+            throw new Error("No TMDB " + (isSeries ? "TV" : "movie") + " match for IMDb ID " + value);
+        console.log("[UHDMovies] IMDb " + value + " resolved to TMDB ID " + matches[0].id);
+        return String(matches[0].id);
     });
 }
 function getTmdbDetails(tmdbId, mediaType) {
@@ -350,15 +379,30 @@ function extractVideoSeed(finallink) {
     });
 }
 
+function getUrlHost(url) {
+    var match = String(url || "").match(/^https?:\/\/([^\/?#]+)/i);
+    return match ? match[1].toLowerCase().split("@").pop().split(":")[0] : "";
+}
+function resolveRelativeUrl(value, baseUrl) {
+    value = String(value || "").trim();
+    if (!value) return "";
+    if (/^https?:\/\//i.test(value)) return value;
+    if (value.indexOf("//") === 0) return "https:" + value;
+
+    var baseMatch = String(baseUrl || "").match(/^(https?:\/\/[^\/?#]+)/i);
+    if (!baseMatch) return "";
+    var origin = baseMatch[1];
+
+    if (value.charAt(0) === "/") return origin + value;
+
+    var basePath = String(baseUrl).replace(/[?#].*$/, "");
+    var slash = basePath.lastIndexOf("/");
+    return (slash >= 0 ? basePath.slice(0, slash + 1) : origin + "/") + value;
+}
 function isAllowedDestination(url) {
-    try {
-        var host = new URL(url).hostname.toLowerCase();
-        return host === "driveseed.org" || host.endsWith(".driveseed.org") ||
-            host === "video-seed.dev" || host.endsWith(".video-seed.dev");
-    }
-    catch (e) {
-        return false;
-    }
+    var host = getUrlHost(url);
+    return host === "driveseed.org" || /\.driveseed\.org$/.test(host) ||
+        host === "video-seed.dev" || /\.video-seed\.dev$/.test(host);
 }
 function extractAllowedRedirect(html, baseUrl) {
     var candidates = [];
@@ -375,7 +419,7 @@ function extractAllowedRedirect(html, baseUrl) {
 
     for (var i = 0; i < candidates.length; i++) {
         try {
-            var candidate = new URL(candidates[i], baseUrl).toString();
+            var candidate = resolveRelativeUrl(candidates[i], baseUrl);
             if (isAllowedDestination(candidate))
                 return candidate;
         }
@@ -396,6 +440,7 @@ function resolveNaukriAdda(url) {
             return null;
         }
         var finalUrl = res.url || url;
+        console.log("[UHDMovies] NaukriAdda HTTP " + res.status + ", final URL: " + finalUrl);
         if (isAllowedDestination(finalUrl))
             return finalUrl;
         return res.text().then(function (html) {
@@ -412,7 +457,7 @@ function resolveNaukriAdda(url) {
     });
 }
 function routeResolvedLink(finalLink, linkData) {
-    if (!finalLink)
+    if (!finalLink || !/^https?:\/\//i.test(finalLink))
         return Promise.resolve([]);
 
     var lower = finalLink.toLowerCase();
@@ -668,8 +713,18 @@ function getTvEpisodeLink(pageUrl, targetSeason, targetEpisode) {
 }
 function getStreams(tmdbId, mediaType, season, episode) {
     console.log("[UHDMovies] getStreams " + mediaType + " " + tmdbId);
+    if (tmdbId == null || !String(tmdbId).trim()) {
+        console.warn("[UHDMovies] Missing TMDB/IMDb id");
+        return Promise.resolve([]);
+    }
+    if (mediaType !== "movie" && mediaType !== "tv" && mediaType !== "series") {
+        console.warn("[UHDMovies] Unsupported media type: " + mediaType);
+        return Promise.resolve([]);
+    }
     var allStreams = [];
-    return getTmdbDetails(tmdbId, mediaType).then(function (tmdbDetails) {
+    return resolveTmdbId(tmdbId, mediaType).then(function (resolvedTmdbId) {
+        return getTmdbDetails(resolvedTmdbId, mediaType);
+    }).then(function (tmdbDetails) {
         if (!tmdbDetails)
             return [];
         console.log("[UHDMovies] Title: " + tmdbDetails.title + " (" + tmdbDetails.year + ")");
@@ -692,10 +747,8 @@ function getStreams(tmdbId, mediaType, season, episode) {
                     if (!sourceLink)
                         return Promise.resolve([]);
                     var sourceHost = "";
-                    try {
-                        sourceHost = new URL(sourceLink).hostname.toLowerCase();
-                    }
-                    catch (e) {
+                    sourceHost = getUrlHost(sourceLink);
+                    if (!sourceHost) {
                         console.warn("[UHDMovies] Invalid source link: " + sourceLink);
                         return Promise.resolve([]);
                     }
@@ -713,6 +766,9 @@ function getStreams(tmdbId, mediaType, season, episode) {
 
                     return finalLinkPromise.then(function (finalLink) {
                         return routeResolvedLink(finalLink, linkData);
+                    }).catch(function (err) {
+                        console.error("[UHDMovies] Link resolver failed: " + err.message);
+                        return [];
                     });
                 });
                 return Promise.all(extractPromises).then(function (results) {
