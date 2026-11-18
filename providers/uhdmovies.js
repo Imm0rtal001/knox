@@ -1,4 +1,673 @@
-// UHDMovies Nuvio provider - merged standalone JavaScript build
-// @vega-provider uhd
-// @vega-version 2.2
-"use strict";var __defProp=Object.defineProperty,__defProps=Object.defineProperties,__getOwnPropDesc=Object.getOwnPropertyDescriptor,__getOwnPropDescs=Object.getOwnPropertyDescriptors,__getOwnPropNames=Object.getOwnPropertyNames,__getOwnPropSymbols=Object.getOwnPropertySymbols,__hasOwnProp=Object.prototype.hasOwnProperty,__propIsEnum=Object.prototype.propertyIsEnumerable,__defNormalProp=(obj,key,value)=>key in obj?__defProp(obj,key,{enumerable:!0,configurable:!0,writable:!0,value:value}):obj[key]=value,__spreadValues=(a,b)=>{for(var prop in b||(b={}))__hasOwnProp.call(b,prop)&&__defNormalProp(a,prop,b[prop]);if(__getOwnPropSymbols)for(var prop of __getOwnPropSymbols(b))__propIsEnum.call(b,prop)&&__defNormalProp(a,prop,b[prop]);return a},__spreadProps=(a,b)=>__defProps(a,__getOwnPropDescs(b)),__name=(target,value)=>__defProp(target,"name",{value:value,configurable:!0}),__export=(target,all)=>{for(var name in all)__defProp(target,name,{get:all[name],enumerable:!0})},__copyProps=(to,from,except,desc)=>{if(from&&"object"==typeof from||"function"==typeof from)for(let key of __getOwnPropNames(from))__hasOwnProp.call(to,key)||key===except||__defProp(to,key,{get:()=>from[key],enumerable:!(desc=__getOwnPropDesc(from,key))||desc.enumerable});return to},__toCommonJS=mod=>__copyProps(__defProp({},"__esModule",{value:!0}),mod),__async=(__this,__arguments,generator)=>new Promise((resolve,reject)=>{var fulfilled=value=>{try{step(generator.next(value))}catch(e){reject(e)}},rejected=value=>{try{step(generator.throw(value))}catch(e){reject(e)}},step=x=>x.done?resolve(x.value):Promise.resolve(x.value).then(fulfilled,rejected);step((generator=generator.apply(__this,__arguments)).next())}),stream_exports={};function getErrorMessage(error){if(error instanceof Error)return error.message;if("string"==typeof error)return error;try{return JSON.stringify(error)}catch(e){return String(error)}}function throwProviderError(provider,operation,error){var _a,_b;const response=null==error?void 0:error.response,status=null==response?void 0:response.status,statusText=null==response?void 0:response.statusText,url=(null==(_a=null==response?void 0:response.config)?void 0:_a.url)||(null==(_b=null==error?void 0:error.config)?void 0:_b.url),details=[status?`HTTP ${status}${statusText?` ${statusText}`:""}`:"",url?`URL ${url}`:"",getErrorMessage(error)].filter(Boolean);throw new Error(`${provider} ${operation} failed: ${details.join(" | ")}`)}__export(stream_exports,{getStream:()=>getStream}),__name(getErrorMessage,"getErrorMessage"),__name(throwProviderError,"throwProviderError");var GOFILE_API="https://api.gofile.io",GOFILE_LANGUAGE="en-US",GOFILE_USER_AGENT="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",cachedAccountToken=null,cachedGenerateWT=null,cachedWTTime=0;function getOrFetchGenerateWT(axios){return __async(this,null,function*(){const now=Date.now();if(cachedGenerateWT&&now-cachedWTTime<108e5)return cachedGenerateWT;try{const code=(yield axios.get("https://gofile.io/js/wt.obf.js",{headers:{"User-Agent":GOFILE_USER_AGENT,Referer:"https://gofile.io/"}})).data,runner=new Function("navigator","window","document","location",`${code}\nreturn generateWT;`),fakeNav={userAgent:GOFILE_USER_AGENT,language:GOFILE_LANGUAGE},fakeWin={navigator:fakeNav,location:{href:"https://gofile.io/",protocol:"https:",host:"gofile.io"}},generateWT=runner(fakeNav,fakeWin,{},fakeWin.location);if("function"==typeof generateWT)return cachedGenerateWT=generateWT,cachedWTTime=now,generateWT}catch(err){console.warn("gofile: failed to fetch/execute wt.obf.js:",(null==err?void 0:err.message)||err)}return accountToken=>accountToken})}function getOrFetchToken(axios,providerContext){return __async(this,null,function*(){var _a,_b;if(cachedAccountToken)return cachedAccountToken;const kvStore=null==providerContext?void 0:providerContext.kvStore;try{const saved=yield null==kvStore?void 0:kvStore.get("gofile_account_token");if(saved&&"string"==typeof saved)return cachedAccountToken=saved,saved}catch(e){}const token=null==(_b=null==(_a=(yield axios.post(`${GOFILE_API}/accounts`,{},{headers:{"User-Agent":GOFILE_USER_AGENT,Origin:"https://gofile.io",Referer:"https://gofile.io/"}})).data)?void 0:_a.data)?void 0:_b.token;if(!token)throw new Error("Gofile did not return an account token");cachedAccountToken=token;try{yield null==kvStore?void 0:kvStore.set("gofile_account_token",token)}catch(e){}return token})}function findFirstFile(content){var _a;if("file"===(null==content?void 0:content.type)&&(null==content?void 0:content.link))return content;for(const child of Object.values(null!=(_a=null==content?void 0:content.children)?_a:{})){const file=findFirstFile(child);if(file)return file}}function gofileExtractor(id,axios,providerContext){return __async(this,null,function*(){var _a,_b,_c,_d,_e,_f,_g;try{const token=yield getOrFetchToken(axios,providerContext),websiteToken=(yield getOrFetchGenerateWT(axios))(token),response=yield axios.get(`${GOFILE_API}/contents/${id}`,{params:{contentFilter:"",page:1,pageSize:1e3,sortField:"name",sortDirection:1},headers:{Accept:"*/*","Accept-Language":`${GOFILE_LANGUAGE},en;q=0.9`,Authorization:`Bearer ${token}`,Origin:"https://gofile.io",Referer:"https://gofile.io/","User-Agent":GOFILE_USER_AGENT,"X-BL":GOFILE_LANGUAGE,"X-Website-Token":websiteToken}});if("ok"!==(null==(_a=response.data)?void 0:_a.status)){if("error-auth"===(null==(_b=response.data)?void 0:_b.status)||401===response.status){cachedAccountToken=null;try{yield null==(_c=null==providerContext?void 0:providerContext.kvStore)?void 0:_c.delete("gofile_account_token")}catch(e){}}throw new Error(`Gofile API returned ${null!=(_e=null==(_d=response.data)?void 0:_d.status)?_e:"invalid data"}`)}const file=findFirstFile(response.data.data);if(!(null==file?void 0:file.link))throw new Error("No downloadable file found in Gofile response");return{link:file.link,token:token}}catch(error){if(401===(null==(_f=null==error?void 0:error.response)?void 0:_f.status)){cachedAccountToken=null;try{yield null==(_g=null==providerContext?void 0:providerContext.kvStore)?void 0:_g.delete("gofile_account_token")}catch(e){}}throwProviderError("Gofile",`extract ${id}`,error)}})}__name(getOrFetchGenerateWT,"getOrFetchGenerateWT"),__name(getOrFetchToken,"getOrFetchToken"),__name(findFirstFile,"findFirstFile"),__name(gofileExtractor,"gofileExtractor");var hubcloudDecode=__name(function(value){return void 0===value?"":atob(value.toString())},"hubcloudDecode"),extractUrlFromScript=__name(html=>{var _a,_b,_c;const doubleAtobMatch=html.match(/(?:var|let|const)\s+\w+\s*=\s*atob\(atob\(['"]([^'"]+)['"]\)\)/);if(null==doubleAtobMatch?void 0:doubleAtobMatch[1])return atob(atob(doubleAtobMatch[1]));const plainMatch=html.match(/var\s+url\s*=\s*['"]([^'"]+)['"]/);return hubcloudDecode(null!=(_c=null==(_b=null==(_a=null==plainMatch?void 0:plainMatch[1])?void 0:_a.split("r="))?void 0:_b[1])?_c:"")||(null==plainMatch?void 0:plainMatch[1])||""},"extractUrlFromScript"),getPixelDrainUrl=__name(html=>{const match=html.match(/var\s+pxl\s*=\s*['"]([^'"]+)['"];?/i);return(null==match?void 0:match[1])||""},"getPixelDrainUrl"),getRedirectedPixelDrainUrl=__name((...htmlSources)=>{for(const html of htmlSources){if(!html)continue;const redirectedUrl=getPixelDrainUrl(html);if(redirectedUrl)return redirectedUrl}return""},"getRedirectedPixelDrainUrl");function resolveGofileLink(gofileLink,axios,providerContext){return __async(this,null,function*(){try{const id=new URL(gofileLink).pathname.split("/").filter(Boolean).pop();if(!id)return null;const gfResult=yield gofileExtractor(id,axios,providerContext);return(null==gfResult?void 0:gfResult.link)&&(null==gfResult?void 0:gfResult.token)?{server:"Gofile",link:gfResult.link,type:"mkv",headers:{Referer:"https://gofile.io/",Cookie:`accountToken=${gfResult.token}`}}:null}catch(error){return console.log("hubcloudExtractor: resolveGofileLink error:",error),null}})}function hubcloudExtractor(link,signal,axios,cheerio,headers,providerContext,isDownload,providerValue){return __async(this,null,function*(){var _a,_b,_c,_d,_e,_f,_g;try{console.log("hubcloudExtractor",link);const baseUrl=link.split("/").slice(0,3).join("/"),streamLinks2=[],openWebView=null==providerContext?void 0:providerContext.openWebView;let vLinkRes;try{vLinkRes=yield axios(`${link}`,{headers:headers,signal:signal})}catch(error){if(403!==(null==(_a=error.response)?void 0:_a.status))throw error;if(!openWebView)throw console.log(`hubcloudExtractor: 403 Forbidden for ${link}, but openWebView solver is not available!`),error;{console.log(`hubcloudExtractor: WAF detected (403) for ${link}, using solver...`);const cleanHeaders=__spreadProps(__spreadValues({},headers),{Referer:baseUrl}),wafResult=yield openWebView(baseUrl,{title:"Solve the captcha below and click done",description:"Required to bypass anti-bot protection.",headers:cleanHeaders,waitForCookie:"cf_clearance",force:!0});wafResult.userAgent&&(headers["User-Agent"]=wafResult.userAgent),headers.Cookie=(headers.Cookie?headers.Cookie+"; ":"")+wafResult.cookies,vLinkRes=yield axios(`${link}`,{headers:headers,signal:signal})}}const vLinkText=vLinkRes.data,$vLink=cheerio.load(vLinkText),vLinkGofileBtns=$vLink("a[href*='gofile.io']");for(const el of vLinkGofileBtns){const gfHref=$vLink(el).attr("href");if(gfHref){const gfStream=yield resolveGofileLink(gfHref,axios,providerContext);gfStream&&!streamLinks2.some(s=>s.link===gfStream.link)&&streamLinks2.push(gfStream)}}let vcloudLink=extractUrlFromScript(vLinkText)||$vLink(".fa-file-download.fa-lg").parent().attr("href")||link;if(console.log("vcloudLink",vcloudLink),(null==vcloudLink?void 0:vcloudLink.startsWith("/"))&&(vcloudLink=`${baseUrl}${vcloudLink}`,console.log("New vcloudLink",vcloudLink)),null==vcloudLink?void 0:vcloudLink.includes("gofile.io")){const gfStream=yield resolveGofileLink(vcloudLink,axios,providerContext);gfStream&&!streamLinks2.some(s=>s.link===gfStream.link)&&streamLinks2.push(gfStream)}let vcloudText="";if(vcloudLink&&!vcloudLink.includes("gofile.io")&&vcloudLink!==link)try{vcloudText=(yield axios.get(vcloudLink,{headers:headers,signal:signal})).data}catch(error){if(403!==(null==(_b=error.response)?void 0:_b.status)||!openWebView)throw error;{console.log(`hubcloudExtractor: WAF detected (403) for ${vcloudLink}, using solver...`);const vcloudBaseUrl=vcloudLink.split("/").slice(0,3).join("/"),cleanHeaders2=__spreadProps(__spreadValues({},headers),{Referer:vcloudBaseUrl}),wafResult=yield openWebView(vcloudBaseUrl,{title:"Solve the captcha below and click done",description:"Required to bypass anti-bot protection.",headers:cleanHeaders2,waitForCookie:"cf_clearance",force:!0});wafResult.userAgent&&(headers["User-Agent"]=wafResult.userAgent),headers.Cookie=(headers.Cookie?headers.Cookie+"; ":"")+wafResult.cookies,vcloudText=(yield axios.get(vcloudLink,{headers:headers,signal:signal})).data}}const $=cheerio.load(vcloudText),linkClass=$(".btn-success.btn-lg.h6,.btn-danger,.btn-secondary");for(const element of linkClass){let link2=$(element).attr("href")||"";switch(!0){case null==link2?void 0:link2.includes("pixeld"):if(console.log("Pixeldrain link found:",link2),!(null==link2?void 0:link2.includes("api"))){const redirectedPixelDrainUrl=getRedirectedPixelDrainUrl(vLinkText,vcloudText);redirectedPixelDrainUrl&&(console.log("Special case for token negn6f",redirectedPixelDrainUrl),link2=redirectedPixelDrainUrl);const token=null==(_c=link2.split("/").pop())?void 0:_c.split("?")[0],baseUrl2=link2.split("/").slice(0,-2).join("/");link2=`${baseUrl2}/api/file/${token}?download`}streamLinks2.push({server:"Pixeldrain",link:link2,type:"mkv"});break;case(null==link2?void 0:link2.includes(".dev"))&&!(null==link2?void 0:link2.includes("/?id=")):streamLinks2.push({server:"CF Worker",link:link2,type:"mkv"});break;case(null==link2?void 0:link2.includes("hubcloud"))||(null==link2?void 0:link2.includes("/?id=")):try{let newLink=link2;try{if("undefined"!=typeof fetch){const fRes=yield fetch(link2,{headers:headers,signal:signal,redirect:"follow"});fRes.url&&fRes.url.includes("googleusercontent")?newLink=fRes.url.split("?link=")[1]||fRes.url:fRes.url&&fRes.url!==link2&&(newLink=fRes.url)}}catch(e){}if(!newLink.includes("googleusercontent"))try{const res1=yield axios.get(newLink,{headers:headers,signal:signal,maxRedirects:0,validateStatus:__name(s=>s>=200&&s<400,"validateStatus")});if((null==(_d=res1.headers)?void 0:_d.location)&&(newLink=res1.headers.location),newLink.includes("googleusercontent"))newLink=newLink.split("?link=")[1]||newLink;else if(newLink.includes("http")){const res2=yield axios.get(newLink,{headers:headers,signal:signal,maxRedirects:0,validateStatus:__name(s=>s>=200&&s<400,"validateStatus")});if(null==(_e=res2.headers)?void 0:_e.location){const loc2=res2.headers.location;newLink=loc2.includes("?link=")?loc2.split("?link=")[1]:loc2}}}catch(e){}newLink.includes("?link=")&&(newLink=newLink.split("?link=")[1]||newLink),streamLinks2.push({server:"GDrive (download only)",link:newLink,type:"mkv"})}catch(error){console.log("hubcloudExtractor error in hubcloud link: ",error)}break;case null==link2?void 0:link2.includes("gofile.io"):try{const gfStream=yield resolveGofileLink(link2,axios,providerContext);gfStream&&!streamLinks2.some(s=>s.link===gfStream.link)&&streamLinks2.push(gfStream)}catch(error){console.log("hubcloudExtractor error in gofile link: ",error)}break;case null==link2?void 0:link2.includes("cloudflarestorage"):streamLinks2.push({server:"CF Storage",link:link2,type:"mkv"});break;case(null==link2?void 0:link2.includes("fastdl"))||(null==link2?void 0:link2.includes("fsl.")):streamLinks2.push({server:"FastDl",link:link2,type:"mkv"});break;case link2.includes("hubcdn")&&!link2.includes("/?id="):streamLinks2.push({server:"HubCdn",link:link2,type:"mkv"});break;default:if((null==link2?void 0:link2.includes(".mkv"))||(null==link2?void 0:link2.includes("?token="))){const serverName="CF Worker";streamLinks2.push({server:serverName,link:link2,type:"mkv"})}}}let preferredServer="auto";try{const specificKey=providerValue?`${providerValue}_preferredDownloadServer`:"";preferredServer=((specificKey?yield null==(_f=null==providerContext?void 0:providerContext.kvStore)?void 0:_f.get(specificKey):void 0)||(yield null==(_g=null==providerContext?void 0:providerContext.kvStore)?void 0:_g.get("preferredDownloadServer"))||"auto").toLowerCase().trim()}catch(e){}const getPriority=__name((serverName="")=>{const s=serverName.toLowerCase();return isDownload&&"auto"!==preferredServer&&""!==preferredServer&&s.includes(preferredServer)?0:isDownload?s.includes("cf storage")||s.includes("storage")||s.includes("resumable")?1:s.includes("gdrive")||s.includes("google")||s.includes("instant")?2:s.includes("pixeldrain")?3:s.includes("gofile")?4:s.includes("fastdl")||s.includes("fsl")?5:s.includes("hubcdn")?6:s.includes("cf worker")||s.includes("worker")||s.includes("fast cloud")?8:10:s.includes("cf storage")||s.includes("storage")?1:s.includes("cf worker")||s.includes("worker")||s.includes("fast cloud")?2:s.includes("gofile")?3:s.includes("pixeldrain")?4:s.includes("fastdl")||s.includes("fsl")?5:s.includes("hubcdn")?6:s.includes("gdrive")||s.includes("google")?7:10},"getPriority");return streamLinks2.sort((a,b)=>getPriority(a.server)-getPriority(b.server)),console.log("streamLinks",streamLinks2),streamLinks2}catch(error){throwProviderError("HubCloud",`extract ${link}`,error)}})}function gdflixExtractor(link,signal,axios,cheerio,headers,providerContext){return __async(this,null,function*(){var _a,_b,_c,_d,_e,_f,_g;try{let wafCookies;try{yield axios.get(link,{headers:headers,signal:signal})}catch(error){if(403!==(null==(_a=error.response)?void 0:_a.status)||!(null==providerContext?void 0:providerContext.openWebView))throw error;{console.log("gdflix: WAF detected (403), using solver...");const baseUrl=link.split("/").slice(0,3).join("/");wafCookies=(yield providerContext.openWebView(link,{title:"Solve the captcha below and click done",description:"Required to bypass GDFlix anti-bot protection.",headers:__spreadProps(__spreadValues({},headers),{Referer:baseUrl}),force:!0,waitForCookie:"cf_clearance"})).cookies}}wafCookies&&(headers.Cookie=wafCookies);const streamLinks2=[],res=yield axios(`${link}`,{headers:headers,signal:signal});console.log("gdflixExtractor",link);const data=res.data;let $drive=cheerio.load(data);if(null==(_b=$drive("body").attr("onload"))?void 0:_b.includes("location.replace")){const newLink=null==(_e=null==(_d=null==(_c=$drive("body").attr("onload"))?void 0:_c.split("location.replace('"))?void 0:_d[1].split("'"))?void 0:_e[0];if(console.log("newLink",newLink),newLink){const newRes=yield axios.get(newLink,{headers:headers,signal:signal});$drive=cheerio.load(newRes.data)}}try{const baseUrl=link.split("/").slice(0,3).join("/"),resumeDrive=$drive(".btn-secondary").attr("href")||"";if(console.log("resumeDrive",resumeDrive),resumeDrive.includes("indexbot")){const resumeBotRes=yield axios.get(resumeDrive,{headers:headers}),resumeBotToken=resumeBotRes.data.match(/formData\.append\('token', '([a-f0-9]+)'\)/)[1],resumeBotBody=new FormData;resumeBotBody.append("token",resumeBotToken);const resumeBotPath=resumeBotRes.data.match(/fetch\('\/download\?id=([a-zA-Z0-9\/+]+)'/)[1],resumeBotBaseUrl=resumeDrive.split("/download")[0],resumeBotDownload=yield fetch(resumeBotBaseUrl+"/download?id="+resumeBotPath,{method:"POST",body:resumeBotBody,headers:{Referer:resumeDrive,Cookie:"PHPSESSID=7e9658ce7c805dab5bbcea9046f7f308"}}),resumeBotDownloadData=yield resumeBotDownload.json();console.log("resumeBotDownloadData",resumeBotDownloadData.url),streamLinks2.push({server:"ResumeBot",link:resumeBotDownloadData.url,type:"mkv"})}else{const url=baseUrl+resumeDrive,resumeDriveHtml=(yield axios.get(url,{headers:headers})).data,resumeLink=cheerio.load(resumeDriveHtml)(".btn-success").attr("href");resumeLink&&streamLinks2.push({server:"ResumeCloud",link:resumeLink,type:"mkv"})}}catch(err){console.log("Resume link not found")}try{const seed=$drive(".btn-danger").attr("href")||"";if(seed&&seed.startsWith("http")){if(seed.includes("url=")){const directPart=decodeURIComponent(seed.split("url=")[1]);directPart&&directPart.startsWith("http")&&streamLinks2.push({server:"Instant Download",link:directPart,type:"mkv"})}try{const vRes=yield axios.get(seed,{headers:__spreadProps(__spreadValues({},headers),{Referer:link}),maxRedirects:0,validateStatus:__name(s=>s>=200&&s<400,"validateStatus"),signal:signal}),loc=null==(_f=vRes.headers)?void 0:_f.location;if(loc){let directGoogleUrl=null;loc.includes("url=")?directGoogleUrl=decodeURIComponent(loc.split("url=")[1]):(loc.includes("googleusercontent.com")||loc.startsWith("http"))&&(directGoogleUrl=loc),directGoogleUrl&&directGoogleUrl.startsWith("http")&&streamLinks2.push({server:"Instant Download",link:directGoogleUrl,type:"mkv"})}else if("string"==typeof vRes.data){const upMatch=vRes.data.match(/window\.location\.href\s*=\s*["']([^"']+)["']/);if(upMatch){const upPath=upMatch[1],vOrigin=new URL(seed).origin,upUrl=upPath.startsWith("http")?upPath:vOrigin+upPath,upRes=yield axios.get(upUrl,{headers:__spreadProps(__spreadValues({},headers),{Referer:seed}),signal:signal}),loc2=null==(_g=upRes.headers)?void 0:_g.location;if(loc2&&loc2.startsWith("http"))streamLinks2.push({server:"Instant Download",link:loc2,type:"mkv"});else if("string"==typeof upRes.data){const dlBtn=cheerio.load(upRes.data)("#downloadBtn, a.btn-danger, a.btn-success").attr("href");dlBtn&&dlBtn.startsWith("http")&&streamLinks2.push({server:"Instant Download",link:dlBtn,type:"mkv"})}}}}catch(e){}}}catch(e){}return streamLinks2}catch(error){return streamLinks}})}__name(resolveGofileLink,"resolveGofileLink"),__name(hubcloudExtractor,"hubcloudExtractor"),__name(gdflixExtractor,"gdflixExtractor");var getStream=__name(_0=>__async(null,[_0],function*({link:url,signal:signal,providerContext:providerContext,isDownload:isDownload}){try{const{axios:axios,cheerio:cheerio,commonHeaders:headers}=providerContext;let targetUrl=url;if(url.includes("thenaukriadda")||url.includes("sid=")){console.log("UHDMovies: bypassing thenaukriadda shortlink:",url);try{const bypassed=yield bypassThenaukriadda(url,providerContext,signal);bypassed&&(targetUrl=bypassed,console.log("UHDMovies: bypassed to:",targetUrl))}catch(bypassErr){console.warn("UHDMovies: thenaukriadda bypass failed:",bypassErr.message)}}if(targetUrl.includes("hubcloud"))return yield hubcloudExtractor(targetUrl,signal,axios,cheerio,headers,providerContext,isDownload,"UHDMovies");if(targetUrl.includes("gdflix"))return yield gdflixExtractor(targetUrl,signal,axios,cheerio,headers,providerContext);if(targetUrl.includes("driveseed")||targetUrl.includes("driveleech")||targetUrl.includes("appdrive")){const driveStreams=yield extractStreamsFromDriveseed(targetUrl,providerContext,signal);if(driveStreams.length>0)return driveStreams}return/\.(mp4|mkv|m3u8|avi)($|\?)/i.test(targetUrl)?[{server:"Direct Stream",link:targetUrl,type:targetUrl.includes(".m3u8")?"m3u8":"mkv"}]:[]}catch(err){return throwProviderError("UHDMovies","stream",err),[]}}),"getStream");function bypassThenaukriadda(initialUrl,providerContext,signal){return __async(this,null,function*(){var _a,_b,_c,_d,_e,_f;const{axios:axios,cheerio:cheerio,commonHeaders:commonHeaders}=providerContext,headers=__spreadProps(__spreadValues({},commonHeaders),{Referer:"https://uhdmovies.my/"}),res1=yield axios.get(initialUrl,{headers:headers,signal:signal}),html1="string"==typeof res1.data?res1.data:"",redirect1=html1.match(/location\.replace\(["']([^"']+)["']\)/);if(redirect1&&!redirect1[1].includes("thenaukriadda"))return redirect1[1].replace(/\\/g,"");let cookies=(null==(_b=null==(_a=res1.headers)?void 0:_a["set-cookie"])?void 0:_b.map(c=>c.split(";")[0]).join("; "))||"lp_ck_test=1";const form1=cheerio.load(html1)("form"),action1=form1.attr("action")||initialUrl.split("?")[0],input1=form1.find("input[name='_lp_http']").val()||form1.find("input[name='_wp_http']").val()||form1.find("input").val()||initialUrl.split("sid=")[1];if(!input1)return initialUrl;const inputName1=form1.find("input[name='_lp_http']").length?"_lp_http":"_wp_http",params1=new URLSearchParams;params1.append(inputName1,input1);const res2=yield axios.post(action1,params1.toString(),{headers:__spreadProps(__spreadValues({},headers),{"Content-Type":"application/x-www-form-urlencoded",Referer:initialUrl,Cookie:cookies,Origin:new URL(action1).origin}),signal:signal});(null==(_c=res2.headers)?void 0:_c["set-cookie"])&&(cookies+="; "+res2.headers["set-cookie"].map(c=>c.split(";")[0]).join("; "));const html2="string"==typeof res2.data?res2.data:"",$2=cheerio.load(html2),form2=$2("#lp-s1-form, form[id*='lp-'], form[id*='wp-']").first(),action2=form2.attr("action");if(!action2){const directMatch=html2.match(/setAttribute\("href",\s*"(.*?)"/);return directMatch?directMatch[1]:initialUrl}const params2=new URLSearchParams;form2.find("input").each((_,el)=>{const name=$2(el).attr("name"),val=$2(el).val();name&&params2.append(name,val||"")});const res3=yield axios.post(action2,params2.toString(),{headers:__spreadProps(__spreadValues({},headers),{"Content-Type":"application/x-www-form-urlencoded",Referer:action1,Cookie:cookies,Origin:new URL(action2).origin}),signal:signal});(null==(_d=res3.headers)?void 0:_d["set-cookie"])&&(cookies+="; "+res3.headers["set-cookie"].map(c=>c.split(";")[0]).join("; "));const html3="string"==typeof res3.data?res3.data:"",scMatch=html3.match(/sc\(["']([^"']+)["'],\s*["']([^"']+)["']/);if(!scMatch){const directGo=html3.match(/href=["'](https?:\/\/[^"']+\?lp_go=[^"']+)["']/);if(directGo)return directGo[1];const directMatch=html3.match(/location\.replace\(["']([^"']+)["']\)/);return directMatch?directMatch[1].replace(/\\/g,""):action2}const tokenName=scMatch[1],tokenVal=scMatch[2],lpGoUrl=`${new URL(action2).origin}/?lp_go=${tokenName}`;cookies+=`; ${tokenName}=${tokenVal}`;const res4=yield axios.get(lpGoUrl,{headers:__spreadProps(__spreadValues({},headers),{Referer:action2,Cookie:cookies}),signal:signal}),redirectMatch=("string"==typeof res4.data?res4.data:"").match(/location\.replace\(["']([^"']+)["']\)/);return redirectMatch?redirectMatch[1].replace(/\\/g,""):(null==(_f=null==(_e=res4.request)?void 0:_e.res)?void 0:_f.responseUrl)||lpGoUrl})}function extractStreamsFromDriveseed(driveUrl,providerContext,signal){return __async(this,null,function*(){var _a,_b;const{axios:axios,cheerio:cheerio,commonHeaders:headers}=providerContext,streams=[],addedUrls=new Set,addStream=__name((server,link)=>{link&&link.startsWith("http")&&!addedUrls.has(link)&&(addedUrls.add(link),streams.push({server:server,link:link,type:"mkv"}))},"addStream");let fileUrl=driveUrl;if(driveUrl.includes("/r?"))try{const rRes=yield axios.get(driveUrl,{headers:__spreadProps(__spreadValues({},headers),{Referer:"https://en.thenaukriadda.in/"}),signal:signal}),pathMatch=("string"==typeof rRes.data?rRes.data:"").match(/location\.replace\(["']([^"']+)["']\)/);if(pathMatch){const p=pathMatch[1].replace(/\\/g,""),origin=new URL(driveUrl).origin;fileUrl=p.startsWith("http")?p:origin+p}}catch(e){}try{const fileRes=yield axios.get(fileUrl,{headers:__spreadProps(__spreadValues({},headers),{Referer:driveUrl}),signal:signal}),fileHtml="string"==typeof fileRes.data?fileRes.data:"",$file=cheerio.load(fileHtml);try{const zfileUrl=fileUrl.replace("/file/","/zfile/"),zRes=yield axios.get(zfileUrl,{headers:__spreadProps(__spreadValues({},headers),{Referer:fileUrl}),signal:signal}),zHtml="string"==typeof zRes.data?zRes.data:"",$z=cheerio.load(zHtml);$z("a").each((_,el)=>{const href=$z(el).attr("href");if(href&&(href.includes("workers.dev")||href.includes("r2.dev")||href.includes("drive.google.com")||/\.(mp4|mkv|m3u8)($|\?)/i.test(href))){const serverName=href.includes("drive.google.com")?"Google Drive":"Resume Cloud (Fast)";addStream(serverName,href)}}),$z("iframe, video, source").each((_,el)=>{const src=$z(el).attr("src");if(src){const match=src.match(/link=(https?:\/\/[^&"']+)/);match&&match[1]&&addStream("Direct Stream",match[1])}})}catch(e){}$file("a").each((_,el)=>{const href=$file(el).attr("href");if(href&&(href.includes("workers.dev")||href.includes("r2.dev")||href.includes("drive.google.com")||/\.(mp4|mkv|m3u8)($|\?)/i.test(href))){const serverName=href.includes("drive.google.com")?"Google Drive":"Direct File Stream";addStream(serverName,href)}});try{const instantHref=$file(".btn-danger, a:contains('Instant Download')").attr("href");if(instantHref&&instantHref.startsWith("http")){let added=!1;if(instantHref.includes("url=")){const directPart=decodeURIComponent(instantHref.split("url=")[1]);directPart&&directPart.startsWith("http")&&(addStream("Instant Download",directPart),added=!0)}if(!added)try{const vRes=yield axios.get(instantHref,{headers:__spreadProps(__spreadValues({},headers),{Referer:fileUrl}),maxRedirects:0,validateStatus:__name(s=>s>=200&&s<400,"validateStatus"),signal:signal}),loc=null==(_a=vRes.headers)?void 0:_a.location;if(loc){let directGoogleUrl=null;loc.includes("url=")?directGoogleUrl=decodeURIComponent(loc.split("url=")[1]):(loc.includes("googleusercontent.com")||loc.startsWith("http"))&&(directGoogleUrl=loc),directGoogleUrl&&directGoogleUrl.startsWith("http")&&addStream("Instant Download",directGoogleUrl)}else if("string"==typeof vRes.data){const upMatch=vRes.data.match(/window\.location\.href\s*=\s*["']([^"']+)["']/);if(upMatch){const upPath=upMatch[1],vOrigin=new URL(instantHref).origin,upUrl=upPath.startsWith("http")?upPath:vOrigin+upPath,upRes=yield axios.get(upUrl,{headers:__spreadProps(__spreadValues({},headers),{Referer:instantHref}),maxRedirects:0,validateStatus:__name(s=>s>=200&&s<400,"validateStatus"),signal:signal}),loc2=null==(_b=upRes.headers)?void 0:_b.location;if(loc2&&loc2.startsWith("http"))addStream("Instant Download",loc2);else if("string"==typeof upRes.data){const dlBtn=cheerio.load(upRes.data)("#downloadBtn, a.btn-danger, a.btn-success").attr("href");dlBtn&&dlBtn.startsWith("http")&&addStream("Instant Download",dlBtn)}}}}catch(e){}}}catch(e){}for(const t of[1,2])try{const wfileUrl=fileUrl.replace("/file/","/wfile/")+`?type=${t}`,wRes=yield axios.get(wfileUrl,{headers:__spreadProps(__spreadValues({},headers),{Referer:fileUrl}),signal:signal}),wHtml="string"==typeof wRes.data?wRes.data:"",$w=cheerio.load(wHtml);$w(".btn-success, a.btn").each((i,el)=>{const href=$w(el).attr("href");href&&addStream(`Worker ${t}.${i+1}`,href)})}catch(e){}}catch(e){}if(0===streams.length)try{const gdStreams=yield gdflixExtractor(fileUrl,signal,axios,cheerio,headers,providerContext);if(Array.isArray(gdStreams))for(const s of gdStreams)addStream(s.server||"GDFlix",s.link)}catch(e){}return streams})}__name(bypassThenaukriadda,"bypassThenaukriadda"),__name(extractStreamsFromDriveseed,"extractStreamsFromDriveseed"),export { getStream };
+"use strict";
+// src/uhdmovies/index.js
+var DOMAIN = "https://uhdmovies.ceo";
+var TMDB_API = "https://api.themoviedb.org/3";
+var TMDB_API_KEY = "1865f43a0549ca50d341dd9ab8b29f49";
+var USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36";
+function getBaseUrl(url) {
+    if (!url)
+        return DOMAIN;
+    var match = url.match(/^(https?:\/\/[^\/]+)/);
+    return match ? match[1] : DOMAIN;
+}
+function fixUrl(url, domain) {
+    if (!url)
+        return "";
+    if (url.indexOf("http") === 0)
+        return url;
+    if (url.indexOf("//") === 0)
+        return "https:" + url;
+    if (url.indexOf("/") === 0)
+        return domain + url;
+    return domain + "/" + url;
+}
+function toFormEncoded(obj) {
+    return Object.keys(obj).map(function (k) {
+        return encodeURIComponent(k) + "=" + encodeURIComponent(obj[k] || "");
+    }).join("&");
+}
+function stripTags(html) {
+    return (html || "").replace(/<[^>]+>/g, "").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, " ").trim();
+}
+function extractFormAction(html) {
+    var m = html.match(/<form[^>]*id="landing"[^>]*action="([^"]+)"/i) || html.match(/<form[^>]*action="([^"]+)"[^>]*id="landing"/i);
+    return m ? m[1] : null;
+}
+function extractFormInputs(html) {
+    var obj = {};
+    var formMatch = html.match(/<form[^>]*id="landing"[^>]*>([\s\S]*?)<\/form>/i) || html.match(/<form[^>]*>([\s\S]*?)<\/form>/i);
+    var formHtml = formMatch ? formMatch[1] : html;
+    var re = /<input[^>]+>/gi;
+    var m;
+    while ((m = re.exec(formHtml)) !== null) {
+        var nameM = m[0].match(/name="([^"]+)"/i);
+        var valueM = m[0].match(/value="([^"]*)"/i);
+        if (nameM)
+            obj[nameM[1]] = valueM ? valueM[1] : "";
+    }
+    return obj;
+}
+function extractScriptContaining(html, needle) {
+    var re = /<script[^>]*>([\s\S]*?)<\/script>/gi;
+    var m;
+    while ((m = re.exec(html)) !== null) {
+        if (m[1].indexOf(needle) !== -1)
+            return m[1];
+    }
+    return "";
+}
+function extractMetaRefresh(html) {
+    var m = html.match(/<meta[^>]*http-equiv="refresh"[^>]*content="([^"]+)"/i) || html.match(/<meta[^>]*content="([^"]+)"[^>]*http-equiv="refresh"/i);
+    if (!m)
+        return null;
+    var urlM = m[1].match(/url=(.+)/i);
+    return urlM ? urlM[1].trim() : null;
+}
+function extractBtnSuccessLinks(html) {
+    var links = [];
+    var seen = {};
+    var patterns = [
+        /<a[^>]*class="[^"]*btn-success[^"]*"[^>]*href="([^"]+)"/gi,
+        /<a[^>]*href="([^"]+)"[^>]*class="[^"]*btn-success[^"]*"/gi
+    ];
+    for (var pi = 0; pi < patterns.length; pi++) {
+        var re = patterns[pi];
+        var m;
+        while ((m = re.exec(html)) !== null) {
+            if (m[1].indexOf("http") === 0 && !seen[m[1]]) {
+                seen[m[1]] = true;
+                links.push(m[1]);
+            }
+        }
+    }
+    return links;
+}
+function extractTextCenterLinks(html) {
+    var links = [];
+    var divRe = /<div[^>]*class="[^"]*text-center[^"]*"[^>]*>([\s\S]*?)<\/div>/gi;
+    var divM;
+    while ((divM = divRe.exec(html)) !== null) {
+        var divHtml = divM[1];
+        var aRe = /<a\s[^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi;
+        var aM;
+        while ((aM = aRe.exec(divHtml)) !== null) {
+            links.push({ href: aM[1], text: stripTags(aM[2]) });
+        }
+    }
+    return links;
+}
+function extractFirstListGroupItem(html) {
+    var m = html.match(/<li[^>]*class="[^"]*list-group-item[^"]*"[^>]*>([\s\S]*?)<\/li>/i);
+    return m ? stripTags(m[1]) : "";
+}
+function extractThirdListItem(html) {
+    var re = /<li[^>]*>([\s\S]*?)<\/li>/gi;
+    var count = 0;
+    var m;
+    while ((m = re.exec(html)) !== null) {
+        count++;
+        if (count === 3)
+            return stripTags(m[1]);
+    }
+    return "";
+}
+function getIndexQuality(str) {
+    if (!str)
+        return "Unknown";
+    // Check explicit resolution first (e.g. 2160p, 1080p, 720p)
+    var m = str.match(/(\d{3,4})[pP]/);
+    if (m)
+        return m[1] + "p";
+    // Only treat 4K/UHD as 2160p when it's a standalone quality tag, not part of site names like "UHDMovies"
+    if (/\b4[kK]\b/.test(str) || /\bUHD\b(?!movies)/i.test(str))
+        return "2160p";
+    return "Unknown";
+}
+function buildQualityLabel(str) {
+    var resolution = getIndexQuality(str);
+    var label = resolution === "2160p" ? "4K" : resolution;
+    var fuente = null;
+    if (/remux/i.test(str))
+        fuente = "BluRay REMUX";
+    else if (/blu.?ray|bluray/i.test(str))
+        fuente = "BluRay";
+    else if (/web.?dl/i.test(str))
+        fuente = "WEB-DL";
+    else if (/webrip/i.test(str))
+        fuente = "WEBRip";
+    else if (/hdrip/i.test(str))
+        fuente = "HDRip";
+    else if (/dvdrip/i.test(str))
+        fuente = "DVDRip";
+    else if (/hdtv/i.test(str))
+        fuente = "HDTV";
+    var codec = null;
+    if (/\bHEVC\b|\bx265\b|\bH\.?265\b/i.test(str))
+        codec = "x265/HEVC";
+    else if (/\bAVC\b|\bx264\b|\bH\.?264\b/i.test(str))
+        codec = "x264/AVC";
+    return [label, fuente, codec].filter(Boolean).join(" | ");
+}
+function cleanTitle(title) {
+    var qualityTags = ["WEBRip", "WEB-DL", "WEB", "BluRay", "HDRip", "DVDRip", "HDTV", "CAM", "TS", "R5", "DVDScr", "BRRip", "BDRip", "DVD", "PDTV", "HD"];
+    var audioTags = ["AAC", "AC3", "DTS", "MP3", "FLAC", "DD5", "EAC3", "Atmos"];
+    var subTags = ["ESub", "ESubs", "Subs", "MultiSub", "NoSub", "EnglishSub", "HindiSub"];
+    var codecTags = ["x264", "x265", "H264", "HEVC", "AVC"];
+    var parts = title.split(/[.\-_]/);
+    var startIndex = -1;
+    for (var i = 0; i < parts.length; i++) {
+        var p = parts[i].toLowerCase();
+        for (var q = 0; q < qualityTags.length; q++) {
+            if (p.indexOf(qualityTags[q].toLowerCase()) !== -1) {
+                startIndex = i;
+                break;
+            }
+        }
+        if (startIndex !== -1)
+            break;
+    }
+    var endIndex = -1;
+    for (var j = parts.length - 1; j >= 0; j--) {
+        var pp = parts[j].toLowerCase();
+        var found = false;
+        var allTags = subTags.concat(audioTags).concat(codecTags);
+        for (var t = 0; t < allTags.length; t++) {
+            if (pp.indexOf(allTags[t].toLowerCase()) !== -1) {
+                found = true;
+                break;
+            }
+        }
+        if (found) {
+            endIndex = j;
+            break;
+        }
+    }
+    if (startIndex !== -1 && endIndex !== -1 && endIndex >= startIndex) {
+        return parts.slice(startIndex, endIndex + 1).join(".");
+    }
+    else if (startIndex !== -1) {
+        return parts.slice(startIndex).join(".");
+    }
+    return parts.slice(-3).join(".");
+}
+function fetchText(url, extraHeaders) {
+    var headers = Object.assign({ "User-Agent": USER_AGENT }, extraHeaders || {});
+    return fetch(url, { headers, redirect: "follow" }).then(function (res) {
+        return res.text();
+    });
+}
+function fetchJson(url) {
+    return fetch(url, { headers: { "User-Agent": USER_AGENT } }).then(function (res) {
+        return res.json();
+    });
+}
+function getTmdbDetails(tmdbId, mediaType) {
+    var isSeries = mediaType === "series" || mediaType === "tv";
+    var endpoint = isSeries ? "tv" : "movie";
+    var url = TMDB_API + "/" + endpoint + "/" + tmdbId + "?api_key=" + TMDB_API_KEY;
+    console.log("[UHDMovies] TMDB: " + url);
+    return fetchJson(url).then(function (data) {
+        if (isSeries) {
+            return {
+                title: data.name,
+                year: data.first_air_date ? data.first_air_date.slice(0, 4) : null
+            };
+        }
+        return {
+            title: data.title,
+            year: data.release_date ? data.release_date.slice(0, 4) : null
+        };
+    }).catch(function (err) {
+        console.error("[UHDMovies] TMDB error: " + err.message);
+        return null;
+    });
+}
+function searchByTitle(title, year) {
+    var query = encodeURIComponent((title + " " + (year || "")).trim());
+    var url = DOMAIN + "/?s=" + query;
+    console.log("[UHDMovies] Search: " + url);
+    return fetchText(url).then(function (html) {
+        return parseSearchResults(html);
+    }).catch(function (err) {
+        console.error("[UHDMovies] Search error: " + err.message);
+        return [];
+    });
+}
+function parseSearchResults(html) {
+    var results = [];
+    var chunks = html.split(/<article\b/i);
+    for (var i = 1; i < chunks.length; i++) {
+        var chunk = "<article" + chunks[i];
+        var classM = chunk.match(/<article[^>]*class="([^"]*)"/i);
+        if (!classM || classM[1].indexOf("gridlove-post") === -1)
+            continue;
+        var h1M = chunk.match(/<h1[^>]*class="[^"]*sanket[^"]*"[^>]*>([\s\S]*?)<\/h1>/i);
+        var titleRaw = h1M ? stripTags(h1M[1]).replace(/^Download\s+/i, "") : "";
+        var titleM = titleRaw.match(/^(.*\)\d*)/);
+        var title = titleM ? titleM[1] : titleRaw;
+        var imgDivM = chunk.match(/<div[^>]*class="[^"]*entry-image[^"]*"[^>]*>[\s\S]*?<a\s[^>]*href="([^"]+)"/i);
+        var href = imgDivM ? imgDivM[1] : null;
+        if (href && title) {
+            results.push({ title, url: href, rawTitle: titleRaw });
+        }
+    }
+    console.log("[UHDMovies] Results: " + results.length);
+    return results;
+}
+function bypassHrefli(url) {
+    var host = getBaseUrl(url);
+    console.log("[UHDMovies] bypassHrefli: " + url);
+    return fetchText(url).then(function (html) {
+        var formUrl = extractFormAction(html);
+        var formData = extractFormInputs(html);
+        if (!formUrl)
+            return Promise.resolve(null);
+        return fetch(formUrl, {
+            method: "POST",
+            headers: {
+                "User-Agent": USER_AGENT,
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: toFormEncoded(formData)
+        }).then(function (res) {
+            return res.text();
+        });
+    }).then(function (html) {
+        if (!html)
+            return null;
+        var formUrl = extractFormAction(html);
+        var formData = extractFormInputs(html);
+        if (!formUrl)
+            return null;
+        return fetch(formUrl, {
+            method: "POST",
+            headers: {
+                "User-Agent": USER_AGENT,
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: toFormEncoded(formData)
+        }).then(function (res) {
+            return res.text().then(function (t) {
+                return { html: t, formData };
+            });
+        });
+    }).then(function (result) {
+        if (!result)
+            return null;
+        var script = extractScriptContaining(result.html, "?go=");
+        var skTokenM = script.match(/\?go=([^"]+)/);
+        if (!skTokenM)
+            return null;
+        var skToken = skTokenM[1];
+        var wpHttp2 = result.formData["_wp_http2"] || "";
+        return fetchText(host + "?go=" + skToken, {
+            "Cookie": skToken + "=" + wpHttp2
+        });
+    }).then(function (html) {
+        if (!html)
+            return null;
+        var driveUrl = extractMetaRefresh(html);
+        return driveUrl || null;
+    }).then(function (driveUrl) {
+        if (!driveUrl)
+            return null;
+        return fetchText(driveUrl).then(function (html) {
+            var pathM = html.match(/replace\("([^"]+)"\)/);
+            if (!pathM || pathM[1] === "/404")
+                return null;
+            return fixUrl(pathM[1], getBaseUrl(driveUrl));
+        });
+    }).catch(function (err) {
+        console.error("[UHDMovies] bypassHrefli error: " + err.message);
+        return null;
+    });
+}
+function extractVideoSeed(finallink) {
+    console.log("[UHDMovies] VideoSeed: " + finallink);
+    var hostM = finallink.match(/^https?:\/\/([^\/]+)/);
+    var host = hostM ? hostM[1] : "video-seed.dev";
+    var tokenParts = finallink.split("?url=");
+    if (tokenParts.length < 2)
+        return Promise.resolve(null);
+    var token = tokenParts[1];
+    return fetch("https://" + host + "/api", {
+        method: "POST",
+        headers: {
+            "User-Agent": USER_AGENT,
+            "Content-Type": "application/x-www-form-urlencoded",
+            "x-token": host,
+            "Referer": finallink
+        },
+        body: "keys=" + encodeURIComponent(token)
+    }).then(function (res) {
+        return res.text();
+    }).then(function (text) {
+        var m = text.match(/url":"([^"]+)"/);
+        return m ? m[1].replace(/\\\//g, "/") : null;
+    }).catch(function (err) {
+        console.error("[UHDMovies] VideoSeed error: " + err.message);
+        return null;
+    });
+}
+function extractInstantLink(finallink) {
+    console.log("[UHDMovies] InstantLink: " + finallink);
+    var hostM = finallink.match(/^https?:\/\/([^\/]+)/);
+    var host = hostM ? hostM[1] : finallink.indexOf("video-leech") !== -1 ? "video-leech.dev" : "video-seed.dev";
+    var tokenParts = finallink.split("url=");
+    if (tokenParts.length < 2)
+        return Promise.resolve(null);
+    var token = tokenParts[1];
+    return fetch("https://" + host + "/api", {
+        method: "POST",
+        headers: {
+            "User-Agent": USER_AGENT,
+            "Content-Type": "application/x-www-form-urlencoded",
+            "x-token": host,
+            "Referer": finallink
+        },
+        body: "keys=" + encodeURIComponent(token)
+    }).then(function (res) {
+        return res.text();
+    }).then(function (text) {
+        var m = text.match(/url":"([^"]+)"/);
+        return m ? m[1].replace(/\\\//g, "/") : null;
+    }).catch(function (err) {
+        console.error("[UHDMovies] InstantLink error: " + err.message);
+        return null;
+    });
+}
+function extractResumeBot(url) {
+    console.log("[UHDMovies] ResumeBot: " + url);
+    return fetchText(url).then(function (html) {
+        var tokenM = html.match(/formData\.append\('token', '([a-f0-9]+)'\)/);
+        var pathM = html.match(/fetch\('\/download\?id=([a-zA-Z0-9\/+]+)'/);
+        if (!tokenM || !pathM)
+            return null;
+        var token = tokenM[1];
+        var path = pathM[1];
+        var baseUrl = url.split("/download")[0];
+        return fetch(baseUrl + "/download?id=" + path, {
+            method: "POST",
+            headers: {
+                "User-Agent": USER_AGENT,
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Accept": "*/*",
+                "Origin": baseUrl,
+                "Referer": url
+            },
+            body: "token=" + encodeURIComponent(token)
+        });
+    }).then(function (res) {
+        if (!res)
+            return null;
+        return res.text();
+    }).then(function (text) {
+        if (!text)
+            return null;
+        try {
+            var json = JSON.parse(text);
+            return json.url && json.url.indexOf("http") === 0 ? json.url : null;
+        }
+        catch (e) {
+            return null;
+        }
+    }).catch(function (err) {
+        console.error("[UHDMovies] ResumeBot error: " + err.message);
+        return null;
+    });
+}
+function extractCFType1(url) {
+    console.log("[UHDMovies] CFType1: " + url);
+    return fetchText(url + "?type=1").then(function (html) {
+        return extractBtnSuccessLinks(html);
+    }).catch(function (err) {
+        console.error("[UHDMovies] CFType1 error: " + err.message);
+        return [];
+    });
+}
+function extractResumeCloudLink(baseUrl, path) {
+    console.log("[UHDMovies] ResumeCloud: " + baseUrl + path);
+    return fetchText(baseUrl + path).then(function (html) {
+        var links = extractBtnSuccessLinks(html);
+        return links.length ? links[0] : null;
+    }).catch(function (err) {
+        console.error("[UHDMovies] ResumeCloud error: " + err.message);
+        return null;
+    });
+}
+function extractDriveseedPage(url) {
+    console.log("[UHDMovies] Driveseed: " + url);
+    var streams = [];
+    return Promise.resolve().then(function () {
+        if (url.indexOf("r?key=") !== -1) {
+            return fetchText(url).then(function (html) {
+                var redirectM = html.match(/replace\("([^"]+)"\)/);
+                if (!redirectM)
+                    return html;
+                var base = getBaseUrl(url);
+                return fetchText(base + redirectM[1]);
+            });
+        }
+        return fetchText(url);
+    }).then(function (html) {
+        var baseDomain = getBaseUrl(url);
+        var qualityText = extractFirstListGroupItem(html);
+        var rawFileName = qualityText.replace("Name : ", "").trim();
+        var fileName = cleanTitle(rawFileName);
+        var size = extractThirdListItem(html).replace("Size : ", "").trim();
+        var quality = buildQualityLabel(qualityText);
+        var labelExtras = "";
+        if (fileName)
+            labelExtras += "[" + fileName + "]";
+        if (size)
+            labelExtras += "[" + size + "]";
+        var textCenterLinks = extractTextCenterLinks(html);
+        var promises = [];
+        textCenterLinks.forEach(function (item) {
+            var text = (item.text || "").toLowerCase();
+            var href = item.href;
+            if (!href)
+                return;
+            if (text.indexOf("instant download") !== -1) {
+                promises.push(extractInstantLink(href).then(function (link) {
+                    if (link)
+                        streams.push({ name: "UHDMovies", title: "Driveseed Instant " + labelExtras, url: link, quality });
+                }));
+            }
+            else if (text.indexOf("resume worker bot") !== -1) {
+                promises.push(extractResumeBot(href).then(function (link) {
+                    if (link)
+                        streams.push({ name: "UHDMovies", title: "Driveseed ResumeBot " + labelExtras, url: link, quality });
+                }));
+            }
+            else if (text.indexOf("direct links") !== -1) {
+                promises.push(extractCFType1(baseDomain + href).then(function (links) {
+                    links.forEach(function (link) {
+                        streams.push({ name: "UHDMovies", title: "Driveseed Direct " + labelExtras, url: link, quality });
+                    });
+                }));
+            }
+            else if (text.indexOf("resume cloud") !== -1) {
+                promises.push(extractResumeCloudLink(baseDomain, href).then(function (link) {
+                    if (link)
+                        streams.push({ name: "UHDMovies", title: "Driveseed ResumeCloud " + labelExtras, url: link, quality });
+                }));
+            }
+            else if (text.indexOf("cloud download") !== -1) {
+                streams.push({ name: "UHDMovies", title: "Driveseed Cloud " + labelExtras, url: href, quality });
+            }
+        });
+        return Promise.all(promises).then(function () {
+            return streams;
+        });
+    }).catch(function (err) {
+        console.error("[UHDMovies] Driveseed error: " + err.message);
+        return [];
+    });
+}
+function getMovieLinks(pageUrl) {
+    console.log("[UHDMovies] Movie links: " + pageUrl);
+    return fetchText(pageUrl).then(function (html) {
+        var links = [];
+        var entryM = html.match(/<div[^>]*class="[^"]*entry-content[^"]*"[^>]*>([\s\S]*)/i);
+        var entryHtml = entryM ? entryM[1] : html;
+        var parts = entryHtml.split(/<\/?p(?:\s[^>]*)?\s*>/i);
+        for (var i = 0; i < parts.length; i++) {
+            if (!/\[.*\]/.test(parts[i]))
+                continue;
+            var sourceName = stripTags(parts[i]).split("Download")[0].trim();
+            for (var j = i + 1; j < Math.min(i + 6, parts.length); j++) {
+                var btnM = parts[j].match(/<a[^>]*class="[^"]*maxbutton-1[^"]*"[^>]*href="([^"]+)"/i) || parts[j].match(/<a[^>]*href="([^"]+)"[^>]*class="[^"]*maxbutton-1[^"]*"/i);
+                if (btnM) {
+                    links.push({ sourceName, sourceLink: btnM[1] });
+                    break;
+                }
+            }
+        }
+        console.log("[UHDMovies] Movie links found: " + links.length);
+        return links;
+    }).catch(function (err) {
+        console.error("[UHDMovies] getMovieLinks error: " + err.message);
+        return [];
+    });
+}
+function getTvEpisodeLink(pageUrl, targetSeason, targetEpisode) {
+    console.log("[UHDMovies] TV S" + targetSeason + "E" + targetEpisode + ": " + pageUrl);
+    return fetchText(pageUrl).then(function (html) {
+        var links = [];
+        var blockRe = /<(p|div)(\s[^>]*)?>[\s\S]*?<\/\1>/gi;
+        var prevDetails = "";
+        var currentSeason = 1;
+        var m;
+        while ((m = blockRe.exec(html)) !== null) {
+            var blockHtml = m[0];
+            var blockText = stripTags(blockHtml);
+            var hasEpisodeLink = /episode/i.test(blockHtml) && /<a\b/i.test(blockHtml);
+            if (hasEpisodeLink) {
+                var seasonM = prevDetails.match(/(?:Season\s+|S0?)(\d+)/i);
+                if (seasonM)
+                    currentSeason = parseInt(seasonM[1]);
+                if (currentSeason === targetSeason) {
+                    var episodeLinks = [];
+                    var aRe = /<a\b[^>]*href="([^"]+)"[^>]*>[\s\S]*?<\/a>/gi;
+                    var aM;
+                    while ((aM = aRe.exec(blockHtml)) !== null) {
+                        if (/episode/i.test(aM[0]))
+                            episodeLinks.push(aM[1]);
+                    }
+                    if (targetEpisode <= episodeLinks.length && targetEpisode >= 1) {
+                        var link = episodeLinks[targetEpisode - 1];
+                        var sizeM = prevDetails.match(/(\d+(?:\.\d+)?\s*(?:MB|GB))/i);
+                        links.push({
+                            sourceLink: link,
+                            quality: buildQualityLabel(prevDetails),
+                            size: sizeM ? sizeM[1] : null,
+                            details: prevDetails
+                        });
+                    }
+                }
+                currentSeason++;
+            }
+            prevDetails = blockText;
+        }
+        console.log("[UHDMovies] Episode links found: " + links.length);
+        return links;
+    }).catch(function (err) {
+        console.error("[UHDMovies] getTvEpisodeLink error: " + err.message);
+        return [];
+    });
+}
+function getStreams(tmdbId, mediaType, season, episode) {
+    console.log("[UHDMovies] getStreams " + mediaType + " " + tmdbId);
+    var allStreams = [];
+    return getTmdbDetails(tmdbId, mediaType).then(function (tmdbDetails) {
+        if (!tmdbDetails)
+            return [];
+        console.log("[UHDMovies] Title: " + tmdbDetails.title + " (" + tmdbDetails.year + ")");
+        return searchByTitle(tmdbDetails.title, tmdbDetails.year);
+    }).then(function (searchResults) {
+        if (!searchResults || searchResults.length === 0) {
+            console.log("[UHDMovies] No search results");
+            return [];
+        }
+        var isSeries = mediaType === "series" || mediaType === "tv";
+        function processResult(index) {
+            if (index >= searchResults.length)
+                return Promise.resolve(allStreams);
+            var result = searchResults[index];
+            console.log("[UHDMovies] Processing: " + result.title);
+            var linksPromise = isSeries && season && episode ? getTvEpisodeLink(result.url, season, episode) : getMovieLinks(result.url);
+            return linksPromise.then(function (links) {
+                var extractPromises = links.map(function (linkData) {
+                    var sourceLink = linkData.sourceLink;
+                    if (!sourceLink)
+                        return Promise.resolve([]);
+                    var finalLinkPromise = sourceLink.indexOf("unblockedgames") !== -1 ? bypassHrefli(sourceLink) : Promise.resolve(sourceLink);
+                    return finalLinkPromise.then(function (finalLink) {
+                        if (!finalLink)
+                            return [];
+                        if (finalLink.indexOf("driveseed") !== -1 || finalLink.indexOf("driveleech") !== -1) {
+                            return extractDriveseedPage(finalLink);
+                        }
+                        if (finalLink.indexOf("video-seed") !== -1) {
+                            return extractVideoSeed(finalLink).then(function (url) {
+                                if (!url)
+                                    return [];
+                                return [{ name: "UHDMovies", title: "UHDMovies " + (linkData.quality || "Unknown"), url, quality: linkData.quality || "Unknown" }];
+                            });
+                        }
+                        return [{
+                                name: "UHDMovies",
+                                title: "UHDMovies " + (linkData.sourceName || linkData.quality || ""),
+                                url: finalLink,
+                                quality: linkData.quality || "Unknown"
+                            }];
+                    });
+                });
+                return Promise.all(extractPromises).then(function (results) {
+                    results.forEach(function (streams) {
+                        allStreams = allStreams.concat(streams);
+                    });
+                    return processResult(index + 1);
+                });
+            });
+        }
+        return processResult(0).then(function (streams) {
+            function scoreStream(s) {
+                var q = s.quality || "";
+                var rScore = 0;
+                if (/^4K/i.test(q))
+                    rScore = 4;
+                else if (/1080p/i.test(q))
+                    rScore = 3;
+                else if (/720p/i.test(q))
+                    rScore = 2;
+                else if (/480p/i.test(q))
+                    rScore = 1;
+                var sScore = 0;
+                if (/remux/i.test(q))
+                    sScore = 5;
+                else if (/blu.?ray/i.test(q))
+                    sScore = 4;
+                else if (/web.?dl/i.test(q))
+                    sScore = 3;
+                else if (/webrip/i.test(q))
+                    sScore = 2;
+                else if (/hdrip|dvdrip|hdtv/i.test(q))
+                    sScore = 1;
+                return rScore * 10 + sScore;
+            }
+            streams.sort(function (a, b) { return scoreStream(b) - scoreStream(a); });
+            return streams;
+        });
+    }).catch(function (err) {
+        console.error("[UHDMovies] Error: " + err.message);
+        return [];
+    });
+}
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = { getStreams };
+}
+else {
+    global.getStreams = getStreams;
+}
