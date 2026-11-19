@@ -433,8 +433,8 @@ async function extractDirectM3u8(pageUrl) {
 // ── HubCloud resolver ─────────────────────────────────────────
 async function extractHubCloud(hubUrl, referer) {
   try {
-    // Normalise .mov → .ist (common alias)
-    let url = hubUrl.replace('hubcloud.mov', 'hubcloud.ist');
+    // Normalise .ist → .mov (common alias)
+    let url = hubUrl.replace('hubcloud.ist', 'hubcloud.mov');
 
     const res1  = await cfFetch(url, {
       headers     : { ...SITE_HEADERS, 'Referer': referer || '' },
