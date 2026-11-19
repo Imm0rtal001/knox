@@ -253,7 +253,7 @@ async function extractDownloadLinks(movieUrl, targetYear = null) {
     const movieTitle = $('h1').first().text().trim();
 
     // Find all download links (the new SID links) and their associated quality information
-    $('a[href*="tech.unblockedgames.world"], a[href*="tech.examzculture.in"], a[href*="tech.examdegree.site"]').each((index, element) => {
+    $('a[href*="tech.unblockedgames.world"], a[href*="tech.examzculture.in"], a[href*="en.thenaukriadda.in"]').each((index, element) => {
       const link = $(element).attr('href');
 
       if (link && !links.some(item => item.url === link)) {
@@ -537,7 +537,7 @@ async function resolveSidToDriveleech(sidUrl) {
 // Function to try Instant Download method
 async function tryInstantDownload(html) {
   // Look for video-seed.pro or video-leech.pro links (the actual instant download pattern)
-  const videoSeedRegex = /href="([^"]*(?:video-seed\.pro|video-leech\.pro)[^"]*)"/i;
+  const videoSeedRegex = /href="([^"]*(?:video-seed\.dev|video-leech\.dev)[^"]*)"/i;
   const match = videoSeedRegex.exec(html);
 
   if (!match || !match[1]) {
@@ -597,7 +597,7 @@ async function resolveDriveseedLink(driveseedUrl) {
   try {
     const response = await makeRequest(driveseedUrl, {
       headers: {
-        'Referer': 'https://links.modpro.blog/',
+        'Referer': 'https://en.thenaukriadda.in/',
       }
     });
     const html = await response.text();
@@ -901,7 +901,7 @@ async function resolveDownloadLink(linkInfo) {
     if (linkInfo.url.includes('tech.unblockedgames.world') ||
       linkInfo.url.includes('tech.examzculture.in') ||
       linkInfo.url.includes('tech.examdegree.site') ||
-      linkInfo.url.includes('tech.creativeexpressionsblog.com')) {
+      linkInfo.url.includes('en.thenaukriadda.in')) {
       resolvedUrl = await resolveSidToDriveleech(linkInfo.url);
     } else if (linkInfo.url.includes('driveleech.net') || linkInfo.url.includes('driveseed.org')) {
       resolvedUrl = linkInfo.url;
@@ -1061,7 +1061,7 @@ async function extractTvShowDownloadLinks(showPageUrl, targetSeason, targetEpiso
         }
 
         // Is this a paragraph with episode links?
-        if ($el.is('p') && $el.find('a[href*="tech.unblockedgames.world"], a[href*="tech.examzculture.in"], a[href*="tech.examdegree.site"]').length > 0) {
+        if ($el.is('p') && $el.find('a[href*="tech.unblockedgames.world"], a[href*="tech.examzculture.in"], a[href*="en.thenaukriadda.in"]').length > 0) {
           const linksParagraph = $el;
           const episodeRegex = new RegExp(`^Episode\\s+0*${targetEpisode}(?!\\d)`, 'i');
           const targetEpisodeLink = linksParagraph.find('a').filter((i, el) => {
@@ -1092,7 +1092,7 @@ async function extractTvShowDownloadLinks(showPageUrl, targetSeason, targetEpiso
 
     if (links.length === 0) {
       console.log('[UHDMovies] Main extraction logic failed. Trying fallback method with season filtering.');
-      $('.entry-content').find('a[href*="tech.unblockedgames.world"], a[href*="tech.examzculture.in"], a[href*="tech.examdegree.site"]').each((i, el) => {
+      $('.entry-content').find('a[href*="tech.unblockedgames.world"], a[href*="tech.examzculture.in"], a[href*="en.thenaukriadda.in"]').each((i, el) => {
         const linkElement = $(el);
         const episodeRegex = new RegExp(`^Episode\\s+0*${targetEpisode}(?!\\d)`, 'i');
 
