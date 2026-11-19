@@ -18,7 +18,7 @@
 // ── Configuration  (edit these) ──────────────────────────────
 const CONFIG = {
   TMDB_API_KEY : '1865f43a0549ca50d341dd9ab8b29f49', // swap if rate-limited
-  WORKER_PROXY : '',          // Set to your Cloudflare Worker URL if you have one
+  WORKER_PROXY : 'https://lucky-star-3059.salman-sohail93.workers.dev',          // Set to your Cloudflare Worker URL if you have one
                               // e.g. 'https://myproxy.workers.dev'
   FLARESOLVERR : '',          // Optional: 'http://localhost:8191' (FlareSolverr v2)
   FLARESOLVERR_SESSION: 'movies4u',
