@@ -27,11 +27,10 @@ const CONFIG = {
     'https://new8.movies4u.garden',
   ],
   PLAYER_DOMAINS: [           // m4uplay player domains, tried in order
-    'https://m4uplay.store',
     'https://m4ulinks.xyz',
   ],
-  MAX_RETRIES  : 2,
-  RETRY_DELAY_MS: 800,
+  MAX_RETRIES  : 3,
+  RETRY_DELAY_MS: 400,
 };
 
 // ── Cloudflare-bypass headers ─────────────────────────────────
