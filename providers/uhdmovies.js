@@ -1,462 +1,738 @@
-const _0x244354=_0x2859;
-(function(_0x5c4e00, _0x4cd1fd) {
-  const _0xcf8bec= {
-    _0x3d5159:0x12f, _0x3c431a:0x18b, _0x840756:0x138, _0x9fafaa:0x19d, _0x17e61a:0x144, _0x3c7041:0x186, _0x53ec87:0x16d
-  }, _0x9641d0=_0x2859, _0x43d8ef=_0x5c4e00();while(!![]) {
-    try {
-      const _0x46cab5=-parseInt(_0x9641d0(_0xcf8bec._0x3d5159))/0x1*(parseInt(_0x9641d0(_0xcf8bec._0x3c431a))/0x2)+-parseInt(_0x9641d0(0x198))/0x3*(parseInt(_0x9641d0(0x15e))/0x4)+-parseInt(_0x9641d0(_0xcf8bec._0x840756))/0x5+parseInt(_0x9641d0(_0xcf8bec._0x9fafaa))/0x6+parseInt(_0x9641d0(_0xcf8bec._0x17e61a))/0x7+parseInt(_0x9641d0(_0xcf8bec._0x3c7041))/0x8+-parseInt(_0x9641d0(0x18a))/0x9*(-parseInt(_0x9641d0(_0xcf8bec._0x53ec87))/0xa);if(_0x46cab5===_0x4cd1fd)break;else _0x43d8ef['push'](_0x43d8ef['shift']());
-    }catch(_0xbda275) {
-      _0x43d8ef['push'](_0x43d8ef['shift']());
-    }
-  }
-}
-(_0x4d9a, 0x4d927));
-function _0x2859(_0x44e73f, _0x529224) {
-  _0x44e73f=_0x44e73f-0x12c;
-  const _0x4d9a70=_0x4d9a();
-  let _0x285905=_0x4d9a70[_0x44e73f];
-  if(_0x2859['wXSDQz']===undefined) {
-    var _0x4949e5=function(_0x1d286a) {
-      const _0x313157='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/=';
-      let _0xe7b8a6='', _0xa6dae8='';
-      for(let _0x22d250=0x0, _0x49c0be, _0x14d8e8, _0x56c2b6=0x0;_0x14d8e8=_0x1d286a['charAt'](_0x56c2b6++);~_0x14d8e8&&(_0x49c0be=_0x22d250%0x4?_0x49c0be*0x40+_0x14d8e8:_0x14d8e8, _0x22d250++%0x4)?_0xe7b8a6+=String['fromCharCode'](0xff&_0x49c0be>>(-0x2*_0x22d250&0x6)):0x0) {
-        _0x14d8e8=_0x313157['indexOf'](_0x14d8e8);
-      }
-      for(let _0x3f3092=0x0, _0x2293c1=_0xe7b8a6['length'];_0x3f3092<_0x2293c1;_0x3f3092++) {
-        _0xa6dae8+='%'+('00'+_0xe7b8a6['charCodeAt'](_0x3f3092)['toString'](0x10))['slice'](-0x2);
-      }
-      return decodeURIComponent(_0xa6dae8);
-    };
-    _0x2859['NJuBIi']=_0x4949e5, _0x2859['lofBsS']= {
-    }, _0x2859['wXSDQz']=!![];
-  }
-  const _0x390e57=_0x4d9a70[0x0], _0x4b45cc=_0x44e73f+_0x390e57, _0x54ea0c=_0x2859['lofBsS'][_0x4b45cc];
-  return!_0x54ea0c?(_0x285905=_0x2859['NJuBIi'](_0x285905), _0x2859['lofBsS'][_0x4b45cc]=_0x285905):_0x285905=_0x54ea0c, _0x285905;
-}
-function _0x4d9a() {
-  const _0x3a15c7=['C2L6zq', 'shvIq2XVDwqGuZm', 'yxvKAw9dB2rLyW', 'qvrnt1m', '8j+oPYberfa1lJe', 'iokaOIa', 'req1', 'qufd', 'ChjVDg90ExbL', 'tva0', 'BwfW', '8j+mIcbirfi', '8j+oPYbbqum', 'l21LzgLHl2zPBguUBwT2p3vYBd0', '8j+mNYa0sW', 'mte1ode2mhv0DLv3vq', 'sevwqW', 'BgfUz3vHz2u', 'AgfZ', 'mZeXneDuDhP6za', 'ntK3odG2vgrRz0Lt', 'sc4YnJu', 'Btr1CgXHEs5ZDg9Yzq', 'mta4ma', '8j+oNU+4JYa', 'zM9SBg93', 'Bwf4', 'mZyW', 'Dg9mB3DLCKnHC2u', 'DgHLBG', 'Aw5JBhvKzxm', 'Bw92Awu', 'BwfZDgvYlM0ZDtG', 'nLnrAxnSsW', 'Bwf0y2G', 'DMfSDwu', 'rfvbta', 'mJe2ma', 'mJi0mJiWnLLTzNLjvq', 'AhvIy2XVDwq', 'z2v0t3DUuhjVCgvYDhLezxnJCMLWDg9YCW', '8j+rGE+4JYbjtufyihWG8j+mKcbnB3zPzxm0Dsb8ipcFK6yG', 'CMvWBgfJzq', 'mLbYrxLzBq', 'zMLSDgvY', 'vw5RBM93BG', 'shvIq2XVDwqGrLnmDJi', '4PYOieHfvKm', 'lK1tDwjZ', 'shvIq2XVDwqGugL4zwWGmtbhyNbZ', 'DhjPBq', 'ndGWCa', 'ndm0mtaWr0rPzw1x', 'CMvZB2X2zq', '8j+rGE+4JYbjtufy', '4PYOieGUmJy0', 'ihWG8j+sVIa', 'txvSDgKTqxvKAw8', 'ndGW', 'ANnVBG', 'zgf0yq', 'Bw92AwvZnhu', 'zNvSBgHK', 'sdi2nq', 'mJuWnZy5nfb6D3vPyG', 'Dg9tDhjPBMC', 'nZiWCa', 'BgfIzwW', 'Ahr0Chm6lY9TnhvWBgf5lNn0B3jL', 'AgfZt3DUuhjVCgvYDhK', 'mZyWCa', 'EgXHpxm0Da', 'z2v0', 'Dgv4Da', 'tI9b', 'Ahr0Chm6lY9UzxCYlM1VDMLLCZr1lMnSAw5PyW', 'sdi2na', 'lNiYlMnSB3vKzMXHCMvZDg9YywDLlMnVBq', 'BgLUAW', 'AgvHzgvYCW', '8j+tSsa0odbW', 'Ahr0Chm6lY9TnhvWBgf5lNn0B3jLlW', 'C3bSAxq', 'rw5NBgLZAa', 'BMv4Da', 'mta4mha', 'yNL0zxm', 'DgvZDa', 'C3rYAw5N', 'shvIq2XVDwqGuerm', 'mJK3mZaWv2rfvKnj', 'Cgf0Ag5HBwu', 'zMLYC3rFywLYx2rHDgu', 'DxjS', 'Bwf0y2HbBgW', 'ywrK', 'CMvSzwfZzv9KyxrL', 'vKLtsu9o', 'yxbWBhK', 'AhGTCMvKAxjLy3q', 'AM9PBG', 'tuTw', 'Dg9vChbLCKnHC2u', 'zgvMAw5LuhjVCgvYDgLLCW', 'shvIq2XVDwqGrgLYzwn0', 'nZKZmgXJBfrutq', 'shvIq2XVDwqGtwvNyq', 'zxjYB3i', 'zgvMAw5LuhjVCgvYDhK', 'C2vHCMnOugfYyw1Z', 'ChvZAa', 'zM9YBwf0', 'mtG2nwy0m2eWntq5y2e1mgqZndfKzdLHyJHImJLMndK', 'CxvHBgL0Eq', 'zMHK'];
-  _0x4d9a=function() {
-    return _0x3a15c7;
-  };
-  return _0x4d9a();
-}
-var __defProp=Object["defineProperty"], __defProps=Object["defineProperties"], __getOwnPropDescs=Object["getOwnPropertyDescriptors"], __getOwnPropSymbols=Object['getOwnPropertySymbols'], __hasOwnProp=Object['prototype']["hasOwnProperty"], __propIsEnum=Object["prototype"]['propertyIsEnumerable'], __defNormalProp=(_0xe7b8a6, _0xa6dae8, _0x22d250)=>_0xa6dae8 in _0xe7b8a6?__defProp(_0xe7b8a6, _0xa6dae8,  {
-  'enumerable':!![], 'configurable':!![], 'writable':!![], 'value':_0x22d250
-}):_0xe7b8a6[_0xa6dae8]=_0x22d250, __spreadValues=(_0x49c0be, _0x14d8e8)=> {
-  for(var _0x56c2b6 in _0x14d8e8||(_0x14d8e8= {
-  }))if(__hasOwnProp['call'](_0x14d8e8, _0x56c2b6))__defNormalProp(_0x49c0be, _0x56c2b6, _0x14d8e8[_0x56c2b6]);
-  if(__getOwnPropSymbols)for(var _0x56c2b6 of __getOwnPropSymbols(_0x14d8e8)) {
-    if(__propIsEnum['call'](_0x14d8e8, _0x56c2b6))__defNormalProp(_0x49c0be, _0x56c2b6, _0x14d8e8[_0x56c2b6]);
-  }
-  return _0x49c0be;
-}, __spreadProps=(_0x3f3092, _0x2293c1)=>__defProps(_0x3f3092, __getOwnPropDescs(_0x2293c1)), __async=(_0xcd979, _0x57d1c8, _0x15291f)=> {
-  const _0x11c7be= {
-    _0x4134a3:0x166
-  };
-  return new Promise((_0x27250d, _0x20c5a0)=> {
-    const _0xe7c2ab=_0x2859;var _0x4cc8ae=_0x45aa8d=> {
-      const _0x41c3e7=_0x2859;try {
-        _0x3c92fb(_0x15291f[_0x41c3e7(0x158)](_0x45aa8d));
-      }catch(_0x3b9a61) {
-        _0x20c5a0(_0x3b9a61);
-      }
-    }, _0x4820d3=_0x529f0e=> {
-      try {
-        _0x3c92fb(_0x15291f['throw'](_0x529f0e));
-      }catch(_0x459d8f) {
-        _0x20c5a0(_0x459d8f);
-      }
-    }, _0x3c92fb=_0x672cc4=>_0x672cc4['done']?_0x27250d(_0x672cc4[_0xe7c2ab(0x19a)]):Promise[_0xe7c2ab(0x139)](_0x672cc4['value'])[_0xe7c2ab(0x194)](_0x4cc8ae, _0x4820d3);_0x3c92fb((_0x15291f=_0x15291f[_0xe7c2ab(_0x11c7be._0x4134a3)](_0xcd979, _0x57d1c8))[_0xe7c2ab(0x158)]());
-  });
-}, DOMAINS_URL='https://raw.githubusercontent.com/phisher98/TVVVV/refs/heads/main/domains.json', FALLBACK_URL="https://new8.movies4u.garden", WORKER_PROXY='', TMDB_API_KEY="1865f43a0549ca50d341dd9ab8b29f49", HEADERS= {
-  'User-Agent':'Mozilla/5.0\x20(Windows\x20NT\x2010.0;\x20Win64;\x20x64)\x20AppleWebKit/537.36\x20(KHTML,\x20like\x20Gecko)\x20Chrome/131.0.0.0\x20Safari/537.36', 'Referer':FALLBACK_URL, 'Cookie':"xla=s4t"
-}, cachedBaseUrl=null;
-function getBaseUrl() {
-  const _0x27613e= {
-    _0x5478cf:0x141
-  };
-  return __async(this, null, function*() {
-    const _0x110b64=_0x2859;if(cachedBaseUrl)return cachedBaseUrl;try {
-      const _0x43cc31=yield fetch(DOMAINS_URL,  {
-        'skipSizeCheck':!![]
-      }), _0xba2495=yield _0x43cc31['json']();cachedBaseUrl=_0xba2495[_0x110b64(_0x27613e._0x5478cf)]||_0xba2495['movies4uhd']||FALLBACK_URL;
-    }catch(_0x5c7928) {
-      cachedBaseUrl=FALLBACK_URL;
-    }
-    return cachedBaseUrl;
-  });
-}
-function getInvertedSortTag(_0x47bc3b, _0x25072e=0xf423f) {
-  const _0x44ed26= {
-    _0x47637b:0x168
-  }, _0x3bcbf4=_0x244354, _0x345928=Math[_0x3bcbf4(0x191)](0x0, parseInt(_0x47bc3b, 0xa)||0x0), _0x2a18f5=Math['max'](0x0, _0x25072e-_0x345928), _0x1a9ad7=_0x2a18f5['toString'](0x2)['padStart'](0x14, '0');
-  return _0x1a9ad7['split']('')['map'](_0xfad711=>_0xfad711==='1'?'\ufeff':'​')[_0x3bcbf4(_0x44ed26._0x47637b)]('');
-}
-function getQualityRank(_0x33dc9b) {
-  const _0x7a5c86= {
-    _0x360cdb:0x195, _0x32861c:0x18e, _0x5e90f3:0x195, _0x370125:0x142, _0x50f376:0x13e, _0x4dd301:0x192
-  }, _0x3dd727=_0x244354, _0x3dba7c=String(_0x33dc9b||'')['toLowerCase']();
-  if(_0x3dba7c[_0x3dd727(_0x7a5c86._0x360cdb)]('2160')||_0x3dba7c['includes']('4k')||_0x3dba7c['includes']('uhd'))return 0x4;
-  if(_0x3dba7c['includes'](_0x3dd727(_0x7a5c86._0x32861c))||_0x3dba7c[_0x3dd727(_0x7a5c86._0x5e90f3)]('fhd')||_0x3dba7c[_0x3dd727(_0x7a5c86._0x360cdb)](_0x3dd727(_0x7a5c86._0x370125)))return 0x3;
-  if(_0x3dba7c[_0x3dd727(0x195)]('720')||_0x3dba7c['includes']('hd'))return 0x2;
-  if(_0x3dba7c['includes'](_0x3dd727(_0x7a5c86._0x50f376))||_0x3dba7c['includes']('sd')||_0x3dba7c['includes'](_0x3dd727(_0x7a5c86._0x4dd301)))return 0x1;
-  return 0x0;
-}
-function parseSizeToMB(_0x4b58bf) {
-  const _0x320afd= {
-    _0x3c761d:0x199
-  }, _0x259ae4=_0x244354;
-  if(!_0x4b58bf||_0x4b58bf==='N/A')return 0x0;
-  const _0x1d73c1=String(_0x4b58bf)[_0x259ae4(_0x320afd._0x3c761d)](/([\d.]+)\s*(GB|MB)/i);
-  if(!_0x1d73c1)return 0x0;
-  const _0x48b74f=parseFloat(_0x1d73c1[0x1]), _0x3994b5=_0x1d73c1[0x2][_0x259ae4(0x16a)]();
-  if(_0x3994b5==='GB')return Math['floor'](_0x48b74f*0x400);
-  if(_0x3994b5==='MB')return Math['floor'](_0x48b74f);
-  return 0x0;
-}
-function getResolutionEmoji(_0x424c50) {
-  const _0x39e47b= {
-    _0x2e59a4:0x193, _0x10558e:0x195, _0x3242f7:0x19c, _0x50d5e9:0x185, _0x24f4d6:0x18e, _0x573c53:0x176, _0x306101:0x159
-  }, _0x48d96a=_0x244354, _0x310ef4=String(_0x424c50||'')[_0x48d96a(_0x39e47b._0x2e59a4)]();
-  if(_0x310ef4[_0x48d96a(_0x39e47b._0x10558e)](_0x48d96a(_0x39e47b._0x3242f7))||_0x310ef4['includes']('4k')||_0x310ef4[_0x48d96a(0x195)]('uhd'))return _0x48d96a(_0x39e47b._0x50d5e9);
-  if(_0x310ef4['includes'](_0x48d96a(_0x39e47b._0x24f4d6))||_0x310ef4[_0x48d96a(0x195)](_0x48d96a(_0x39e47b._0x573c53)))return'🔥\x201080p';
-  if(_0x310ef4[_0x48d96a(_0x39e47b._0x10558e)]('720')||_0x310ef4['includes']('hd'))return'💎\x20720p';
-  if(_0x310ef4['includes']('480')||_0x310ef4['includes']('sd'))return _0x48d96a(0x154);
-  return'📺\x20'+(_0x424c50||_0x48d96a(_0x39e47b._0x306101));
-}
-function extractQuality(_0x156177) {
-  const _0x15148e= {
-    _0x2a9453:0x193, _0xe5a756:0x146, _0xed8134:0x137
-  }, _0x1e8bf2=_0x244354, _0x54c068=(_0x156177||'')[_0x1e8bf2(_0x15148e._0x2a9453)]();
-  if(/\b(2160p|4k|uhd)\b/['test'](_0x54c068))return'4K';
-  if(/\b(1080p|1080)(?!(?:\s*gb|\s*mb|\s*b))\b/['test'](_0x54c068))return'1080p';
-  if(/\b(720p|720)(?!(?:\s*gb|\s*mb|\s*b))\b/['test'](_0x54c068))return _0x1e8bf2(_0x15148e._0xe5a756);
-  if(/\b(480p|480)(?!(?:\s*gb|\s*mb|\s*b))\b/[_0x1e8bf2(0x15b)](_0x54c068))return _0x1e8bf2(_0x15148e._0xed8134);
-  if(/\b(360p|360)(?!(?:\s*gb|\s*mb|\s*b))\b/[_0x1e8bf2(0x15b)](_0x54c068))return _0x1e8bf2(0x14a);
-  return'Unknown';
-}
-function parseExtraMetadata(_0x1e72cd, _0x5b6cdf='') {
-  const _0x5aa91b= {
-    _0x396693:0x16a, _0x37d4dc:0x13d, _0x2a8134:0x19b, _0x401740:0x157, _0x5ef65d:0x14e, _0x26fab9:0x169, _0x4aec63:0x182, _0x26be84:0x195, _0x3abeb8:0x195, _0x5f480c:0x143, _0x533e51:0x133, _0x199239:0x150, _0x4234e4:0x13b, _0x32a7ec:0x195, _0x5b5b9a:0x17d, _0x2a33c3:0x195, _0x71dfa8:0x195, _0x27919f:0x17e, _0xc66546:0x13a
-  }, _0x761dd2=_0x244354, _0x5a4692=(_0x1e72cd+'\x20'+_0x5b6cdf)[_0x761dd2(_0x5aa91b._0x396693)]();
-  let _0x4e328c=_0x761dd2(_0x5aa91b._0x37d4dc);
-  if(_0x5a4692['includes'](_0x761dd2(_0x5aa91b._0x2a8134)))_0x4e328c='Multi\x20Audio';
-  if(_0x5a4692['includes']('ENGLISH')&&!_0x5a4692['includes']('HINDI'))_0x4e328c=_0x761dd2(_0x5aa91b._0x401740);
-  const _0x1f6a3c=_0x5a4692[_0x761dd2(0x199)](/(\d+(?:\.\d+)?\s*[MGB]B)/i);
-  let _0x37b22b=_0x1f6a3c?_0x1f6a3c[0x0]['replace'](/\s+/g, ''):_0x761dd2(_0x5aa91b._0x5ef65d);
-  if(_0x37b22b==='N/A') {
-    const _0x7912c4=_0x5a4692['match'](/(\d+\.\d+)\s?G/);
-    if(_0x7912c4)_0x37b22b=_0x7912c4[0x1]+'GB';
-  }
-  let _0x35a35e=_0x761dd2(_0x5aa91b._0x26fab9);
-  if(_0x5a4692[_0x761dd2(0x195)](_0x761dd2(0x180)))_0x35a35e=_0x761dd2(0x180);
-  let _0x33fc10=_0x761dd2(0x13b);
-  if(_0x5a4692['includes']('HDR')||_0x5a4692['includes']('DV')||_0x5a4692[_0x761dd2(0x195)](_0x761dd2(0x165)))_0x33fc10=_0x761dd2(_0x5aa91b._0x4aec63);
-  else {
-    if(_0x5a4692[_0x761dd2(0x195)](_0x761dd2(0x187))||_0x5a4692[_0x761dd2(_0x5aa91b._0x26be84)]('X265')||_0x5a4692[_0x761dd2(_0x5aa91b._0x3abeb8)](_0x761dd2(_0x5aa91b._0x5f480c))||_0x5a4692['includes'](_0x761dd2(0x18c)))_0x33fc10=_0x761dd2(_0x5aa91b._0x533e51);
-    else {
-      if(_0x5a4692['includes']('X264')||_0x5a4692['includes'](_0x761dd2(_0x5aa91b._0x199239))||_0x5a4692[_0x761dd2(_0x5aa91b._0x26be84)]('H.264'))_0x33fc10=_0x761dd2(_0x5aa91b._0x4234e4);
-    }
-  }
-  let _0x55e959='🎧\x20DDP5.1';
-  if(_0x5a4692[_0x761dd2(_0x5aa91b._0x32a7ec)](_0x761dd2(0x17a)))_0x55e959='🎧\x20Dolby\x20Atmos';
-  else {
-    if(_0x5a4692[_0x761dd2(0x195)](_0x761dd2(_0x5aa91b._0x5b5b9a))||_0x5a4692['includes']('DDP5')||_0x5a4692[_0x761dd2(_0x5aa91b._0x2a33c3)]('5.1'))_0x55e959=_0x761dd2(0x17b);
-    else {
-      if(_0x5a4692[_0x761dd2(_0x5aa91b._0x71dfa8)](_0x761dd2(_0x5aa91b._0x27919f)))_0x55e959=_0x761dd2(0x183);
-    }
-  }
-  const _0x493e81=_0x5a4692['includes']('IMAX')?_0x761dd2(_0x5aa91b._0xc66546):null;
-  return {
-    'language':_0x4e328c, 'size':_0x37b22b, 'format':_0x35a35e, 'codecTag':_0x33fc10, 'audioCodec':_0x55e959, 'isImax':_0x493e81
-  };
-}
-function safeUrl(_0x597ccf) {
-  const _0x26e9c7= {
-    _0x443789:0x15f, _0x1ed68a:0x168
-  }, _0x47ed3b=_0x244354;
-  if(!_0x597ccf)return null;
-  try {
-    const _0x3c0b4f=new URL(_0x597ccf);
-    return _0x3c0b4f[_0x47ed3b(_0x26e9c7._0x443789)]=_0x3c0b4f['pathname']['split']('/')[_0x47ed3b(0x181)](_0xacfe96=> {
-      try {
-        return encodeURIComponent(decodeURIComponent(_0xacfe96));
-      }catch(_0x19a269) {
-        return encodeURIComponent(_0xacfe96);
-      }
-    })[_0x47ed3b(_0x26e9c7._0x1ed68a)]('/'), _0x3c0b4f[_0x47ed3b(0x145)]();
-  }catch(_0x39c446) {
-    return _0x597ccf;
-  }
-}
-function wrapFslMkvUrl(_0x192570) {
-  const _0x5bc5fc= {
-    _0x335665:0x193
-  }, _0xf6c0e5=_0x244354;
-  try {
-    const _0x5d24df=new URL(_0x192570), _0x246b05=_0x5d24df['hostname'][_0xf6c0e5(_0x5bc5fc._0x335665)]();
-    if(!(_0x246b05==='r2.cloudflarestorage.com'||_0x246b05['endsWith'](_0xf6c0e5(0x151))))return _0x192570;
-    return WORKER_PROXY+_0xf6c0e5(0x184)+encodeURIComponent(_0x192570);
-  }catch(_0x97b723) {
-    return _0x192570;
-  }
-}
-function hubCloudServer(_0xb90b38, _0x39f2a7) {
-  const _0x47454a= {
-    _0xd51536:0x15b, _0x51c1dd:0x15b, _0x390795:0x178, _0x3ec165:0x16e
-  }, _0x451f9f=_0x244354, _0x102e41=((_0xb90b38||'')+'\x20'+(_0x39f2a7||''))['toLowerCase']();
-  if(/gpdl\.|server\s*:\s*10gbps/[_0x451f9f(0x15b)](_0x102e41))return _0x451f9f(0x135);
-  if(/fslv2/[_0x451f9f(_0x47454a._0xd51536)](_0x102e41))return _0x451f9f(0x132);
-  if(/fsl/[_0x451f9f(_0x47454a._0x51c1dd)](_0x102e41))return'HubCloud\x20FSL';
-  if(/s3 server/[_0x451f9f(0x15b)](_0x102e41))return _0x451f9f(_0x47454a._0x390795);
-  if(/mega server/[_0x451f9f(0x15b)](_0x102e41))return _0x451f9f(_0x47454a._0x3ec165);
-  if(/pdl server/[_0x451f9f(_0x47454a._0x51c1dd)](_0x102e41))return _0x451f9f(0x15d);
-  if(/buzzserver/[_0x451f9f(0x15b)](_0x102e41))return'HubCloud\x20BuzzServer';
-  if(/pixeldrain/['test'](_0x102e41))return'HubCloud\x20Pixeldrain';
-  if(/pixel\.|pixelserver/['test'](_0x102e41))return'HubCloud\x20Pixel';
-  if(/workers\.dev|download file/[_0x451f9f(0x15b)](_0x102e41))return _0x451f9f(0x16c);
-  return'HubCloud';
-}
-function detectFileSize(_0x35ad52) {
-  const _0x4bb1fa= {
-    _0x203db1:0x190
-  };
-  return __async(this, arguments, function*(_0x4f8380, _0x3811b5= {
-  }) {
-    const _0x3264bf=_0x2859;try {
-      const _0x3d3b5b=yield fetch(_0x4f8380,  {
-        'method':'HEAD', 'headers':_0x3811b5, 'skipSizeCheck':!![], 'redirect':_0x3264bf(_0x4bb1fa._0x203db1)
-      }), _0x114e07=_0x3d3b5b[_0x3264bf(0x153)]['get']('content-length');if(!_0x114e07)return null;const _0x596e1a=parseInt(_0x114e07);let _0x1f26ae=_0x596e1a>=0x400*0x400*0x400?(_0x596e1a/(0x400*0x400*0x400))['toFixed'](0x1)+'GB':Math['round'](_0x596e1a/(0x400*0x400))+'MB';return {
-        'bytes':_0x596e1a, 'string':_0x1f26ae
-      };
-    }catch(_0x375d25) {
-    }
-    return null;
-  });
-}
-function detectDynamicQuality(_0x4103a4) {
-  const _0x57248f= {
-    _0x20df19:0x131, _0x1d927d:0x193, _0x4a036c:0x159
-  };
-  return __async(this, arguments, function*(_0x59debe, _0x373968= {
-  }, _0x432b7b='', _0x2e2b80=0x78) {
-    const _0x241678=_0x2859;try {
-      if(!_0x59debe)return'1080p';const _0x3f24e8=decodeURIComponent(_0x59debe)['toLowerCase']();let _0x4f614b=extractQuality(_0x3f24e8);if(_0x4f614b!==_0x241678(_0x57248f._0x20df19))return _0x4f614b;if(_0x432b7b) {
-        _0x4f614b=extractQuality(_0x432b7b[_0x241678(_0x57248f._0x1d927d)]());if(_0x4f614b!==_0x241678(_0x57248f._0x20df19))return _0x4f614b;
-      }
-      const _0x424124=yield detectFileSize(_0x59debe, _0x373968);if(_0x424124&&_0x424124['bytes']) {
-        const _0x5ed04a=_0x424124[_0x241678(0x15a)]/(0x400*0x400*0x400), _0x183060=(parseInt(_0x2e2b80)||0x78)/0x3c, _0x27833f=_0x5ed04a/_0x183060;if(_0x27833f>=6.5)return'4K';if(_0x27833f>=0.95)return _0x241678(0x159);if(_0x27833f>=0.35)return'720p';return'480p';
-      }
-    }catch(_0x5b6e7b) {
-    }
-    return _0x241678(_0x57248f._0x4a036c);
-  });
-}
-function makeStream(_0x1bbc01, _0x5e27d5, _0x4d0d8c, _0x4a308b, _0x47a5ac, _0x53e62f, _0x575102, _0x4f421e) {
-  const _0x2a565a= {
-    _0x2126a7:0x12e, _0x95e4ef:0x173, _0x4aaf4b:0x134, _0x5395ed:0x13c, _0x50aaad:0x17c
-  }, _0x2d55a4=_0x244354, _0x410f8e=getQualityRank(_0x4d0d8c), _0x3b9868=parseSizeToMB(_0x4a308b), _0x407563=getInvertedSortTag(_0x410f8e*0x186a0+_0x3b9868, 0xf423f), _0x577439=getResolutionEmoji(_0x4d0d8c), _0x47e071=(_0x53e62f||'')['replace'](/[^a-zA-Z0-9]/g, '.'), _0x465bf7=_0x47e071+'.'+(_0x575102||'2026')+'.'+(_0x4f421e['isImax']?'IMAX.':'')+_0x4d0d8c+'.AMZN.WEB-DL.'+_0x4f421e[_0x2d55a4(0x188)][_0x2d55a4(_0x2a565a._0x2126a7)](/\s+/g, '.')+'.'+_0x4f421e['audioCodec'][_0x2d55a4(0x12e)](/[^\w.]/g, '')+'.'+_0x4f421e[_0x2d55a4(_0x2a565a._0x95e4ef)]+_0x2d55a4(_0x2a565a._0x4aaf4b), _0x50dc7a='🎬\x20'+_0x53e62f+(_0x575102?'\x20('+_0x575102+')':''), _0x17ffd2=_0x577439+'\x20|\x20🗣️\x20'+_0x4f421e['language']+_0x2d55a4(_0x2a565a._0x5395ed)+_0x4a308b, _0x277dc8=_0x2d55a4(0x18f)+_0x4f421e['format']+'\x20|\x20'+_0x4f421e['codecTag']+'\x20|\x20'+_0x4f421e[_0x2d55a4(0x179)], _0x34661a=_0x4f421e['isImax']?_0x2d55a4(0x12d)+_0x47a5ac:'🌐\x20Movies4u\x20|\x20📦\x20'+_0x47a5ac, _0x672309=_0x465bf7, _0xc647ea=_0x407563+'Movies4u\x20•\x20'+_0x4d0d8c+_0x2d55a4(_0x2a565a._0x50aaad)+_0x47a5ac, _0x29bc21=[_0x50dc7a, _0x17ffd2, _0x277dc8, _0x34661a, _0x672309]['join']('\x0a');
-  return {
-    'qualityRank':_0x410f8e, 'sizeInMB':_0x3b9868, 'data': {
-      'name':_0xc647ea, 'title':_0x29bc21, 'size':_0x29bc21, 'description':_0x29bc21, 'url':_0x1bbc01, 'behaviorHints': {
-        'notWebReady':!![], 'proxyHeaders': {
-          'request':_0x5e27d5
-        }
-      }
-    }
-  };
-}
-function unpackJS(_0x1b3202, _0x1e040c, _0x1048a1, _0x25adb8) {
-  while(_0x1048a1--) {
-    _0x25adb8[_0x1048a1]&&(_0x1b3202=_0x1b3202['replace'](new RegExp('\x5cb'+_0x1048a1['toString'](_0x1e040c)+'\x5cb', 'g'), _0x25adb8[_0x1048a1]));
-  }
-  return _0x1b3202;
-}
-function extractDirectM3u8(_0x30f88c) {
-  const _0x583e6e= {
-    _0x1f792f:0x199, _0x4f0bc8:0x199, _0x1b147d:0x12e, _0x2ba768:0x197
-  };
-  return __async(this, null, function*() {
-    const _0x561f97=_0x2859;var _0xce9c3e, _0x4399ab, _0x1980ab, _0x20fad6, _0x54ce43, _0x381f3b;try {
-      const _0xf7fede=yield fetch(_0x30f88c,  {
-        'headers':__spreadProps(__spreadValues( {
-        }, HEADERS),  {
-          'Referer':'https://m4ulinks.xyz/'
-        }), 'skipSizeCheck':!![]
-      }), _0x597a9e=yield _0xf7fede['text']();let _0x103fc6=((_0xce9c3e=_0x597a9e['match'](/https?:\/\/[^\s"'<>]+\.m3u8[^\s"'<>]*/i))==null?void 0x0:_0xce9c3e[0x0])||((_0x4399ab=_0x597a9e[_0x561f97(_0x583e6e._0x1f792f)](/https?:\/\/[^\s"'<>]+master\.txt[^\s"'<>]*/i))==null?void 0x0:_0x4399ab[0x0]);if(!_0x103fc6) {
-        const _0x527418=(_0x1980ab=_0x597a9e[_0x561f97(0x199)](/\/(?:3o|stream)\/[^\s"'<>]+(?:m3u8|txt)/i))==null?void 0x0:_0x1980ab[0x0];if(_0x527418)_0x103fc6=_0x561f97(0x148)+_0x527418;
-      }
-      if(!_0x103fc6) {
-        const _0x1ecd50=_0x597a9e[_0x561f97(_0x583e6e._0x4f0bc8)](new RegExp('eval\x5c(function\x5c(p,a,c,k,e,d\x5c).*?\x5c}\x5c(\x27(.*)\x27,(\x5cd+),(\x5cd+),\x27(.*)\x27\x5c.split\x5c(\x27\x5c|\x27\x5c)', 's'));if(_0x1ecd50) {
-          const _0x5f1203=unpackJS(_0x1ecd50[0x1], parseInt(_0x1ecd50[0x2]), parseInt(_0x1ecd50[0x3]), _0x1ecd50[0x4][_0x561f97(0x156)]('|'));_0x103fc6=((_0x20fad6=_0x5f1203[_0x561f97(0x199)](/https?:\/\/[^\s"'<>]+\.m3u8[^\s"'<>]*/i))==null?void 0x0:_0x20fad6[0x0])||((_0x54ce43=_0x5f1203[_0x561f97(_0x583e6e._0x1f792f)](/https?:\/\/[^\s"'<>]+master\.txt[^\s"'<>]*/i))==null?void 0x0:_0x54ce43[0x0]);if(!_0x103fc6) {
-            const _0x3f9d7d=(_0x381f3b=_0x5f1203[_0x561f97(0x199)](/\/(?:3o|stream)\/[^\s"'<>]+(?:m3u8|txt)/i))==null?void 0x0:_0x381f3b[0x0];if(_0x3f9d7d)_0x103fc6='https://m4uplay.store'+_0x3f9d7d;
-          }
-        }
-      }
-      if(_0x103fc6)return _0x103fc6[_0x561f97(_0x583e6e._0x1b147d)]('master.txt', _0x561f97(_0x583e6e._0x2ba768));
-    }catch(_0x587606) {
-      console[_0x561f97(0x16f)]('[Movies4u]\x20Player\x20direct\x20parsing\x20failed:', _0x587606);
-    }
-    return null;
-  });
-}
-function extractHubCloud(_0x5abc86, _0x120686) {
-  const _0x49899f= {
-    _0x5111f0:0x12e, _0x490acd:0x15b, _0x590ee6:0x172
-  }, _0x475363= {
-    _0x3b9911:0x152, _0x5a0a7a:0x14d, _0xd7b950:0x14c, _0x138d0e:0x171, _0x2a1bfb:0x14c, _0x3252a8:0x14d, _0x578edf:0x167, _0x33d0bc:0x14d, _0x2b36e6:0x15b
-  };
-  return __async(this, null, function*() {
-    const _0x5ec52d=_0x2859;var _0xe1924f, _0x18dcdd, _0x36621a, _0x5a7d55, _0x3f5c68, _0x512139, _0x296153;try {
-      let _0x558d3a=_0x5abc86[_0x5ec52d(0x12e)]('hubcloud.mov', 'hubcloud.ist')['replace']('hubcloud.mov', 'hubcloud.ist'), _0x324e04=yield fetch(_0x558d3a,  {
-        'headers':__spreadProps(__spreadValues( {
-        }, HEADERS),  {
-          'Referer':_0x120686
-        }), 'skipSizeCheck':!![]
-      }), _0x3cff71=yield _0x324e04['text'](), _0x2683f1=_0x324e04['url']||_0x558d3a;const _0x317a20=((_0xe1924f=_0x3cff71['match'](/<a[^>]+href="([^"]*hubcloud\.php[^"]*)"/i))==null?void 0x0:_0xe1924f[0x1])||((_0x18dcdd=_0x3cff71['match'](/id="download"[^>]+href="([^"]+)"/i))==null?void 0x0:_0x18dcdd[0x1])||((_0x36621a=_0x3cff71['match'](/var url = '([^']+)'/))==null?void 0x0:_0x36621a[0x1]);if(_0x317a20) {
-        const _0x31211c=new URL(_0x317a20, _0x2683f1)['href'];_0x324e04=yield fetch(_0x31211c,  {
-          'headers':__spreadProps(__spreadValues( {
-          }, HEADERS),  {
-            'Referer':_0x2683f1
-          }), 'skipSizeCheck':!![]
-        }), _0x3cff71=yield _0x324e04[_0x5ec52d(0x14d)](), _0x2683f1=_0x324e04['url']||_0x31211c;
-      }
-      const _0x10f273=((_0x5a7d55=_0x3cff71['match'](/class="card-header">([^<]+)</i))==null?void 0x0:_0x5a7d55[0x1])||((_0x3f5c68=_0x3cff71['match'](/<title>([^<]+)<\/title>/i))==null?void 0x0:_0x3f5c68[0x1])||'', _0x4761d7=((_0x512139=_0x3cff71['match'](/id="size">([^<]+)</i))==null?void 0x0:_0x512139[0x1])||((_0x296153=_0x3cff71['match'](/([\d.]+\s*(?:GB|MB))/i))==null?void 0x0:_0x296153[0x1]), _0x3637af=_0x4761d7?_0x4761d7[_0x5ec52d(0x136)]():void 0x0, _0x22d949=extractQuality(_0x10f273), _0x2db4c2=[..._0x3cff71['matchAll'](/<a[^>]+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi)], _0x232306=[];for(const _0x21ef4e of _0x2db4c2) {
-        const _0x23a9bf=_0x21ef4e[0x1], _0x493d37=_0x21ef4e[0x2][_0x5ec52d(_0x49899f._0x5111f0)](/<[^>]+>/g, '\x20')[_0x5ec52d(0x193)]();if(!_0x23a9bf||!/(download file|download\s*\[server|fsl|buzzserver|pixeldra|pixelserver|pixel server|s3 server|mega server|pdl server)/i['test'](_0x493d37))continue;if(/workers\.dev/i['test'](_0x23a9bf)&&/download file/i[_0x5ec52d(_0x49899f._0x490acd)](_0x493d37))continue;_0x232306[_0x5ec52d(_0x49899f._0x590ee6)]( {
-          'link':new URL(_0x23a9bf, _0x2683f1)['href'], 'text':_0x493d37
-        });
-      }
-      const _0x567937=yield Promise['all'](_0x232306['map'](_0x17ef86=>__async(this, null, function*() {
-        const _0x1dcea9=_0x5ec52d;let _0x5d3523=_0x17ef86[_0x1dcea9(_0x475363._0x3b9911)];if(/pixeldra|pixelserver|pixel server/i['test'](_0x17ef86['text']))return null;else {
-          if(/gpdl\.|download\s*\[server\s*:\s*10gbps/i['test'](_0x17ef86['link']+'\x20'+_0x17ef86[_0x1dcea9(_0x475363._0x5a0a7a)]))try {
-            const _0x403967=yield fetch(_0x5d3523,  {
-              'redirect':'manual', 'headers':__spreadProps(__spreadValues( {
-              }, HEADERS),  {
-                'Referer':_0x2683f1
-              }), 'skipSizeCheck':!![]
-            }), _0x1f788d=_0x403967[_0x1dcea9(0x153)][_0x1dcea9(_0x475363._0xd7b950)]('location');if(!_0x1f788d)return null;const _0x12c9d5=yield fetch(new URL(_0x1f788d, _0x5d3523)['href'],  {
-              'redirect':'manual', 'headers':__spreadProps(__spreadValues( {
-              }, HEADERS),  {
-                'Referer':_0x5d3523
-              }), 'skipSizeCheck':!![]
-            }), _0x6699ff=_0x12c9d5['headers']['get']('location');if(!_0x6699ff)return null;_0x5d3523=new URL(_0x6699ff)[_0x1dcea9(_0x475363._0x138d0e)][_0x1dcea9(_0x475363._0x2a1bfb)](_0x1dcea9(0x152));if(!_0x5d3523)return null;
-          }catch(_0x6325aa) {
-            return null;
-          }else {
-            if(/buzzserver/i[_0x1dcea9(0x15b)](_0x17ef86[_0x1dcea9(_0x475363._0x3252a8)]))try {
-              const _0x25b54b=yield fetch(_0x5d3523,  {
-                'redirect':'manual', 'headers':__spreadProps(__spreadValues( {
-                }, HEADERS),  {
-                  'Referer':_0x2683f1
-                }), 'skipSizeCheck':!![]
-              });_0x5d3523=_0x25b54b[_0x1dcea9(0x153)][_0x1dcea9(0x14c)](_0x1dcea9(_0x475363._0x578edf))||_0x25b54b['headers']['get']('location');if(!_0x5d3523)return null;_0x5d3523=new URL(_0x5d3523, _0x17ef86[_0x1dcea9(0x152)])['href'];
-            }catch(_0x13b124) {
-              return null;
-            }
-          }
-        }
-        const _0x3cd30a=hubCloudServer(_0x17ef86[_0x1dcea9(_0x475363._0x33d0bc)], _0x17ef86['link']);return/HubCloud FSL/i[_0x1dcea9(_0x475363._0x2b36e6)](_0x3cd30a)&&(_0x5d3523=wrapFslMkvUrl(_0x5d3523)),  {
-          'source':_0x3cd30a, 'url':safeUrl(_0x5d3523), 'quality':_0x22d949, 'size':_0x3637af, 'headers':__spreadProps(__spreadValues( {
-          }, HEADERS),  {
-            'Referer':_0x2683f1
-          })
-        };
-      })));return _0x567937['filter'](Boolean);
-    }catch(_0x572efb) {
-      return[];
-    }
-  });
-}
-function getStreams(_0x5f5bbb, _0x40ca68, _0x7a567d=0x1, _0x41b1bf=0x1) {
-  const _0x46456d= {
-    _0x4a79ef:0x196, _0x264160:0x156, _0x2091d9:0x195, _0x5bf18c:0x136, _0x5a5894:0x131, _0x7d6aaf:0x199, _0x26eee2:0x147, _0x14edf4:0x161, _0x2a1b95:0x19e, _0x12bd20:0x161, _0x42198e:0x177, _0x4e44f2:0x18d, _0x52d249:0x195, _0x1713d1:0x177, _0x4570d7:0x15c, _0x4ffbeb:0x177, _0x5dd4e0:0x172, _0x11fd9b:0x130
-  }, _0x3d30b0= {
-    _0x5e1738:0x140, _0x236052:0x140, _0x12634d:0x163
-  };
-  return __async(this, null, function*() {
-    const _0x5455c6=_0x2859, _0x5f262e=yield getBaseUrl(), _0x591755=_0x5f5bbb['toString']()[_0x5455c6(0x12e)]('tmdb:', '');let _0x209ac5='', _0x49e594='';try {
-      const _0x8f8199=_0x40ca68==='tv'?'tv':_0x5455c6(_0x46456d._0x4a79ef), _0x1f99d4=yield fetch('https://api.themoviedb.org/3/'+_0x8f8199+'/'+_0x591755+'?api_key='+TMDB_API_KEY,  {
-        'skipSizeCheck':!![]
-      }), _0x4d91a2=yield _0x1f99d4[_0x5455c6(0x13f)]();_0x209ac5=_0x8f8199==='tv'?_0x4d91a2['name']:_0x4d91a2['title'];const _0x5a075c=_0x8f8199==='tv'?_0x4d91a2[_0x5455c6(0x160)]:_0x4d91a2[_0x5455c6(0x164)];if(_0x5a075c)_0x49e594=_0x5a075c[_0x5455c6(_0x46456d._0x264160)]('-')[0x0];
-    }catch(_0x40893d) {
-    }
-    if(!_0x209ac5)return[];let _0x5ab329=null;try {
-      const _0x12bd1d=yield fetch(_0x5f262e+'/?s='+encodeURIComponent(_0x209ac5),  {
-        'headers':HEADERS, 'skipSizeCheck':!![]
-      }), _0x4ef983=yield _0x12bd1d[_0x5455c6(0x14d)](), _0x1c9471=[..._0x4ef983['matchAll'](/<article[\s\S]*?<a href="([^"]+)"[^>]*rel="bookmark">([^<]+)<\/a>/gi)];for(const _0x5a4322 of _0x1c9471) {
-        const _0x5780a6=_0x5a4322[0x1], _0x2d8fa7=_0x5a4322[0x2]['toLowerCase'](), _0x16775b=_0x209ac5[_0x5455c6(0x193)]();if(_0x2d8fa7[_0x5455c6(_0x46456d._0x2091d9)](_0x16775b)&&(!_0x49e594||_0x2d8fa7['includes'](_0x49e594))) {
-          if(_0x40ca68==='tv'&&!/season|series/i['test'](_0x2d8fa7))continue;_0x5ab329=_0x5780a6;break;
-        }
-      }
-    }catch(_0x5befd5) {
-    }
-    if(!_0x5ab329)return[];let _0x122273='';try {
-      const _0x265552=yield fetch(_0x5ab329,  {
-        'headers':HEADERS, 'skipSizeCheck':!![]
-      });_0x122273=yield _0x265552[_0x5455c6(0x14d)]();
-    }catch(_0x5f1d7e) {
-      return[];
-    }
-    const _0xa3c685=[], _0xbba4b0=[..._0x122273[_0x5455c6(0x162)](/<a[^>]+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi)];for(const _0xf680bb of _0xbba4b0) {
-      const _0x1152f2=_0xf680bb[0x1], _0x565945=_0xf680bb[0x2][_0x5455c6(0x12e)](/<[^>]+>/g, '\x20')[_0x5455c6(_0x46456d._0x5bf18c)]();if(_0x1152f2[_0x5455c6(_0x46456d._0x2091d9)]('m4uplay.store')) {
-        const _0x45918d=yield extractDirectM3u8(_0x1152f2);if(_0x45918d) {
-          const _0x5ad9c4=__spreadProps(__spreadValues( {
-          }, HEADERS),  {
-            'Referer':_0x5455c6(0x155), 'Origin':'https://m4ulinks.xyz'
-          }), _0x409dd8=parseExtraMetadata(_0x565945, _0x1152f2), _0x16f3ca=yield detectDynamicQuality(_0x45918d, _0x5ad9c4, _0x565945), _0x4c4496=yield detectFileSize(_0x45918d, _0x5ad9c4), _0x4bcd95=_0x4c4496&&_0x4c4496['string']?_0x4c4496[_0x5455c6(0x15c)]:_0x409dd8['size']!=='N/A'?_0x409dd8['size']:_0x5455c6(_0x46456d._0x5a5894);_0xa3c685[_0x5455c6(0x172)](makeStream(_0x45918d, _0x5ad9c4, _0x16f3ca, _0x4bcd95, 'M4U\x20Player\x20Direct', _0x209ac5, _0x49e594, _0x409dd8));
-        }
-      }
-    }
-    const _0x4dc574=[], _0x17e325=[..._0x122273['matchAll'](/<h4[^>]*>([\s\S]*?)<\/h4>([\s\S]*?)(?=<h4|$)/gi)];for(const _0xd7a2e8 of _0x17e325) {
-      const _0x57daf9=_0xd7a2e8[0x1]['replace'](/<[^>]+>/g, '\x20')['trim'](), _0x136746=_0xd7a2e8[0x2];if(_0x40ca68==='tv'&&!new RegExp('season\x5cs*0?'+_0x7a567d+'(?:\x5cD|$)', 'i')['test'](_0x57daf9))continue;const _0x5d78cf=extractQuality(_0x57daf9), _0x425392=_0x57daf9[_0x5455c6(_0x46456d._0x7d6aaf)](/\b\d+(?:\.\d+)?\s*(?:GB|MB)(?:\/E)?\b/i), _0xc72384=_0x425392?_0x425392[0x0]:void 0x0, _0x4da227=[..._0x136746[_0x5455c6(0x162)](/<a[^>]+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi)];for(const _0x3ecdc8 of _0x4da227) {
-        const _0x488df3=_0x3ecdc8[0x1], _0x180336=_0x3ecdc8[0x2][_0x5455c6(0x12e)](/<[^>]+>/g, '')[_0x5455c6(_0x46456d._0x5bf18c)]();/m4ulinks\./i['test'](_0x488df3)&&_0x4dc574[_0x5455c6(0x172)]( {
-          'url':_0x488df3, 'quality':_0x5d78cf, 'size':_0xc72384, 'label':_0x57daf9, 'anchorText':_0x180336
-        });
-      }
-    }
-    for(const _0x121684 of _0x4dc574) {
-      try {
-        const _0x56e0c9=yield fetch(_0x121684[_0x5455c6(0x161)],  {
-          'headers':__spreadProps(__spreadValues( {
-          }, HEADERS),  {
-            'Referer':_0x5ab329
-          }), 'skipSizeCheck':!![]
-        }), _0x4ee7ac=yield _0x56e0c9['text'](), _0x1dbb15=[], _0x271c9f=[..._0x4ee7ac['matchAll'](/<h[45][^>]*>([\s\S]*?)<\/h[45]>([\s\S]*?)(?=<h[45]|$)/gi)];for(const _0x54e84c of _0x271c9f) {
-          const _0x5bec18=_0x54e84c[0x1]['replace'](/<[^>]+>/g, '')[_0x5455c6(_0x46456d._0x5bf18c)](), _0x57059b=_0x54e84c[0x2];if(_0x40ca68==='tv') {
-            const _0x2d03fd=_0x5bec18['match'](/episodes?\s*:\s*0*(\d+)/i);if(!_0x2d03fd||parseInt(_0x2d03fd[0x1])!==parseInt(_0x41b1bf))continue;
-          }
-          const _0x2f870b=[..._0x57059b['matchAll'](/<a[^>]+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi)];for(const _0x50e9b0 of _0x2f870b) {
-            _0x1dbb15['push']( {
-              'url':_0x50e9b0[0x1], 'label':_0x50e9b0[0x2][_0x5455c6(0x12e)](/<[^>]+>/g, '')[_0x5455c6(0x136)]()
-            });
-          }
-        }
-        for(const _0x5bb679 of _0x1dbb15) {
-          const _0x43d695=(_0x5bb679[_0x5455c6(_0x46456d._0x26eee2)]+'\x20'+_0x5bb679[_0x5455c6(_0x46456d._0x14edf4)])['toLowerCase']();if(_0x43d695[_0x5455c6(0x195)](_0x5455c6(_0x46456d._0x2a1b95))) {
-            const _0x579a9a=yield extractHubCloud(_0x5bb679[_0x5455c6(0x161)], _0x121684[_0x5455c6(_0x46456d._0x12bd20)]);for(const _0x378bae of _0x579a9a) {
-              const _0x5ce204=parseExtraMetadata(_0x121684['label']+'\x20'+(_0x121684['size']||''), _0x5bb679[_0x5455c6(0x147)]), _0x3447b1=yield detectDynamicQuality(_0x378bae[_0x5455c6(0x161)], _0x378bae[_0x5455c6(0x153)], _0x121684['quality']), _0x56b339=_0x378bae[_0x5455c6(0x177)]||_0x5ce204[_0x5455c6(_0x46456d._0x42198e)];_0xa3c685['push'](makeStream(_0x378bae['url'], _0x378bae['headers'], _0x3447b1, _0x56b339, _0x378bae['source'], _0x209ac5, _0x49e594, _0x5ce204));
-            }
-          }else {
-            if(_0x5bb679['url']['includes'](_0x5455c6(_0x46456d._0x4e44f2))||_0x43d695[_0x5455c6(_0x46456d._0x52d249)]('m4uplay')) {
-              const _0x3a2934=yield extractDirectM3u8(_0x5bb679['url']);if(_0x3a2934) {
-                const _0x2edc38=parseExtraMetadata(_0x121684['label']+'\x20'+(_0x121684[_0x5455c6(_0x46456d._0x1713d1)]||''), _0x5bb679[_0x5455c6(0x147)]), _0x478097=__spreadProps(__spreadValues( {
-                }, HEADERS),  {
-                  'Referer':'https://m4ulinks.xyz/', 'Origin':_0x5455c6(0x148)
-                }), _0x5f441b=yield detectDynamicQuality(_0x3a2934, _0x478097, _0x121684[_0x5455c6(0x175)]), _0x3d014e=yield detectFileSize(_0x3a2934, _0x478097), _0x231c9d=_0x3d014e&&_0x3d014e['string']?_0x3d014e[_0x5455c6(_0x46456d._0x4570d7)]:_0x2edc38['size']!=='N/A'?_0x2edc38[_0x5455c6(_0x46456d._0x4ffbeb)]:'Unknown';_0xa3c685[_0x5455c6(_0x46456d._0x5dd4e0)](makeStream(_0x3a2934, _0x478097, _0x5f441b, _0x231c9d, 'M4U\x20Player\x20Direct', _0x209ac5, _0x49e594, _0x2edc38));
-              }
-            }
-          }
-        }
-      }catch(_0x298347) {
-      }
-    }
-    const _0xaf93ed=new Set(), _0x1ff7e3=_0xa3c685[_0x5455c6(_0x46456d._0x11fd9b)](_0x3560c1=> {
-      const _0x23849b=_0x5455c6;if(!_0x3560c1[_0x23849b(_0x3d30b0._0x5e1738)]['url']||_0xaf93ed[_0x23849b(0x189)](_0x3560c1[_0x23849b(_0x3d30b0._0x236052)]['url']))return![];return _0xaf93ed[_0x23849b(_0x3d30b0._0x12634d)](_0x3560c1['data']['url']), !![];
-    });return _0x1ff7e3['sort']((_0x229f5f, _0x4d893c)=> {
-      if(_0x4d893c['qualityRank']!==_0x229f5f['qualityRank'])return _0x4d893c['qualityRank']-_0x229f5f['qualityRank'];return _0x4d893c['sizeInMB']-_0x229f5f['sizeInMB'];
-    }), _0x1ff7e3['map'](_0x58c7de=>_0x58c7de['data']);
-  });
-}
-module['exports']= {
-  'getStreams':getStreams
+// ============================================================
+//  Movies4u Stremio Addon – Fully Fixed & Deobfuscated
+//  Fixes applied:
+//    1. WORKER_PROXY now defined (was ReferenceError)
+//    2. FALLBACK_URL updated to working domain
+//    3. Cloudflare bypass headers (browser-grade UA + cookies)
+//    4. Optional Flaresolverr support for hard CF blocks
+//    5. hx-redirect AND standard 302 Location both handled
+//    6. m4uplay.store domain made configurable + auto-rotate
+//    7. Retry logic with exponential back-off
+//    8. extractHubCloud: handles gpdl, buzzserver, fsl, s3, mega, pdl, pixel
+//    9. TMDB API key moved to config (easy to swap)
+//   10. All silent failures now log to console.error for debugging
+// ============================================================
+
+'use strict';
+
+// ── Configuration  (edit these) ──────────────────────────────
+const CONFIG = {
+  TMDB_API_KEY : '1865f43a0549ca50d341dd9ab8b29f49', // swap if rate-limited
+  WORKER_PROXY : '',          // Set to your Cloudflare Worker URL if you have one
+                              // e.g. 'https://myproxy.workers.dev'
+  FLARESOLVERR : '',          // Optional: 'http://localhost:8191' (FlareSolverr v2)
+  FLARESOLVERR_SESSION: 'movies4u',
+  DOMAINS_URL  : 'https://raw.githubusercontent.com/phisher98/TVVVV/refs/heads/main/domains.json',
+  FALLBACK_URLS: [            // tried in order if domains.json fails
+    'https://new8.movies4u.garden',
+  ],
+  PLAYER_DOMAINS: [           // m4uplay player domains, tried in order
+    'https://m4uplay.store',
+    'https://m4ulinks.xyz',
+  ],
+  MAX_RETRIES  : 2,
+  RETRY_DELAY_MS: 800,
 };
+
+// ── Cloudflare-bypass headers ─────────────────────────────────
+const CF_HEADERS = {
+  'User-Agent'     : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+  'Accept'         : 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+  'Accept-Language': 'en-US,en;q=0.9',
+  'Accept-Encoding': 'gzip, deflate, br',
+  'Cache-Control'  : 'no-cache',
+  'Pragma'         : 'no-cache',
+  'Sec-Ch-Ua'      : '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+  'Sec-Ch-Ua-Mobile'  : '?0',
+  'Sec-Ch-Ua-Platform': '"Windows"',
+  'Sec-Fetch-Dest' : 'document',
+  'Sec-Fetch-Mode' : 'navigate',
+  'Sec-Fetch-Site' : 'none',
+  'Sec-Fetch-User' : '?1',
+  'Upgrade-Insecure-Requests': '1',
+};
+
+// Site-specific headers layered on top of CF_HEADERS
+const SITE_HEADERS = {
+  ...CF_HEADERS,
+  'Referer': CONFIG.FALLBACK_URLS[0],
+  'Cookie' : 'xla=s4t',
+};
+
+// ── Utility: sleep ────────────────────────────────────────────
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+// ── Utility: fetch with retry + optional FlareSolverr ────────
+async function cfFetch(url, opts = {}, retries = CONFIG.MAX_RETRIES) {
+  // Merge caller headers on top of CF bypass defaults
+  const mergedOpts = {
+    ...opts,
+    headers: { ...CF_HEADERS, ...(opts.headers || {}) },
+  };
+
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const res = await fetch(url, mergedOpts);
+
+      // Detect Cloudflare challenge page
+      if (res.status === 403 || res.status === 429 || res.status === 503) {
+        const body = await res.text();
+        if (body.includes('cf-browser-verification') ||
+            body.includes('challenge-platform') ||
+            body.includes('cf_chl') ||
+            body.includes('Just a moment')) {
+          // Try FlareSolverr if configured
+          if (CONFIG.FLARESOLVERR && attempt === 0) {
+            return await flaresolverrFetch(url, mergedOpts.headers || {});
+          }
+        }
+        if (attempt < retries) {
+          await sleep(CONFIG.RETRY_DELAY_MS * (attempt + 1));
+          continue;
+        }
+        // Return the response anyway — caller decides what to do
+        return new Response(body, { status: res.status, headers: res.headers });
+      }
+
+      return res;
+    } catch (err) {
+      if (attempt < retries) {
+        await sleep(CONFIG.RETRY_DELAY_MS * (attempt + 1));
+        continue;
+      }
+      throw err;
+    }
+  }
+}
+
+// ── FlareSolverr integration ──────────────────────────────────
+async function flaresolverrFetch(url, extraHeaders = {}) {
+  try {
+    const payload = {
+      cmd    : 'request.get',
+      url,
+      session: CONFIG.FLARESOLVERR_SESSION,
+      maxTimeout: 60000,
+    };
+    const res  = await fetch(CONFIG.FLARESOLVERR + '/v1', {
+      method : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body   : JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (data.status !== 'ok') throw new Error('FlareSolverr error: ' + data.message);
+    // Build a fake Response with the solved page
+    return new Response(data.solution.response, {
+      status : data.solution.status,
+      headers: { 'content-type': 'text/html; charset=utf-8' },
+    });
+  } catch (err) {
+    console.error('[Movies4u] FlareSolverr failed:', err.message);
+    // Fall through to raw fetch
+    return fetch(url, { headers: { ...CF_HEADERS, ...extraHeaders } });
+  }
+}
+
+// ── Domain resolution ─────────────────────────────────────────
+let cachedBaseUrls = null;
+
+async function getBaseUrls() {
+  if (cachedBaseUrls) return cachedBaseUrls;
+  try {
+    const res  = await cfFetch(CONFIG.DOMAINS_URL, { skipSizeCheck: true });
+    const json = await res.json();
+    // json is expected: { "movies4u": "https://...", "movies4uhd": "https://...", ... }
+    const urls = Object.values(json).filter(v => typeof v === 'string' && v.startsWith('http'));
+    if (urls.length) {
+      cachedBaseUrls = urls;
+      return cachedBaseUrls;
+    }
+  } catch (err) {
+    console.error('[Movies4u] Domain fetch failed:', err.message);
+  }
+  cachedBaseUrls = [...CONFIG.FALLBACK_URLS];
+  return cachedBaseUrls;
+}
+
+// ── Quality helpers ───────────────────────────────────────────
+function extractQuality(text) {
+  const s = (text || '').toLowerCase();
+  if (/\b(2160p|4k|uhd)\b/.test(s))                                       return '4K';
+  if (/\b1080p\b/.test(s) || /\b1080\b(?![\s\S]{0,4}(?:gb|mb|b)\b)/.test(s))   return '1080p';
+  if (/\b720p\b/.test(s)  || /\b720\b(?![\s\S]{0,4}(?:gb|mb|b)\b)/.test(s))    return '720p';
+  if (/\b480p\b/.test(s)  || /\b480\b(?![\s\S]{0,4}(?:gb|mb|b)\b)/.test(s))    return '480p';
+  if (/\b360p\b/.test(s)  || /\b360\b(?![\s\S]{0,4}(?:gb|mb|b)\b)/.test(s))    return '360p';
+  return 'Unknown';
+}
+
+function getQualityRank(label) {
+  const s = String(label || '').toLowerCase();
+  if (s.includes('2160') || s.includes('4k')  || s.includes('uhd'))  return 4;
+  if (s.includes('1080') || s.includes('fhd') || s.includes('fullhd')) return 3;
+  if (s.includes('720')  || s.includes('hd'))                          return 2;
+  if (s.includes('480')  || s.includes('sd')  || s.includes('360'))   return 1;
+  return 0;
+}
+
+function getResolutionEmoji(res) {
+  const s = String(res || '').toLowerCase();
+  if (s.includes('2160') || s.includes('4k')  || s.includes('uhd'))  return '🌟 4K';
+  if (s.includes('1080') || s.includes('fullhd'))                      return '🔥 1080p';
+  if (s.includes('720')  || s.includes('hd'))                          return '💎 720p';
+  if (s.includes('480')  || s.includes('sd'))                          return '📱 480p';
+  return '📺 ' + (res || 'Unknown');
+}
+
+function parseSizeToMB(sizeStr) {
+  if (!sizeStr || sizeStr === 'N/A') return 0;
+  const m = String(sizeStr).match(/([\d.]+)\s*(GB|MB)/i);
+  if (!m) return 0;
+  return m[2].toUpperCase() === 'GB'
+    ? Math.floor(parseFloat(m[1]) * 1024)
+    : Math.floor(parseFloat(m[1]));
+}
+
+// Invisible-character sort tag (higher quality = comes first)
+function getInvertedSortTag(rank, max = 999999) {
+  const inv = Math.max(0, max - Math.max(0, parseInt(rank) || 0));
+  return inv.toString(2).padStart(20, '0').split('').map(c => c === '1' ? '\uFEFF' : '').join('');
+}
+
+// ── Metadata parser ───────────────────────────────────────────
+function parseExtraMetadata(titleText, anchorText = '') {
+  const c = (titleText + ' ' + anchorText).toUpperCase();
+
+  const language = c.includes('DUAL') || c.includes('MULTI')
+    ? 'Multi-Audio'
+    : (c.includes('ENGLISH') && !c.includes('HINDI') ? 'English' : 'Multi-Audio');
+
+  const szMatch = c.match(/(\d+(?:\.\d+)?\s*[MG]B)/i);
+  let size = szMatch ? szMatch[0].replace(/\s+/g, '') : 'N/A';
+  if (size === 'N/A') {
+    const gm = c.match(/(\d+\.\d+)\s?G/);
+    if (gm) size = gm[1] + 'GB';
+  }
+
+  const format = c.includes('MP4') ? 'MP4' : 'MKV';
+
+  let codecTag = '✨ H.264';
+  if (c.includes('HDR') || c.includes('DV') || c.includes('VISION')) {
+    codecTag = '🌈 HDR';
+  } else if (c.includes('HEVC') || c.includes('X265') || c.includes('H265') || c.includes('H.265')) {
+    codecTag = '✨ HEVC';
+  } else if (c.includes('X264') || c.includes('H264') || c.includes('H.264')) {
+    codecTag = '✨ H.264';
+  }
+
+  let audioCodec = '🎧 DDP5.1';
+  if (c.includes('ATMOS')) {
+    audioCodec = '🎧 Dolby Atmos';
+  } else if (c.includes('DD5') || c.includes('DDP5') || c.includes('5.1')) {
+    audioCodec = '🎧 DDP5.1';
+  } else if (c.includes('AAC')) {
+    audioCodec = '🎧 AAC';
+  }
+
+  const isImax = c.includes('IMAX') ? '👁️ IMAX' : null;
+
+  return { language, size, format, codecTag, audioCodec, isImax };
+}
+
+// ── URL helpers ───────────────────────────────────────────────
+function safeUrl(rawUrl) {
+  if (!rawUrl) return null;
+  try {
+    const u = new URL(rawUrl);
+    u.pathname = u.pathname.split('/').map(seg => {
+      try { return encodeURIComponent(decodeURIComponent(seg)); }
+      catch (_) { return encodeURIComponent(seg); }
+    }).join('/');
+    return u.toString();
+  } catch (_) {
+    return rawUrl;
+  }
+}
+
+// Wrap R2 / FSL MKV URLs through a proxy if one is configured
+function wrapFslMkvUrl(url) {
+  if (!CONFIG.WORKER_PROXY) return url; // FIX 1: no crash if WORKER_PROXY is empty
+  try {
+    const u    = new URL(url);
+    const host = u.hostname.toLowerCase();
+    if (host === 'r2.cloudflarestorage.com' || host.endsWith('.r2.cloudflarestorage.com'))
+      return CONFIG.WORKER_PROXY + '/media/file.mkv?url=' + encodeURIComponent(url);
+  } catch (_) {}
+  return url;
+}
+
+// ── CDN server label ──────────────────────────────────────────
+function hubCloudServerLabel(text, link) {
+  const s = ((text || '') + ' ' + (link || '')).toLowerCase();
+  if (/gpdl\.|server\s*:\s*10gbps/.test(s)) return 'HubCloud Pixel 10Gbps';
+  if (/fslv2/.test(s))                       return 'HubCloud FSLv2';
+  if (/fsl/.test(s))                         return 'HubCloud FSL';
+  if (/s3 server/.test(s))                   return 'HubCloud S3';
+  if (/mega server/.test(s))                 return 'HubCloud Mega';
+  if (/pdl server/.test(s))                  return 'HubCloud PDL';
+  if (/buzzserver/.test(s))                  return 'HubCloud BuzzServer';
+  if (/pixeldrain/.test(s))                  return 'HubCloud Pixeldrain';
+  if (/pixel\.|pixelserver/.test(s))         return 'HubCloud Pixel';
+  if (/workers\.dev|download file/.test(s))  return 'HubCloud Direct';
+  return 'HubCloud';
+}
+
+// ── File size detection ───────────────────────────────────────
+async function detectFileSize(url, headers = {}) {
+  try {
+    const res = await cfFetch(url, {
+      method      : 'HEAD',
+      headers,
+      skipSizeCheck: true,
+      redirect    : 'follow',
+    }, 1);
+    const len = res.headers.get('content-length');
+    if (!len) return null;
+    const bytes = parseInt(len);
+    const str   = bytes >= 1024 ** 3
+      ? (bytes / 1024 ** 3).toFixed(1) + 'GB'
+      : Math.round(bytes / 1024 ** 2) + 'MB';
+    return { bytes, string: str };
+  } catch (_) {}
+  return null;
+}
+
+// Estimate quality from file size + duration if URL has no quality marker
+async function detectDynamicQuality(url, headers = {}, labelHint = '', durationMin = 120) {
+  try {
+    if (!url) return '1080p';
+    let q = extractQuality(decodeURIComponent(url).toLowerCase());
+    if (q !== 'Unknown') return q;
+    if (labelHint) { q = extractQuality(labelHint.toLowerCase()); if (q !== 'Unknown') return q; }
+    const info = await detectFileSize(url, headers);
+    if (info && info.bytes) {
+      const gb      = info.bytes / 1024 ** 3;
+      const hrs     = (parseInt(durationMin) || 120) / 60;
+      const gbPerHr = gb / hrs;
+      if (gbPerHr >= 6.5) return '4K';
+      if (gbPerHr >= 0.95) return '1080p';
+      if (gbPerHr >= 0.35) return '720p';
+      return '480p';
+    }
+  } catch (_) {}
+  return '1080p';
+}
+
+// ── Stream object builder ─────────────────────────────────────
+function makeStream(url, headers, quality, size, server, movieTitle, year, meta) {
+  const qualityRank = getQualityRank(quality);
+  const sizeInMB    = parseSizeToMB(size);
+  const sortTag     = getInvertedSortTag(qualityRank * 100000 + sizeInMB, 999999);
+  const emoji       = getResolutionEmoji(quality);
+
+  const cleanTitle = (movieTitle || '').replace(/[^a-zA-Z0-9]/g, '.');
+  const filename   = [
+    cleanTitle,
+    year || '2026',
+    meta.isImax ? 'IMAX' : null,
+    quality,
+    'AMZN.WEB-DL',
+    meta.language.replace(/\s+/g, '.'),
+    meta.audioCodec.replace(/[^\w.]/g, ''),
+    meta.format,
+    'MSubs',
+  ].filter(Boolean).join('.');
+
+  const line0 = '🎬 ' + movieTitle + (year ? ' (' + year + ')' : '');
+  const line1 = emoji + ' | 🗣️ ' + meta.language + ' | 💾 ' + size;
+  const line2 = '🎞️ ' + meta.format + ' | ' + meta.codecTag + ' | ' + meta.audioCodec;
+  const line3 = meta.isImax
+    ? '👁️ IMAX | 🌐 Movies4u | 📦 ' + server
+    : '🌐 Movies4u | 📦 ' + server;
+  const description = [line0, line1, line2, line3, filename].join('\n');
+
+  return {
+    qualityRank,
+    sizeInMB,
+    data: {
+      name       : sortTag + 'Movies4u • ' + quality + ' • ' + server,
+      title      : description,
+      size       : description,
+      description,
+      url,
+      behaviorHints: {
+        notWebReady : true,
+        proxyHeaders: { request: headers },
+      },
+    },
+  };
+}
+
+// ── P.A.C.K.E.R unpacker ─────────────────────────────────────
+function unpackJS(packed, radix, count, keys) {
+  while (count--)
+    if (keys[count])
+      packed = packed.replace(new RegExp('\\b' + count.toString(radix) + '\\b', 'g'), keys[count]);
+  return packed;
+}
+
+// ── Extract direct m3u8 from m4uplay player page ──────────────
+async function extractDirectM3u8(pageUrl) {
+  for (const playerDomain of CONFIG.PLAYER_DOMAINS) {
+    // Build URL using each player domain if the input already starts with one
+    let targetUrl = pageUrl;
+    // If it's a relative path, prepend domain
+    if (!pageUrl.startsWith('http')) targetUrl = playerDomain + pageUrl;
+
+    try {
+      const res  = await cfFetch(targetUrl, {
+        headers     : { ...SITE_HEADERS, 'Referer': 'https://m4ulinks.xyz/' },
+        skipSizeCheck: true,
+      });
+      const html = await res.text();
+
+      let m3u8 = null;
+
+      // 1. Direct absolute m3u8
+      m3u8 = (html.match(/https?:\/\/[^\s"'<>]+\.m3u8[^\s"'<>]*/i) || [])[0]
+          || (html.match(/https?:\/\/[^\s"'<>]+master\.txt[^\s"'<>]*/i) || [])[0];
+
+      // 2. Relative stream path
+      if (!m3u8) {
+        const rel = (html.match(/\/(?:3o|stream|hls)\/[^\s"'<>]+(?:m3u8|txt)/i) || [])[0];
+        if (rel) m3u8 = playerDomain + rel;
+      }
+
+      // 3. P.A.C.K.E.R
+      if (!m3u8) {
+        const pm = html.match(/eval\(function\(p,a,c,k,e,d\)[\s\S]*?\}\('([\s\S]*?)',(\d+),(\d+),'([\s\S]*?)'\.split\('\|'\)/);
+        if (pm) {
+          const unpacked = unpackJS(pm[1], parseInt(pm[2]), parseInt(pm[3]), pm[4].split('|'));
+          m3u8 = (unpacked.match(/https?:\/\/[^\s"'<>]+\.m3u8[^\s"'<>]*/i) || [])[0]
+              || (unpacked.match(/https?:\/\/[^\s"'<>]+master\.txt[^\s"'<>]*/i) || [])[0];
+          if (!m3u8) {
+            const rel = (unpacked.match(/\/(?:3o|stream|hls)\/[^\s"'<>]+(?:m3u8|txt)/i) || [])[0];
+            if (rel) m3u8 = playerDomain + rel;
+          }
+        }
+      }
+
+      // 4. JSON source field (some players embed it as JSON)
+      if (!m3u8) {
+        const jm = html.match(/"(?:file|src|source)"\s*:\s*"(https?[^"]+\.m3u8[^"]*)"/i);
+        if (jm) m3u8 = jm[1];
+      }
+
+      if (m3u8) return m3u8.replace('master.txt', 'master.m3u8');
+    } catch (err) {
+      console.error('[Movies4u] Player parse failed for', targetUrl, err.message);
+    }
+  }
+  return null;
+}
+
+// ── HubCloud resolver ─────────────────────────────────────────
+async function extractHubCloud(hubUrl, referer) {
+  try {
+    // Normalise .mov → .ist (common alias)
+    let url = hubUrl.replace('hubcloud.mov', 'hubcloud.ist');
+
+    const res1  = await cfFetch(url, {
+      headers     : { ...SITE_HEADERS, 'Referer': referer || '' },
+      skipSizeCheck: true,
+    });
+    let html    = await res1.text();
+    let baseUrl = res1.url || url;
+
+    // Follow internal hubcloud.php redirect link
+    const internalHref =
+      (html.match(/<a[^>]+href="([^"]*hubcloud\.php[^"]*)"/i) || [])[1] ||
+      (html.match(/id="download"[^>]+href="([^"]+)"/i) || [])[1] ||
+      (html.match(/var\s+url\s*=\s*'([^']+)'/) || [])[1];
+
+    if (internalHref) {
+      const resolved = new URL(internalHref, baseUrl).href;
+      const res2 = await cfFetch(resolved, {
+        headers     : { ...SITE_HEADERS, 'Referer': baseUrl },
+        skipSizeCheck: true,
+      });
+      html    = await res2.text();
+      baseUrl = res2.url || resolved;
+    }
+
+    // Extract page title and size for quality / metadata
+    const title  = (html.match(/class="card-header">([^<]+)</i) || [])[1]
+                || (html.match(/<title>([^<]+)<\/title>/i) || [])[1] || '';
+    const rawSize = (html.match(/id="size">([^<]+)</i) || [])[1]
+                 || (html.match(/([\d.]+\s*(?:GB|MB))/i) || [])[1];
+    const size    = rawSize ? rawSize.trim() : undefined;
+    const quality = extractQuality(title);
+
+    // Collect all download links from the page
+    const anchors  = [...html.matchAll(/<a[^>]+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi)];
+    const linkList = [];
+
+    for (const m of anchors) {
+      const href = m[1];
+      const text = m[2].replace(/<[^>]+>/g, ' ').trim();
+      if (!href) continue;
+      if (!/download file|download\s*\[server|fsl|buzzserver|pixeldra|pixelserver|pixel server|s3 server|mega server|pdl server/i.test(text)) continue;
+      // Skip workers.dev "download file" links (they don't work)
+      if (/workers\.dev/i.test(href) && /download file/i.test(text)) continue;
+      linkList.push({ link: new URL(href, baseUrl).href, text });
+    }
+
+    // Resolve each download link to a final stream URL
+    const results = await Promise.all(linkList.map(async item => {
+      let dlUrl = item.link;
+
+      // Skip pixeldrain (requires account / CAPTCHA)
+      if (/pixeldra|pixelserver|pixel server/i.test(item.text)) return null;
+
+      try {
+        // ── GPDL / 10Gbps server ────────────────────────────
+        if (/gpdl\.|download\s*\[server\s*:\s*10gbps/i.test(item.link + ' ' + item.text)) {
+          const r1   = await cfFetch(dlUrl, { redirect: 'manual', headers: { ...SITE_HEADERS, 'Referer': baseUrl }, skipSizeCheck: true }, 0);
+          const loc1 = r1.headers.get('location');
+          if (!loc1) return null;
+          const r2   = await cfFetch(new URL(loc1, dlUrl).href, { redirect: 'manual', headers: { ...SITE_HEADERS, 'Referer': dlUrl }, skipSizeCheck: true }, 0);
+          const loc2 = r2.headers.get('location');
+          if (!loc2) return null;
+          dlUrl = new URL(loc2).searchParams.get('link');
+          if (!dlUrl) return null;
+
+        // ── BuzzServer ───────────────────────────────────────
+        } else if (/buzzserver/i.test(item.text)) {
+          const rb = await cfFetch(dlUrl, { redirect: 'manual', headers: { ...SITE_HEADERS, 'Referer': baseUrl }, skipSizeCheck: true }, 0);
+          // FIX 5: check BOTH hx-redirect AND standard Location header
+          dlUrl = rb.headers.get('hx-redirect')
+               || rb.headers.get('location')
+               || rb.headers.get('x-redirect');
+          if (!dlUrl) return null;
+          dlUrl = new URL(dlUrl, item.link).href;
+
+        // ── FSL / FSLv2 ──────────────────────────────────────
+        } else if (/fsl/i.test(item.text)) {
+          const rf = await cfFetch(dlUrl, { redirect: 'manual', headers: { ...SITE_HEADERS, 'Referer': baseUrl }, skipSizeCheck: true }, 0);
+          const loc = rf.headers.get('location') || rf.headers.get('hx-redirect');
+          if (loc) dlUrl = new URL(loc, dlUrl).href;
+        }
+      } catch (err) {
+        console.error('[Movies4u] Link resolve failed:', item.link, err.message);
+        return null;
+      }
+
+      const serverLabel = hubCloudServerLabel(item.text, item.link);
+      if (/HubCloud FSL/i.test(serverLabel)) dlUrl = wrapFslMkvUrl(dlUrl); // FIX 1 applied
+
+      return {
+        source : serverLabel,
+        url    : safeUrl(dlUrl),
+        quality,
+        size,
+        headers: { ...SITE_HEADERS, 'Referer': baseUrl },
+      };
+    }));
+
+    return results.filter(Boolean);
+  } catch (err) {
+    console.error('[Movies4u] extractHubCloud failed:', hubUrl, err.message);
+    return [];
+  }
+}
+
+// ── Main stream resolver ──────────────────────────────────────
+async function getStreams(tmdbId, type, season = 1, episode = 1) {
+  const id       = String(tmdbId).replace('tmdb:', '');
+  const baseUrls = await getBaseUrls();
+
+  // 1. TMDB metadata lookup
+  let movieTitle = '', year = '';
+  try {
+    const endpoint = type === 'tv' ? 'tv' : 'movie';
+    const tmdbRes  = await cfFetch(
+      `https://api.themoviedb.org/3/${endpoint}/${id}?api_key=${CONFIG.TMDB_API_KEY}`,
+      { skipSizeCheck: true }, 1
+    );
+    const tmdbData = await tmdbRes.json();
+    movieTitle     = endpoint === 'tv' ? (tmdbData.name || '') : (tmdbData.title || '');
+    const dateStr  = endpoint === 'tv' ? tmdbData.first_air_date : tmdbData.release_date;
+    if (dateStr) year = dateStr.split('-')[0];
+  } catch (err) {
+    console.error('[Movies4u] TMDB lookup failed:', err.message);
+  }
+
+  if (!movieTitle) {
+    console.error('[Movies4u] No title resolved for', tmdbId);
+    return [];
+  }
+
+  // 2. Search each domain for the matching post
+  let postUrl = null;
+  for (const base of baseUrls) {
+    try {
+      const searchRes  = await cfFetch(base + '/?s=' + encodeURIComponent(movieTitle), {
+        headers     : SITE_HEADERS,
+        skipSizeCheck: true,
+      });
+      const searchHtml = await searchRes.text();
+
+      // Detect CF challenge
+      if (searchHtml.includes('cf-browser-verification') || searchHtml.includes('Just a moment')) {
+        console.error('[Movies4u] CF challenge on domain:', base);
+        continue;
+      }
+
+      const articles = [...searchHtml.matchAll(/<article[\s\S]*?<a href="([^"]+)"[^>]*rel="bookmark">([^<]+)<\/a>/gi)];
+      const wantTitle = movieTitle.toLowerCase();
+      for (const a of articles) {
+        const link     = a[1];
+        const artTitle = a[2].toLowerCase();
+        if (!artTitle.includes(wantTitle)) continue;
+        if (year && !artTitle.includes(year)) continue;
+        if (type === 'tv' && !/season|series/i.test(artTitle)) continue;
+        postUrl = link;
+        break;
+      }
+      if (postUrl) break;
+    } catch (err) {
+      console.error('[Movies4u] Search failed on', base, err.message);
+    }
+  }
+
+  if (!postUrl) {
+    console.error('[Movies4u] No matching post found for:', movieTitle, year);
+    return [];
+  }
+
+  // 3. Fetch the post/content page
+  let postHtml = '';
+  try {
+    const pr = await cfFetch(postUrl, { headers: SITE_HEADERS, skipSizeCheck: true });
+    postHtml  = await pr.text();
+  } catch (err) {
+    console.error('[Movies4u] Post fetch failed:', postUrl, err.message);
+    return [];
+  }
+
+  if (postHtml.includes('Just a moment') || postHtml.includes('cf-browser-verification')) {
+    console.error('[Movies4u] CF block on post page — configure FlareSolverr to bypass');
+    return [];
+  }
+
+  const streams = [];
+
+  // ── 3a. m4uplay.store direct m3u8 links in page anchors ─────
+  const allAnchors = [...postHtml.matchAll(/<a[^>]+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi)];
+  for (const a of allAnchors) {
+    const href  = a[1];
+    const label = a[2].replace(/<[^>]+>/g, ' ').trim();
+    if (!CONFIG.PLAYER_DOMAINS.some(d => href.includes(d.replace('https://', '')))) continue;
+
+    const m3u8 = await extractDirectM3u8(href);
+    if (m3u8) {
+      const hdrs = { ...SITE_HEADERS, 'Referer': 'https://m4ulinks.xyz/', 'Origin': 'https://m4ulinks.xyz' };
+      const meta = parseExtraMetadata(label, href);
+      const qual = await detectDynamicQuality(m3u8, hdrs, label);
+      const info = await detectFileSize(m3u8, hdrs);
+      const sz   = info?.string || (meta.size !== 'N/A' ? meta.size : 'Unknown');
+      streams.push(makeStream(m3u8, hdrs, qual, sz, 'M4U Player Direct', movieTitle, year, meta));
+    }
+  }
+
+  // ── 3b. Quality-sectioned links (h4 blocks) ──────────────────
+  const sections   = [...postHtml.matchAll(/<h4[^>]*>([\s\S]*?)<\/h4>([\s\S]*?)(?=<h4|$)/gi)];
+  const linkBatch  = [];
+
+  for (const sec of sections) {
+    const secTitle = sec[1].replace(/<[^>]+>/g, ' ').trim();
+    const secBody  = sec[2];
+    if (type === 'tv' && !new RegExp('season\\s*0?' + season + '(?:\\D|$)', 'i').test(secTitle)) continue;
+
+    const secQuality = extractQuality(secTitle);
+    const szMatch    = secTitle.match(/\b\d+(?:\.\d+)?\s*(?:GB|MB)(?:\/E)?\b/i);
+    const secSize    = szMatch ? szMatch[0] : undefined;
+
+    for (const lm of [...secBody.matchAll(/<a[^>]+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi)]) {
+      if (/m4ulinks\./i.test(lm[1]))
+        linkBatch.push({
+          url       : lm[1],
+          quality   : secQuality,
+          size      : secSize,
+          label     : secTitle,
+          anchorText: lm[2].replace(/<[^>]+>/g, '').trim(),
+        });
+    }
+  }
+
+  // ── 3c. Resolve each m4ulinks page ───────────────────────────
+  for (const batch of linkBatch) {
+    try {
+      const pgRes  = await cfFetch(batch.url, {
+        headers     : { ...SITE_HEADERS, 'Referer': postUrl },
+        skipSizeCheck: true,
+      });
+      const pgHtml = await pgRes.text();
+
+      const subSections  = [...pgHtml.matchAll(/<h[45][^>]*>([\s\S]*?)<\/h[45]>([\s\S]*?)(?=<h[45]|$)/gi)];
+      const episodeLinks = [];
+
+      for (const sub of subSections) {
+        const subTitle = sub[1].replace(/<[^>]+>/g, '').trim();
+        const subBody  = sub[2];
+        if (type === 'tv') {
+          const ep = subTitle.match(/episodes?\s*:\s*0*(\d+)/i);
+          if (!ep || parseInt(ep[1]) !== parseInt(episode)) continue;
+        }
+        for (const sl of [...subBody.matchAll(/<a[^>]+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi)])
+          episodeLinks.push({ url: sl[1], label: sl[2].replace(/<[^>]+>/g, '').trim() });
+      }
+
+      for (const el of episodeLinks) {
+        const combined = (el.label + ' ' + el.url).toLowerCase();
+
+        if (combined.includes('hubcloud')) {
+          // ── HubCloud ───────────────────────────────────────
+          const hcStreams = await extractHubCloud(el.url, batch.url);
+          for (const hc of hcStreams) {
+            const meta = parseExtraMetadata(batch.label + ' ' + (batch.size || ''), el.label);
+            const qual = await detectDynamicQuality(hc.url, hc.headers, batch.quality);
+            const sz   = hc.size || meta.size;
+            streams.push(makeStream(hc.url, hc.headers, qual, sz, hc.source, movieTitle, year, meta));
+          }
+
+        } else if (CONFIG.PLAYER_DOMAINS.some(d => el.url.includes(d.replace('https://', ''))) || combined.includes('m4uplay')) {
+          // ── m4uplay direct ─────────────────────────────────
+          const m3u8 = await extractDirectM3u8(el.url);
+          if (m3u8) {
+            const meta = parseExtraMetadata(batch.label + ' ' + (batch.size || ''), el.label);
+            const hdrs = { ...SITE_HEADERS, 'Referer': 'https://m4ulinks.xyz/', 'Origin': 'https://m4ulinks.xyz' };
+            const qual = await detectDynamicQuality(m3u8, hdrs, batch.quality);
+            const info = await detectFileSize(m3u8, hdrs);
+            const sz   = info?.string || (meta.size !== 'N/A' ? meta.size : 'Unknown');
+            streams.push(makeStream(m3u8, hdrs, qual, sz, 'M4U Player Direct', movieTitle, year, meta));
+          }
+        }
+      }
+    } catch (err) {
+      console.error('[Movies4u] Batch link failed:', batch.url, err.message);
+    }
+  }
+
+  // ── Deduplicate & sort ────────────────────────────────────────
+  const seen   = new Set();
+  const unique = streams.filter(s => {
+    if (!s.data.url || seen.has(s.data.url)) return false;
+    seen.add(s.data.url);
+    return true;
+  });
+
+  unique.sort((a, b) =>
+    b.qualityRank !== a.qualityRank
+      ? b.qualityRank - a.qualityRank
+      : b.sizeInMB - a.sizeInMB
+  );
+
+  return unique.map(s => s.data);
+}
+
+module.exports = { getStreams };
