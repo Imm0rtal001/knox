@@ -68,8 +68,8 @@ var __defProp=Object["defineProperty"], __defProps=Object["defineProperties"], _
       }
     }, _0x3c92fb=_0x672cc4=>_0x672cc4['done']?_0x27250d(_0x672cc4[_0xe7c2ab(0x19a)]):Promise[_0xe7c2ab(0x139)](_0x672cc4['value'])[_0xe7c2ab(0x194)](_0x4cc8ae, _0x4820d3);_0x3c92fb((_0x15291f=_0x15291f[_0xe7c2ab(_0x11c7be._0x4134a3)](_0xcd979, _0x57d1c8))[_0xe7c2ab(0x158)]());
   });
-}, DOMAINS_URL='https://new8.movies4u.garden', FALLBACK_URL="https://new8.movies4u.garden", TMDB_API_KEY="1865f43a0549ca50d341dd9ab8b29f49", HEADERS= {
-  'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/149.0.0.0 Safari/537.36', 'Referer':FALLBACK_URL, 'Cookie':"xla=s4t"
+}, DOMAINS_URL='https://raw.githubusercontent.com/phisher98/TVVVV/refs/heads/main/domains.json', FALLBACK_URL="https://new8.movies4u.garden", WORKER_PROXY='', TMDB_API_KEY="1865f43a0549ca50d341dd9ab8b29f49", HEADERS= {
+  'User-Agent':'Mozilla/5.0\x20(Windows\x20NT\x2010.0;\x20Win64;\x20x64)\x20AppleWebKit/537.36\x20(KHTML,\x20like\x20Gecko)\x20Chrome/131.0.0.0\x20Safari/537.36', 'Referer':FALLBACK_URL, 'Cookie':"xla=s4t"
 }, cachedBaseUrl=null;
 function getBaseUrl() {
   const _0x27613e= {
