@@ -353,8 +353,8 @@
     {
       "id": "netmirror",
       "name": "Netmirror.",
-      "description": "Netmirror Movies streaming with multiple resolution • Nuvio TV / Fire TV compatible",
-      "version": "1.0.0",
+      "description": "Netmirror • 1080p • Mainstream • Regional",
+      "version": "3.4.0",
       "author": "Imm0rtal001",
       "supportedTypes": [
         "movie",
@@ -364,9 +364,10 @@
       "enabled": true,
       "formats": [
         "mp4",
-        "m3u8"
+        "m3u8",
+        "mkv"
       ],
-      "logo": "https://i.postimg.cc/KzDBBdbK/uhdmovies.png",
+      "logo": "",
       "contentLanguage": [
         "en",
         "hi"
