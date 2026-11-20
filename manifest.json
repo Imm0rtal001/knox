@@ -1,6 +1,6 @@
 {
   "name": "Knox Providers",
-  "version": "4.6.1",
+  "version": "4.7.0",
   "scrapers": [
     {
       "id": "4khdhub",
@@ -351,16 +351,16 @@
       ]
     },
     {
-      "id": "uhdmovies",
-      "name": "UHDMovies.",
-      "description": "UHD Movies streaming with multiple resolution • Nuvio TV / Fire TV compatible",
+      "id": "netmirror",
+      "name": "Netmirror.",
+      "description": "Netmirror Movies streaming with multiple resolution • Nuvio TV / Fire TV compatible",
       "version": "1.0.0",
       "author": "Imm0rtal001",
       "supportedTypes": [
         "movie",
         "tv"
       ],
-      "filename": "providers/uhdmovies.js",
+      "filename": "providers/netmirror.js",
       "enabled": true,
       "formats": [
         "mp4",
