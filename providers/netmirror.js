@@ -1,5 +1,5 @@
 const PROVIDER = "NetMirror";
-const BASE_URL = "https://net79.cc";
+const BASE_URL = "https://net77.cc";
 const USER_AGENT = "Mozilla/5.0 (Linux; Android 14; Pixel 8 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Mobile Safari/537.36";
 const REFERER = "https://videodownloader.site/";
 const LANGS = {
