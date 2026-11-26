@@ -1,4 +1,4 @@
-const MOVIE_BASE = "https://new2.katmoviehd.top";
+const MOVIE_BASE = "https://new3.katmoviehd.top";
 const TVSHW_BASE = "https://new2.katdrama.my";
 const ANIME_BASE = "https://new.pikahd.co";
 const TMDB_API = "https://api.themoviedb.org/3";
